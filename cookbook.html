@@ -452,15 +452,37 @@
   const $ = (s) => document.querySelector(s);
 
   // Inline seed data (mirror of seed-data.json so the page works file:// without fetch).
-  const SEED = [
-    { id: "bite-seed-001", dish_name: "Spicy Tonkotsu Ramen", restaurant_name: "Tatsu Ramen", city: "San Francisco", rating: 4.5, notes: "Rich broth, perfect chashu. Get the egg. The spice creeps up on you in the best way — not aggressive, just present.", tags: ["ramen","spicy","repeat","japanese"], photo_data_url: "", price_estimate: "$$", date: "2026-04-21" },
-    { id: "bite-seed-002", dish_name: "Cacio e Pepe", restaurant_name: "Flour + Water", city: "San Francisco", rating: 5.0, notes: "The platonic ideal. Pasta cooked one minute past al dente, sauce that emulsifies into a glossy cling. Unreasonable amount of pepper.", tags: ["pasta","italian","repeat","splurge"], photo_data_url: "", price_estimate: "$$$", date: "2026-04-12" },
-    { id: "bite-seed-003", dish_name: "Crispy Pork Tacos", restaurant_name: "La Taqueria", city: "San Francisco", rating: 4.0, notes: "Carnitas are the move here. Skip the burrito hype — these tacos are why you came. Salsa verde is the secret weapon.", tags: ["mexican","tacos","lunch"], photo_data_url: "", price_estimate: "$", date: "2026-03-28" },
-    { id: "bite-seed-004", dish_name: "Whole Branzino", restaurant_name: "Anchor Oyster Bar", city: "San Francisco", rating: 4.5, notes: "Filleted tableside. Crispy skin, tender flesh, lemon and herbs. Old-school in the right ways.", tags: ["seafood","date-night","splurge"], photo_data_url: "", price_estimate: "$$$", date: "2026-03-14" },
-    { id: "bite-seed-005", dish_name: "Sourdough Levain", restaurant_name: "Tartine Bakery", city: "San Francisco", rating: 4.5, notes: "Worth the line. Crackly crust, open crumb, tang that hits about three seconds after the chew. Best with cold butter.", tags: ["bread","breakfast","repeat"], photo_data_url: "", price_estimate: "$", date: "2026-02-22" },
-    { id: "bite-seed-006", dish_name: "Beef Pho", restaurant_name: "Turtle Tower", city: "San Francisco", rating: 4.0, notes: "Northern-style — clearer broth, wider noodles, thinly sliced rare beef. Less heavy than the southern version, more of a hug.", tags: ["vietnamese","soup","winter"], photo_data_url: "", price_estimate: "$$", date: "2026-02-08" },
-    { id: "bite-seed-007", dish_name: "Margherita Pizza", restaurant_name: "Tony's Pizza Napoletana", city: "San Francisco", rating: 3.5, notes: "Good not great. Crust was beautifully blistered but slightly underseasoned. Sauce was bright though. Try the New Yorker next time.", tags: ["pizza","italian"], photo_data_url: "", price_estimate: "$$", date: "2026-01-19" }
+  // SEED is loaded asynchronously from seed-data.json (single source of truth
+  // shared with the main app's empty-state CTA). The inline minimal version
+  // below is a graceful fallback if the fetch fails. Photos populate when
+  // the JSON loads.
+  let SEED = [
+    { id: "bite-seed-001", dish_name: "Spicy Tonkotsu Ramen", restaurant_name: "Tatsu Ramen", city: "San Francisco", rating: 4.5, notes: "Rich broth, perfect chashu. Get the egg.", tags: ["ramen","spicy","repeat","japanese"], photo_data_url: "", price_estimate: "$$", date: "2026-04-21" },
+    { id: "bite-seed-002", dish_name: "Cacio e Pepe", restaurant_name: "Flour + Water", city: "San Francisco", rating: 5.0, notes: "The platonic ideal.", tags: ["pasta","italian","repeat","splurge"], photo_data_url: "", price_estimate: "$$$", date: "2026-04-12" },
+    { id: "bite-seed-003", dish_name: "Crispy Pork Tacos", restaurant_name: "La Taqueria", city: "San Francisco", rating: 4.0, notes: "Carnitas are the move here.", tags: ["mexican","tacos","lunch"], photo_data_url: "", price_estimate: "$", date: "2026-03-28" },
+    { id: "bite-seed-004", dish_name: "Whole Branzino", restaurant_name: "Anchor Oyster Bar", city: "San Francisco", rating: 4.5, notes: "Filleted tableside.", tags: ["seafood","date-night","splurge"], photo_data_url: "", price_estimate: "$$$", date: "2026-03-14" },
+    { id: "bite-seed-005", dish_name: "Sourdough Levain", restaurant_name: "Tartine Bakery", city: "San Francisco", rating: 4.5, notes: "Worth the line.", tags: ["bread","breakfast","repeat"], photo_data_url: "", price_estimate: "$", date: "2026-02-22" },
+    { id: "bite-seed-006", dish_name: "Beef Pho", restaurant_name: "Turtle Tower", city: "San Francisco", rating: 4.0, notes: "Northern-style.", tags: ["vietnamese","soup","winter"], photo_data_url: "", price_estimate: "$$", date: "2026-02-08" },
+    { id: "bite-seed-007", dish_name: "Margherita Pizza", restaurant_name: "Tony's Pizza Napoletana", city: "San Francisco", rating: 3.5, notes: "Good not great.", tags: ["pizza","italian"], photo_data_url: "", price_estimate: "$$", date: "2026-01-19" }
   ];
+
+  // Load full seed (with embedded photos + full notes) from the canonical JSON
+  // file. Updates SEED in place so the data-source dropdown reflects fresh data.
+  let seedReady = false;
+  let seedReadyPromise = (async () => {
+    try {
+      const res = await fetch('./seed-data.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const fresh = await res.json();
+      if (Array.isArray(fresh) && fresh.length) {
+        SEED = fresh;
+        seedReady = true;
+        console.log('[cookbook] loaded seed-data.json with', SEED.length, 'bites');
+      }
+    } catch (err) {
+      console.warn('[cookbook] could not fetch seed-data.json, using fallback inline seed:', err.message);
+    }
+  })();
 
   function getBites(source) {
     if (source === 'local') return BitesCookbook.loadBites();
@@ -545,7 +567,7 @@
     const { wrap, page } = pageEl('Cover', opts.pageSize, 'cover');
     page.innerHTML = `
       <div class="topline"></div>
-      <div class="eyebrow">A Bites Cookbook</div>
+      <div class="eyebrow">The Bites Cookbook</div>
       <h2>My Year<br>of Bites</h2>
       <div class="subtitle">${escapeHtml(opts.userName || '—')} · ${rangeLabel(start, end)}</div>
       <div class="stats-rule"></div>
@@ -698,9 +720,17 @@
     $(sel).addEventListener('change', rerender);
   });
 
-  // Initial render
-  document.addEventListener('DOMContentLoaded', rerender);
-  if (document.readyState !== 'loading') rerender();
+  // Initial render: do an immediate quick render with the inline fallback,
+  // then re-render once the canonical seed-data.json (with photos) has loaded.
+  async function bootRender() {
+    rerender();
+    try {
+      await seedReadyPromise;
+      if (seedReady) rerender();
+    } catch {}
+  }
+  document.addEventListener('DOMContentLoaded', bootRender);
+  if (document.readyState !== 'loading') bootRender();
 })();
 </script>
 </body>
