@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bites Cookbook · Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #FAF6F0;
+    --ink: #2A2118;
+    --ink2: #6B5E50;
+    --ink3: #A89E91;
+    --orange: #C84B31;
+    --sand: #E9DFD0;
+    --soft: #F4D8CC;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--ink);
+    background: #ECE6DC;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Top toolbar */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 14px 22px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--sand);
+  }
+  .toolbar h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0 12px 0 0;
+  }
+  .toolbar h1 .accent { color: var(--orange); }
+  .toolbar label {
+    font-size: 13px;
+    color: var(--ink2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toolbar select,
+  .toolbar input[type="text"] {
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    border: 1px solid var(--sand);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+  }
+  .toolbar .btn {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--orange);
+    background: var(--orange);
+    color: white;
+    cursor: pointer;
+  }
+  .toolbar .btn.ghost {
+    background: transparent;
+    color: var(--orange);
+  }
+  .toolbar .btn:hover { filter: brightness(0.95); }
+  .toolbar .spacer { flex: 1; }
+  .toolbar .muted { color: var(--ink3); font-size: 12px; }
+
+  .stage {
+    padding: 32px 22px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  /* The on-screen "page" preview. We size it like a real US Letter or A4 page,
+     scaled so it fits comfortably. */
+  .page {
+    position: relative;
+    width: 8.5in;
+    height: 11in;
+    background: var(--paper);
+    box-shadow: 0 8px 30px rgba(40,30,20,0.18);
+    overflow: hidden;
+    transform-origin: top center;
+  }
+  .page.a4 { width: 8.27in; height: 11.69in; }
+
+  /* On smaller screens, scale down. */
+  @media (max-width: 1000px) {
+    .page { transform: scale(0.65); margin-bottom: -180px; }
+  }
+  @media (max-width: 700px) {
+    .page { transform: scale(0.40); margin-bottom: -300px; }
+  }
+
+  /* Page label */
+  .page-label {
+    position: absolute;
+    top: -22px;
+    left: 0;
+    font-size: 11px;
+    color: var(--ink3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Cover */
+  .cover { padding: 0.5in; }
+  .cover .topline {
+    border-top: 2px solid var(--orange);
+    margin-top: 0.7in;
+    padding-top: 0.05in;
+  }
+  .cover .eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--orange);
+    text-transform: uppercase;
+  }
+  .cover h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 88px;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    margin: 0.4in 0 0;
+    color: var(--ink);
+  }
+  .cover .subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink2);
+    margin-top: 0.25in;
+  }
+  .cover .stats-rule {
+    border-top: 1px solid var(--sand);
+    margin-top: 1.6in;
+  }
+  .cover .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 0.5in;
+  }
+  .cover .stats .item { text-align: center; }
+  .cover .stats .label {
+    font-size: 10px;
+    color: var(--ink3);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .cover .stats .value {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 38px;
+    color: var(--ink);
+    margin-top: 6px;
+  }
+  .cover .ornament {
+    position: absolute;
+    bottom: 1.4in;
+    left: 0.5in;
+    width: 0.18in;
+    height: 0.18in;
+    background: var(--orange);
+  }
+  .cover .dots {
+    position: absolute;
+    bottom: 1.43in;
+    right: 0.5in;
+    display: flex;
+    gap: 6px;
+  }
+  .cover .dots span {
+    width: 7px;
+    height: 7px;
+    background: var(--sand);
+    border-radius: 50%;
+    display: block;
+  }
+  .cover .footer {
+    position: absolute;
+    left: 0.5in;
+    bottom: 0.5in;
+  }
+  .cover .footer .word {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .cover .footer .url {
+    font-size: 11px;
+    color: var(--ink3);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+
+  /* TOC */
+  .toc { padding: 0.5in; }
+  .toc .eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--orange);
+    text-transform: uppercase;
+  }
+  .toc h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 44px;
+    margin: 12px 0 24px;
+    color: var(--ink);
+  }
+  .toc .rule { border-top: 1px solid var(--sand); margin-bottom: 24px; }
+  .toc .month {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--orange);
+    margin: 24px 0 6px;
+    border-bottom: 1px solid var(--sand);
+    padding-bottom: 8px;
+  }
+  .toc .row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+  }
+  .toc .row .dish {
+    font-family: var(--serif);
+    color: var(--ink);
+    font-size: 15px;
+  }
+  .toc .row .restaurant {
+    color: var(--ink2);
+    font-size: 13px;
+  }
+  .toc .row .right {
+    margin-left: auto;
+    color: var(--ink3);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* Bite page */
+  .bite { padding: 0.5in; display: flex; flex-direction: column; }
+  .bite .photo {
+    width: 100%;
+    height: 5in;
+    background: var(--soft);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--sand);
+  }
+  .bite .photo img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    background: var(--paper);
+    display: block;
+  }
+  .bite .photo.placeholder {
+    background:
+      repeating-linear-gradient(45deg, var(--soft), var(--soft) 14px, var(--sand) 14px, var(--sand) 16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bite .photo.placeholder::after {
+    content: "— no photo —";
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink2);
+    background: var(--soft);
+    padding: 6px 14px;
+  }
+  .bite .photo.placeholder .corner {
+    position: absolute;
+    bottom: 0.18in; right: 0.18in;
+    width: 0.22in; height: 0.04in;
+    background: var(--orange);
+  }
+  .bite .eyebrow {
+    margin-top: 0.4in;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+  .bite h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 1.05;
+    color: var(--ink);
+    margin: 12px 0 8px;
+  }
+  .bite .meta {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink2);
+    font-size: 16px;
+  }
+  .bite .rule { border-top: 1px solid var(--sand); margin: 18px 0; }
+  .bite .notes {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .bite .pills {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 18px;
+  }
+  .bite .pill {
+    background: var(--sand);
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .bite .page-num {
+    position: absolute;
+    bottom: 0.5in; right: 0.5in;
+    font-size: 11px;
+    color: var(--ink3);
+  }
+
+  /* Closing */
+  .closing {
+    padding: 0.5in;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .closing .rule {
+    width: 1.2in; border-top: 2px solid var(--orange); margin-bottom: 18px;
+  }
+  .closing h2 {
+    font-family: var(--serif); font-weight: 700; font-size: 30px;
+    margin: 0 0 10px;
+  }
+  .closing .lead {
+    font-family: var(--serif); font-style: italic; color: var(--ink2);
+    font-size: 16px;
+  }
+  .closing .url {
+    margin-top: 14px; color: var(--ink3); font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .closing .renew {
+    position: absolute;
+    bottom: 0.5in; left: 0; right: 0;
+    text-align: center;
+    color: var(--ink3); font-size: 11px;
+  }
+
+  .panel {
+    background: var(--paper);
+    border: 1px solid var(--sand);
+    border-radius: 12px;
+    padding: 14px 18px;
+    max-width: 800px;
+    color: var(--ink2);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .panel strong { color: var(--ink); }
+  .panel code {
+    background: var(--soft); padding: 1px 6px; border-radius: 4px;
+    font-size: 12px; color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<header class="toolbar">
+  <h1>Bites <span class="accent">·</span> Cookbook preview</h1>
+
+  <label>Data:
+    <select id="data-source">
+      <option value="seed">Seed (7 bites)</option>
+      <option value="local">localStorage</option>
+      <option value="seed-many">Seed × 7 (49 bites)</option>
+      <option value="seed-one">Single bite</option>
+      <option value="empty">Empty</option>
+    </select>
+  </label>
+
+  <label>Page:
+    <select id="page-size">
+      <option value="letter">US Letter</option>
+      <option value="a4">A4</option>
+    </select>
+  </label>
+
+  <label>Name:
+    <input id="user-name" type="text" placeholder="—" value="" />
+  </label>
+
+  <span class="spacer"></span>
+
+  <button class="btn ghost" id="reload-btn">↻ Re-render</button>
+  <button class="btn" id="download-btn">Download PDF</button>
+</header>
+
+<main class="stage" id="stage">
+  <div class="panel" id="hint">
+    <strong>Standalone preview.</strong> Pick a data source, hit
+    <em>Re-render</em> to see the layout, then <em>Download PDF</em> to test the
+    real generator. The on-screen pages are HTML mirrors of what the PDF
+    produces — they may not match pixel-for-pixel (jsPDF uses its bundled
+    serif), but the layout, spacing, and structure are 1:1.
+  </div>
+  <div id="pages-host"></div>
+</main>
+
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="cookbook.js"></script>
+<script>
+(function () {
+  const $ = (s) => document.querySelector(s);
+
+  // Inline seed data (mirror of seed-data.json so the page works file:// without fetch).
+  const SEED = [
+    { id: "bite-seed-001", dish_name: "Spicy Tonkotsu Ramen", restaurant_name: "Tatsu Ramen", city: "San Francisco", rating: 4.5, notes: "Rich broth, perfect chashu. Get the egg. The spice creeps up on you in the best way — not aggressive, just present.", tags: ["ramen","spicy","repeat","japanese"], photo_data_url: "", price_estimate: "$$", date: "2026-04-21" },
+    { id: "bite-seed-002", dish_name: "Cacio e Pepe", restaurant_name: "Flour + Water", city: "San Francisco", rating: 5.0, notes: "The platonic ideal. Pasta cooked one minute past al dente, sauce that emulsifies into a glossy cling. Unreasonable amount of pepper.", tags: ["pasta","italian","repeat","splurge"], photo_data_url: "", price_estimate: "$$$", date: "2026-04-12" },
+    { id: "bite-seed-003", dish_name: "Crispy Pork Tacos", restaurant_name: "La Taqueria", city: "San Francisco", rating: 4.0, notes: "Carnitas are the move here. Skip the burrito hype — these tacos are why you came. Salsa verde is the secret weapon.", tags: ["mexican","tacos","lunch"], photo_data_url: "", price_estimate: "$", date: "2026-03-28" },
+    { id: "bite-seed-004", dish_name: "Whole Branzino", restaurant_name: "Anchor Oyster Bar", city: "San Francisco", rating: 4.5, notes: "Filleted tableside. Crispy skin, tender flesh, lemon and herbs. Old-school in the right ways.", tags: ["seafood","date-night","splurge"], photo_data_url: "", price_estimate: "$$$", date: "2026-03-14" },
+    { id: "bite-seed-005", dish_name: "Sourdough Levain", restaurant_name: "Tartine Bakery", city: "San Francisco", rating: 4.5, notes: "Worth the line. Crackly crust, open crumb, tang that hits about three seconds after the chew. Best with cold butter.", tags: ["bread","breakfast","repeat"], photo_data_url: "", price_estimate: "$", date: "2026-02-22" },
+    { id: "bite-seed-006", dish_name: "Beef Pho", restaurant_name: "Turtle Tower", city: "San Francisco", rating: 4.0, notes: "Northern-style — clearer broth, wider noodles, thinly sliced rare beef. Less heavy than the southern version, more of a hug.", tags: ["vietnamese","soup","winter"], photo_data_url: "", price_estimate: "$$", date: "2026-02-08" },
+    { id: "bite-seed-007", dish_name: "Margherita Pizza", restaurant_name: "Tony's Pizza Napoletana", city: "San Francisco", rating: 3.5, notes: "Good not great. Crust was beautifully blistered but slightly underseasoned. Sauce was bright though. Try the New Yorker next time.", tags: ["pizza","italian"], photo_data_url: "", price_estimate: "$$", date: "2026-01-19" }
+  ];
+
+  function getBites(source) {
+    if (source === 'local') return BitesCookbook.loadBites();
+    if (source === 'empty') return [];
+    if (source === 'seed-one') return [SEED[0]];
+    if (source === 'seed-many') {
+      const out = [];
+      for (let copy = 0; copy < 7; copy++) {
+        for (let i = 0; i < SEED.length; i++) {
+          const src = SEED[i];
+          // shift each copy by ~50 days back so dates spread across a year
+          const d = new Date(src.date);
+          d.setDate(d.getDate() - copy * 50);
+          out.push({
+            ...src,
+            id: src.id + '-c' + copy,
+            date: d.toISOString().slice(0, 10),
+          });
+        }
+      }
+      return out;
+    }
+    return SEED;
+  }
+
+  function dateRangeFor(bites) {
+    if (!bites.length) {
+      const end = new Date();
+      const start = new Date(end.getTime() - 365 * 86400000);
+      return { start, end };
+    }
+    const dates = bites.map((b) => new Date(b.date)).filter((d) => !isNaN(d.getTime()));
+    const min = new Date(Math.min(...dates));
+    const max = new Date(Math.max(...dates));
+    return { start: min, end: max };
+  }
+
+  // ---------- HTML preview renderers (mirror of jsPDF layout) ----------
+
+  function shortDate(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  function monthLabel(yyyymm) {
+    const [y, m] = yyyymm.split('-').map(Number);
+    return new Date(y, m - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+  function rangeLabel(start, end) {
+    const fmt = { month: 'long', year: 'numeric' };
+    const s = start.toLocaleDateString('en-US', fmt);
+    const e = end.toLocaleDateString('en-US', fmt);
+    return s === e ? s : (s + ' – ' + e);
+  }
+  function stars(rating) {
+    if (rating == null) return '';
+    const full = Math.floor(rating);
+    const half = (rating - full) >= 0.5;
+    let s = '★'.repeat(full) + (half ? '½' : '');
+    s += '☆'.repeat(5 - full - (half ? 1 : 0));
+    return s;
+  }
+  function cap(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
+
+  function pageEl(label, sizeKey, extraClass) {
+    const wrap = document.createElement('div');
+    wrap.style.position = 'relative';
+    wrap.style.marginTop = '32px';
+    const lbl = document.createElement('div');
+    lbl.className = 'page-label';
+    lbl.textContent = label;
+    wrap.appendChild(lbl);
+    const page = document.createElement('div');
+    page.className = 'page' + (sizeKey === 'a4' ? ' a4' : '') + (extraClass ? ' ' + extraClass : '');
+    wrap.appendChild(page);
+    return { wrap, page };
+  }
+
+  function renderCover(host, bites, opts) {
+    const stats = BitesCookbook.computeStats(bites);
+    const { start, end } = dateRangeFor(bites);
+    const { wrap, page } = pageEl('Cover', opts.pageSize, 'cover');
+    page.innerHTML = `
+      <div class="topline"></div>
+      <div class="eyebrow">A Bites Cookbook</div>
+      <h2>My Year<br>of Bites</h2>
+      <div class="subtitle">${escapeHtml(opts.userName || '—')} · ${rangeLabel(start, end)}</div>
+      <div class="stats-rule"></div>
+      <div class="stats">
+        <div class="item"><div class="label">Total bites</div><div class="value">${stats.count || '—'}</div></div>
+        <div class="item"><div class="label">Avg rating</div><div class="value">${stats.avgRating != null ? stats.avgRating.toFixed(1) : '—'}</div></div>
+        <div class="item"><div class="label">Favorite cuisine</div><div class="value">${stats.topCuisine ? escapeHtml(cap(stats.topCuisine)) : '—'}</div></div>
+      </div>
+      <div class="ornament"></div>
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="footer">
+        <div class="word">Bites</div>
+        <div class="url">aitinkery.github.io/bites</div>
+      </div>
+    `;
+    host.appendChild(wrap);
+  }
+
+  function renderTOC(host, bites, opts) {
+    const groups = BitesCookbook.groupByMonth([...bites].sort((a,b) => a.date.localeCompare(b.date)));
+    const { wrap, page } = pageEl('Contents', opts.pageSize, 'toc');
+    let pageNum = 1;
+    let html = `
+      <div class="eyebrow">Contents</div>
+      <h2>The Year, in Order</h2>
+      <div class="rule"></div>
+    `;
+    for (const g of groups) {
+      html += `<div class="month">${escapeHtml(g.label)}</div>`;
+      for (const b of g.items) {
+        html += `
+          <div class="row">
+            <span class="dish">${escapeHtml(b.dish_name || '(untitled)')}</span>
+            <span class="restaurant">${b.restaurant_name ? '· ' + escapeHtml(b.restaurant_name) : ''}</span>
+            <span class="right">${b.date ? shortDate(b.date) : ''} &nbsp; ${stars(b.rating)} &nbsp; p.${pageNum}</span>
+          </div>
+        `;
+        pageNum += 1;
+      }
+    }
+    page.innerHTML = html;
+    host.appendChild(wrap);
+  }
+
+  function renderBite(host, bite, idx, opts) {
+    const { wrap, page } = pageEl('Page ' + idx, opts.pageSize, 'bite');
+    const photoHTML = bite.photo_data_url
+      ? `<div class="photo"><img src="${bite.photo_data_url}" alt=""></div>`
+      : `<div class="photo placeholder"><div class="corner"></div></div>`;
+    const eyebrow = [
+      bite.date ? shortDate(bite.date).toUpperCase() : '',
+      bite.rating != null ? stars(bite.rating) : '',
+      bite.price_estimate || '',
+    ].filter(Boolean).join('   ·   ');
+    const meta = [bite.restaurant_name, bite.city].filter(Boolean).join(' · ');
+    const pills = (bite.tags || []).slice(0, 8)
+      .map((t) => `<span class="pill">${escapeHtml(t)}</span>`).join('');
+    page.innerHTML = `
+      ${photoHTML}
+      <div class="eyebrow">${escapeHtml(eyebrow)}</div>
+      <h2>${escapeHtml(bite.dish_name || '(untitled bite)')}</h2>
+      <div class="meta">${escapeHtml(meta)}</div>
+      <div class="rule"></div>
+      <div class="notes">${escapeHtml(bite.notes || '')}</div>
+      <div class="pills">${pills}</div>
+      <div class="page-num">${idx}</div>
+    `;
+    host.appendChild(wrap);
+  }
+
+  function renderClosing(host, opts, isEmpty) {
+    const { wrap, page } = pageEl('Closing', opts.pageSize, 'closing');
+    page.innerHTML = `
+      <div class="rule"></div>
+      <h2>Made with Bites</h2>
+      <div class="lead">${isEmpty
+        ? 'No bites captured yet — your story starts on the next plate.'
+        : 'A small ritual that adds up to a year.'}</div>
+      <div class="url">aitinkery.github.io/bites</div>
+      <div class="renew">Want next year? Renew your cookbook at aitinkery.github.io/bites/renew</div>
+    `;
+    host.appendChild(wrap);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ---------- Wire-up ----------
+
+  function rerender() {
+    const source = $('#data-source').value;
+    const pageSize = $('#page-size').value;
+    const userName = $('#user-name').value;
+    const all = getBites(source);
+    // Filter same way the generator does
+    const filtered = BitesCookbook.filterRange(all);
+    const bites = filtered.bites.length ? filtered.bites : all; // for empty/no-date inputs
+
+    const host = $('#pages-host');
+    host.innerHTML = '';
+
+    const opts = { pageSize, userName };
+
+    renderCover(host, bites, opts);
+
+    if (!bites.length) {
+      // empty state shown as a single "body" page mock
+      const { wrap, page } = pageEl('Empty', pageSize, 'closing');
+      page.innerHTML = `
+        <div class="rule"></div>
+        <h2>No bites in this window</h2>
+        <div class="lead">Add a few bites in the app, then come back to print your year.</div>
+      `;
+      host.appendChild(wrap);
+      renderClosing(host, opts, true);
+      return;
+    }
+
+    renderTOC(host, bites, opts);
+    bites.forEach((b, i) => renderBite(host, b, i + 1, { pageSize }));
+    renderClosing(host, opts, false);
+  }
+
+  async function downloadPDF() {
+    const source = $('#data-source').value;
+    const pageSize = $('#page-size').value;
+    const userName = $('#user-name').value;
+    const all = getBites(source);
+    const btn = $('#download-btn');
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
+    try {
+      await BitesCookbook.download(all, { pageSize, userName });
+      btn.textContent = 'Download PDF';
+    } catch (e) {
+      console.error(e);
+      btn.textContent = 'Failed — see console';
+      setTimeout(() => { btn.textContent = 'Download PDF'; }, 2000);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  $('#reload-btn').addEventListener('click', rerender);
+  $('#download-btn').addEventListener('click', downloadPDF);
+  ['#data-source','#page-size','#user-name'].forEach((sel) => {
+    $(sel).addEventListener('change', rerender);
+  });
+
+  // Initial render
+  document.addEventListener('DOMContentLoaded', rerender);
+  if (document.readyState !== 'loading') rerender();
+})();
+</script>
+</body>
+</html>

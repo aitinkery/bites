@@ -1006,6 +1006,12 @@ header.topbar {
       <div class="muted" style="font-size:12px; margin-top:6px;">Imported bites are merged by id. Existing entries are not overwritten unless ids match.</div>
     </div>
     <div class="divider"></div>
+    <div class="field" id="io-cookbook-field">
+      <label>Year-end cookbook <span class="badge" id="io-cookbook-lock" style="display:none; background:var(--accent-soft); color:var(--accent-deep); font-size:11px; padding:2px 8px; border-radius:999px; margin-left:6px;">Pre-order</span></label>
+      <button class="btn full" id="io-cookbook-btn">Export Cookbook · PDF</button>
+      <div class="muted" style="font-size:12px; margin-top:6px;" id="io-cookbook-hint">Generates a magazine-style PDF of your last 12 months. <a href="cookbook.html" target="_blank" rel="noopener" style="color:var(--accent)">Preview the layout</a>.</div>
+    </div>
+    <div class="divider"></div>
     <div class="field">
       <label>Sample data</label>
       <button class="btn ghost full" id="io-seed-btn">Load sample bites</button>
@@ -1067,6 +1073,23 @@ const uuid = () => (crypto && crypto.randomUUID
     }));
 const todayISO = () => new Date().toISOString().slice(0,10);
 const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// Lazy-load a script tag exactly once. Used for the cookbook engine so the
+// jsPDF bundle (~360 KB) only ships when a user actually clicks Export.
+const _loadedScripts = new Map();
+function loadScriptOnce(src) {
+  if (_loadedScripts.has(src)) return _loadedScripts.get(src);
+  const p = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('Failed to load ' + src));
+    document.head.appendChild(s);
+  });
+  _loadedScripts.set(src, p);
+  return p;
+}
 
 function fmtDate(iso) {
   if (!iso) return '';
@@ -1690,6 +1713,61 @@ function bindDetailHandlers() {
 function bindIOHandlers() {
   $('#btn-export').addEventListener('click', () => Sheets.open('sheet-io'));
   $('#io-close').addEventListener('click', Sheets.close);
+
+  // Cookbook PDF export — paid feature. Gate on either:
+  //   localStorage 'bites.v0.cookbookUnlocked' == '1'  (after Stripe purchase, v0.3+)
+  //   URL flag ?cookbook=preview                       (devs / CEO testing)
+  (() => {
+    const btn = $('#io-cookbook-btn');
+    if (!btn) return;
+    const unlocked = (() => {
+      try {
+        if (localStorage.getItem('bites.v0.cookbookUnlocked') === '1') return true;
+      } catch (e) {}
+      const params = new URLSearchParams(location.search);
+      return params.get('cookbook') === 'preview';
+    })();
+    const lock = $('#io-cookbook-lock');
+    if (!unlocked) {
+      btn.classList.add('ghost');
+      btn.textContent = 'Export Cookbook · PDF (Pro)';
+      if (lock) lock.style.display = 'inline-block';
+    }
+    btn.addEventListener('click', async () => {
+      if (!unlocked) {
+        toast('Cookbook export is a paid feature — pre-order in Stats.');
+        Sheets.close();
+        switchView('stats');
+        return;
+      }
+      if (!State.bites.length) {
+        toast('No bites yet — add a few first.');
+        return;
+      }
+      // Lazy-load jsPDF + cookbook.js. Both are vendored locally.
+      try {
+        await loadScriptOnce('vendor/jspdf.umd.min.js');
+        await loadScriptOnce('cookbook.js');
+      } catch (e) {
+        toast('Cookbook engine failed to load.');
+        console.error(e);
+        return;
+      }
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Generating…';
+      try {
+        await window.BitesCookbook.download(State.bites, { /* defaults */ });
+        toast('Cookbook downloaded.');
+      } catch (e) {
+        console.error(e);
+        toast('Cookbook export failed — see console.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    });
+  })();
 
   $('#io-export-btn').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(State.bites, null, 2)], { type: 'application/json' });

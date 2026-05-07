@@ -1,0 +1,8 @@
+# Local dev artifacts: sample PDFs and preview screenshots produced by the
+# cookbook generator. Not part of the shipped app.
+outbound/
+*.pdf
+
+# Editor / OS junk
+.DS_Store
+*~
