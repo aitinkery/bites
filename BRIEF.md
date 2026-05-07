@@ -68,11 +68,13 @@ Single-page web app, localStorage, mobile-first PWA. Demonstrates the core loop:
 | Pro | $4.99/mo or $39/yr | AI features, unlimited photos, exports | "I've used this for a year and want it on my computer too" |
 | Circle | $9.99/mo per host | Group features, shared lists | Group leader pays once; group of 5-10 friends use it free |
 
-**What I am NOT doing:**
+**What I am NOT doing (these are permanent, not stage-gates):**
 - Selling user data
-- Ads (would poison a personal journal)
+- Display ads, native-feed ads, sponsored content — the personal-journal frame is incompatible with ad-supported business models. Affirmed by founder + CEO 2026-05-07.
 - Restaurant-paid promotion
 - Influencer marketplace pivot
+
+Subscription + one-time premium SKUs only. Ads earn ~1% of what subscriptions do at every scale; the real cost is positioning collapse and churn pre-revenue.
 
 **Affiliate revenue (bonus, not core):**
 - Resy / OpenTable booking commissions when users open a saved restaurant
