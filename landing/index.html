@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Bites — Remember every dish worth remembering.</title>
+<meta name="description" content="Bites is a private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten." />
+<meta name="theme-color" content="#FAF6F0" />
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://aitinkery.github.io/bites/landing/" />
+<meta property="og:title" content="Bites — Save dishes, not restaurants." />
+<meta property="og:description" content="Your private food journal. Save what you ate, when, and where — long after you've forgotten." />
+<meta property="og:image" content="https://aitinkery.github.io/bites/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="Bites" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Bites — Save dishes, not restaurants." />
+<meta name="twitter:description" content="Your private food journal. Save what you ate, when, and where." />
+<meta name="twitter:image" content="https://aitinkery.github.io/bites/og-image.png" />
+<link rel="icon" href="../icons/icon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #FAF6F0;
+  --bg-soft: #F2EBDF;
+  --ink: #2A2118;
+  --ink-soft: #6B5E50;
+  --ink-faint: #A89E91;
+  --line: #E5DDD0;
+  --accent: #C84B31;
+  --accent-deep: #9C3621;
+  --accent-soft: #F4D8CC;
+  --gold: #D9A441;
+  --green: #5C7A4A;
+  --shadow-1: 0 1px 2px rgba(42,33,24,.06), 0 4px 12px rgba(42,33,24,.06);
+  --shadow-2: 0 4px 16px rgba(42,33,24,.10), 0 16px 40px rgba(42,33,24,.10);
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body { min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.1;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+p { margin: 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-deep); }
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding:
+    max(20px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right))
+    32px max(22px, env(safe-area-inset-left));
+}
+
+/* --- Top bar (minimal, just brand + alpha tag) --- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 0 28px;
+}
+.brand {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.brand .glyph {
+  display: inline-block;
+  width: 22px; height: 22px;
+  background: var(--accent);
+  border-radius: 6px;
+  vertical-align: -4px;
+  margin-right: 6px;
+}
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* --- Hero --- */
+.hero {
+  padding: 28px 0 36px;
+  border-bottom: 1px solid var(--line);
+}
+.hero h1 {
+  font-size: clamp(36px, 6vw, 56px);
+  margin-bottom: 18px;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+.hero .subhead {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--ink-soft);
+  max-width: 640px;
+  margin-bottom: 26px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px;
+  background: var(--accent);
+  color: var(--bg);
+  border: 0;
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .12s ease, transform .08s ease;
+  box-shadow: var(--shadow-1);
+}
+.btn:hover  { background: var(--accent-deep); color: var(--bg); }
+.btn:active { transform: scale(0.97); }
+.btn.ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: none;
+}
+.btn.ghost:hover { background: var(--accent-soft); color: var(--accent-deep); }
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.cta-note { color: var(--ink-soft); font-size: 13px; }
+
+/* --- Problem section --- */
+.section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+.section h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  margin-bottom: 18px;
+}
+.section .lede {
+  font-size: clamp(15px, 1.7vw, 17px);
+  color: var(--ink-soft);
+  max-width: 680px;
+  margin-bottom: 20px;
+}
+.problem-stack {
+  display: grid;
+  gap: 8px;
+  max-width: 580px;
+  margin-top: 18px;
+}
+.problem-stack .row {
+  display: flex; gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-soft);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.problem-stack .row strong {
+  color: var(--ink);
+  font-weight: 600;
+  flex: 0 0 130px;
+}
+.problem-stack .row em {
+  font-style: normal;
+  color: var(--accent-deep);
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* --- Product cards --- */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 22px;
+}
+@media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .cards { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+.card {
+  background: var(--bg-soft);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card .icon {
+  width: 36px; height: 36px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.card h3 { font-size: 18px; margin-bottom: 6px; }
+.card p { color: var(--ink-soft); font-size: 14px; }
+
+/* --- Why now / for whom --- */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  margin-top: 18px;
+}
+@media (min-width: 760px) { .two-col { grid-template-columns: 1fr 1fr; gap: 36px; } }
+.two-col h3 { font-size: 20px; margin-bottom: 8px; }
+.two-col p  { color: var(--ink-soft); font-size: 15px; }
+
+/* --- Alpha promise --- */
+.alpha {
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg-soft) 100%);
+  border-radius: 18px;
+  padding: 32px 28px;
+  margin: 16px 0 0;
+}
+.alpha h2 { font-size: clamp(24px, 3.5vw, 32px); margin-bottom: 6px; }
+.alpha .sub { color: var(--ink-soft); margin-bottom: 18px; }
+.alpha ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: grid;
+  gap: 10px;
+}
+.alpha li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.alpha li:before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px;
+  width: 16px; height: 16px;
+  background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='black' d='M6.4 11.6L2.8 8l1.4-1.4 2.2 2.2 5.4-5.4L13.2 4.8z'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='black' d='M6.4 11.6L2.8 8l1.4-1.4 2.2 2.2 5.4-5.4L13.2 4.8z'/></svg>") center/contain no-repeat;
+}
+
+/* --- Footer CTA --- */
+.footer-cta {
+  text-align: center;
+  padding: 56px 0 24px;
+}
+.footer-cta h2 { font-size: clamp(28px, 4.5vw, 40px); margin-bottom: 12px; }
+.footer-cta p  { color: var(--ink-soft); margin-bottom: 22px; }
+.footer-cta .btn { padding: 16px 28px; font-size: 17px; }
+
+footer.foot {
+  /* Extra bottom padding ensures the floating Feedback button never overlaps
+     the footer text on small viewports. */
+  padding: 28px 0 max(80px, calc(60px + env(safe-area-inset-bottom)));
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+footer.foot a { color: var(--ink-soft); }
+
+/* --- Feedback button (shared with app) --- */
+.fb-btn {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-2);
+  opacity: 0.7;
+  transition: opacity .15s ease;
+}
+.fb-btn:hover { opacity: 1; color: var(--bg); }
+.fb-btn svg   { width: 13px; height: 13px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header class="topbar">
+    <div class="brand"><span class="glyph"></span>Bites</div>
+    <span class="tag">Alpha · invite only</span>
+  </header>
+
+  <!-- =========================== HERO =========================== -->
+  <section class="hero">
+    <h1>Remember every <em>dish</em> worth remembering.</h1>
+    <p class="subhead">
+      Bites is a private food journal. Save dishes, not restaurants.
+      Search what you ate, when, and where — long after you've forgotten.
+    </p>
+    <div class="cta-row">
+      <a class="btn" href="../?ref=alpha&amp;from=landing" id="cta-hero">Try the alpha →</a>
+      <span class="cta-note">No signup. Works in your browser.</span>
+    </div>
+  </section>
+
+  <!-- =========================== PROBLEM =========================== -->
+  <section class="section">
+    <h2>Yelp tells you what 4,000 strangers think.</h2>
+    <h2 style="color:var(--accent);">Nothing tells you what <em style="font-style:italic;">you</em> thought.</h2>
+    <p class="lede" style="margin-top:18px;">
+      Real food memory is currently a fragmented mess. The most natural food
+      question a person can ask — <em style="font-style:italic;color:var(--ink);">"what did I think of that place?"</em>
+      — has no good answer.
+    </p>
+    <div class="problem-stack" aria-label="Where food memory currently lives">
+      <div class="row"><strong>Camera roll</strong> 8,000 photos, no taxonomy <em>lost</em></div>
+      <div class="row"><strong>DMs to your spouse</strong> "remember that pasta?" <em>buried</em></div>
+      <div class="row"><strong>Yelp "your reviews"</strong> 30% of users ever wrote one <em>empty</em></div>
+      <div class="row"><strong>Instagram saves</strong> impossible to search <em>useless</em></div>
+      <div class="row"><strong>Notes app</strong> entries that get lost <em>scattered</em></div>
+    </div>
+  </section>
+
+  <!-- =========================== PRODUCT =========================== -->
+  <section class="section">
+    <h2>What Bites does</h2>
+    <p class="lede">Four moves. That's the whole product.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="icon" aria-hidden="true">📸</div>
+        <h3>Capture</h3>
+        <p>One tap. Photo, dish name, restaurant, rating. Done before the check arrives.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🔍</div>
+        <h3>Search</h3>
+        <p>"Tatsu Ramen." "Rome." "Pasta." Two seconds to the bite you're thinking of.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🧠</div>
+        <h3>Recall</h3>
+        <p>Your library is yours. No reviews to game. No feed. No strangers.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">📖</div>
+        <h3>Cookbook</h3>
+        <p>Year-end PDF of your dishes — typeset like a real cookbook. <span class="muted" style="color:var(--ink-faint);">(Pro)</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== WHY NOW / FOR WHOM =========================== -->
+  <section class="section">
+    <div class="two-col">
+      <div>
+        <h3>Why now</h3>
+        <p>
+          AI-native retrieval is finally cheap. Apple Photos has the photos —
+          nobody has the <em style="font-style:italic;">taxonomy</em> over them.
+          Vibe-coding lowers the build cost to one founder + an LLM. You're
+          looking at v0, shipped in days.
+        </p>
+      </div>
+      <div>
+        <h3>Who it's for</h3>
+        <p>
+          People who eat out enough that they forget what they liked. People
+          who travel and want their food memory to come home with them.
+          People who've been meaning to keep a food journal but never got
+          past day three.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== ALPHA PROMISE =========================== -->
+  <section class="section" style="border-bottom:0;">
+    <div class="alpha">
+      <h2>What you get as an alpha tester</h2>
+      <p class="sub">30 testers. 14 days. We're validating an idea, not selling a product.</p>
+      <ul>
+        <li><strong>Free for life.</strong> Every alpha tester keeps lifetime access — including the cookbook ($9.99 retail) and any Pro features that ship later.</li>
+        <li><strong>Direct line to the founder.</strong> Hit the Feedback button on any screen. We read every email.</li>
+        <li><strong>Influence what ships.</strong> The product is still soft clay. Your week-2 feedback shapes the v1.</li>
+      </ul>
+      <div class="cta-row">
+        <a class="btn" href="../?ref=alpha&amp;from=landing">Start adding bites — no signup</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== FOOTER CTA =========================== -->
+  <section class="footer-cta">
+    <h2>Try it. The app <em style="font-style:italic;">is</em> the trial.</h2>
+    <p>No email gate. No onboarding wizard. Just open it and add a bite.</p>
+    <a class="btn" href="../?ref=alpha&amp;from=landing" id="cta-footer">Start adding bites →</a>
+  </section>
+
+  <footer class="foot">
+    Bites is a personal project by <a href="https://aitinkery.com" rel="noopener">AI Tinkery</a>.
+    No accounts. No tracking. No ads. Ever.
+  </footer>
+
+</main>
+
+<a class="fb-btn" id="feedback-btn"
+   href="mailto:bites@aitinkery.com?subject=Bites%20alpha%20feedback&body=What%20I%20liked%3A%20%0A%0AWhat%20confused%20me%3A%20%0A%0AWhat%20I%20wish%20was%20different%3A%20%0A%0AWould%20I%20pay%20%249.99%20for%20a%20year-end%20cookbook%20(yes%2Fno%2Fmaybe)%3A%20%0A">
+  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6.7l-3 2.6a.5.5 0 0 1-.7-.4V12H3a1 1 0 0 1-1-1V3z"/></svg>
+  Feedback
+</a>
+
+<script src="../analytics.js"></script>
+<script>
+  // Wire CTAs to analytics so we can see landing→app conversions.
+  (function () {
+    function track(name, props) {
+      if (window.BitesAnalytics) window.BitesAnalytics.track(name, props || {});
+    }
+    document.getElementById('cta-hero')   .addEventListener('click', function () { track('cta_click', { where: 'hero' }); });
+    document.getElementById('cta-footer') .addEventListener('click', function () { track('cta_click', { where: 'footer' }); });
+    document.querySelectorAll('a.btn[href^="../"]').forEach(function (a) {
+      // Catch the "Start adding bites" CTA in the alpha card too.
+      a.addEventListener('click', function () { track('landing_to_app', { href: a.getAttribute('href') }); });
+    });
+    document.getElementById('feedback-btn').addEventListener('click', function () {
+      track('feedback_clicked', { page: 'landing' });
+    });
+  })();
+</script>
+</body>
+</html>

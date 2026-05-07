@@ -825,6 +825,124 @@ header.topbar {
 }
 .cookbook-thanks .muted { display: block; font-size: 12px; margin-top: 4px; }
 
+/* Alpha welcome banner (?ref=alpha) — bottom-anchored, dismissible.
+   Shown once, then never again on this device. Sits ABOVE the FAB so we
+   don't have two bottom-right elements competing for the same space. The
+   FAB and feedback button drop their bottom anchors when the banner is up. */
+.alpha-banner {
+  position: fixed;
+  left: 16px; right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: none;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: var(--shadow-2);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.alpha-banner.show { display: flex; }
+.alpha-banner .glyph {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-family: var(--serif);
+  font-weight: 700;
+}
+.alpha-banner .txt { flex: 1; }
+.alpha-banner .txt strong {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 2px;
+  color: var(--bg);
+}
+.alpha-banner .txt .sub { color: rgba(250, 246, 240, .75); font-size: 13px; }
+.alpha-banner .close {
+  background: transparent;
+  border: 0;
+  color: rgba(250, 246, 240, .65);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 6px;
+  flex: 0 0 auto;
+}
+.alpha-banner .close:hover { color: var(--bg); }
+@media (min-width: 700px) {
+  .alpha-banner { left: auto; right: 24px; max-width: 380px; bottom: 24px; }
+}
+html.standalone .alpha-banner { bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
+/* While the alpha banner is showing, push the FAB up so it's clearly above
+   the banner (the banner literally instructs users to tap +). Hide the
+   secondary feedback pill — it's redundant against the welcome banner and
+   crowds the bottom-right. Pad the app so list content isn't hidden. */
+body.alpha-banner-active .fab    { bottom: calc(232px + env(safe-area-inset-bottom, 0px)); }
+body.alpha-banner-active .fb-btn { display: none; }
+body.alpha-banner-active .app    { padding-bottom: calc(220px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 700px) {
+  /* On wide screens the banner is anchored bottom-right and only ~380px wide,
+     so the FAB keeps its normal position; only the .app padding is bumped
+     a little so the bottom of the grid isn't tucked under the banner. */
+  body.alpha-banner-active .fab    { bottom: max(20px, env(safe-area-inset-bottom)); }
+  body.alpha-banner-active .fb-btn { display: inline-flex; }
+  body.alpha-banner-active .app    { padding-bottom: 130px; }
+}
+
+/* Alpha-tester cookbook badge — shown next to the cookbook buy button when
+   the user is on the alpha tier. */
+.alpha-cookbook-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--green);
+  color: var(--bg);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-left: 6px;
+  vertical-align: 2px;
+}
+
+/* Floating Feedback button — small, present on every screen, doesn't block content. */
+.fb-btn {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: calc(86px + env(safe-area-inset-bottom, 0px)); /* clears the FAB */
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-1);
+  opacity: 0.78;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.fb-btn:hover  { opacity: 1; color: var(--bg); }
+.fb-btn:active { transform: scale(0.96); }
+.fb-btn svg    { width: 13px; height: 13px; }
+@media (min-width: 700px) {
+  .fb-btn { bottom: max(20px, env(safe-area-inset-bottom)); right: 24px; }
+}
+html.standalone .fb-btn { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+
 /* PWA install banner */
 .install {
   position: fixed;
@@ -1239,6 +1357,23 @@ html.standalone header.topbar { padding-bottom: 10px; }
   <button class="close" id="install-no" aria-label="Dismiss">×</button>
 </div>
 
+<!-- Alpha tester welcome (only shown when arriving via ?ref=alpha) -->
+<div class="alpha-banner" id="alpha-banner" role="region" aria-label="Welcome, alpha tester">
+  <div class="glyph" aria-hidden="true">α</div>
+  <div class="txt">
+    <strong>Welcome, alpha tester.</strong>
+    <span class="sub">Bites is <strong style="color:var(--accent-soft);">free for life</strong> for you — your feedback shapes the product. Tap the orange + button to add your first bite.</span>
+  </div>
+  <button class="close" id="alpha-banner-close" aria-label="Dismiss">×</button>
+</div>
+
+<!-- Floating feedback button — opens user's mail client with prefilled template -->
+<a class="fb-btn" id="feedback-btn"
+   href="mailto:bites@aitinkery.com?subject=Bites%20alpha%20feedback&body=What%20I%20liked%3A%20%0A%0AWhat%20confused%20me%3A%20%0A%0AWhat%20I%20wish%20was%20different%3A%20%0A%0AWould%20I%20pay%20%249.99%20for%20a%20year-end%20cookbook%20(yes%2Fno%2Fmaybe)%3A%20%0A">
+  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6.7l-3 2.6a.5.5 0 0 1-.7-.4V12H3a1 1 0 0 1-1-1V3z"/></svg>
+  Feedback
+</a>
+
 <!-- iOS "Add to Home Screen" hint banner. iOS Safari has no beforeinstallprompt,
      so we hand-render a coach card pointing at the share button. -->
 <div class="ios-hint" id="ios-hint" role="region" aria-label="Install Bites on your iPhone">
@@ -1263,6 +1398,10 @@ html.standalone header.topbar { padding-bottom: 10px; }
 <!-- Pull-to-refresh affordance. Only activated in standalone. -->
 <div class="ptr" id="ptr" aria-hidden="true"><span class="spinner"></span><span id="ptr-label">Pull to refresh</span></div>
 
+<!-- Privacy-respecting analytics (local-only, no network). Loaded BEFORE the
+     inline app script so window.BitesAnalytics is available when track() is called. -->
+<script src="./analytics.js"></script>
+
 <script>
 /* ============================================================================
    Bites v0 — vanilla app
@@ -1277,6 +1416,15 @@ const INSTALL_DISMISSED_KEY = 'bites.v0.installDismissed';
 const HERO_SEEN_KEY = 'bites.v0.heroSeen';
 const RESERVATIONS_KEY = 'bites:reservations';
 const RESERVED_KEY = 'bites.v0.cookbookReserved';
+const USER_TIER_KEY = 'bites.user.tier';
+const ALPHA_BANNER_KEY = 'bites.v0.alphaBannerSeen';
+
+// --- Tiny analytics shim ---------------------------------------------------
+// analytics.js is loaded as a separate <script> below this block. If it loaded,
+// `window.BitesAnalytics` exists; if not (offline first paint), we no-op.
+function track(name, props) {
+  try { if (window.BitesAnalytics) window.BitesAnalytics.track(name, props || {}); } catch (e) {}
+}
 
 // --- Tiny utilities ---------------------------------------------------------
 const $  = (s, r=document) => r.querySelector(s);
@@ -1840,7 +1988,10 @@ function saveForm() {
   };
 
   // First save also dismisses the hero (they don't need the welcome anymore).
-  if (!localStorage.getItem(HERO_SEEN_KEY)) localStorage.setItem(HERO_SEEN_KEY, '1');
+  if (!localStorage.getItem(HERO_SEEN_KEY)) {
+    localStorage.setItem(HERO_SEEN_KEY, '1');
+    track('hero_dismissed', { trigger: 'first_save' });
+  }
   $('#hero').classList.remove('show');
 
   if (State.editingId) {
@@ -1863,6 +2014,13 @@ function saveForm() {
   Sheets.close();
   if (State.view === 'stats') renderStats(); else renderHome();
   toast(State.editingId ? 'Bite updated' : 'Bite saved');
+  track(State.editingId ? 'bite_updated' : 'bite_added', {
+    has_photo: !!data.photo_data_url,
+    rating: data.rating,
+    has_restaurant: !!data.restaurant_name,
+    tag_count: (data.tags || []).length,
+    library_size: State.bites.length
+  });
   State.editingId = null;
 }
 
@@ -1965,11 +2123,13 @@ function bindIOHandlers() {
     }
     btn.addEventListener('click', async () => {
       if (!unlocked) {
+        track('cookbook_clicked', { unlocked: false, alpha: isAlphaTier() });
         toast('Cookbook export is a paid feature — pre-order in Stats.');
         Sheets.close();
         switchView('stats');
         return;
       }
+      track('cookbook_clicked', { unlocked: true, alpha: isAlphaTier() });
       if (!State.bites.length) {
         toast('No bites yet — add a few first.');
         return;
@@ -2105,10 +2265,18 @@ async function loadSeed() {
 function bindSearch() {
   const q = $('#q');
   const clear = $('#q-clear');
+  let searchTimer = null;
   q.addEventListener('input', () => {
     State.query = q.value;
     clear.classList.toggle('hidden', !q.value);
     renderHome();
+    // Debounce so typing 'pizza' doesn't fire 5 events.
+    clearTimeout(searchTimer);
+    if (q.value.trim()) {
+      searchTimer = setTimeout(() => {
+        track('bite_searched', { len: q.value.trim().length });
+      }, 600);
+    }
   });
   clear.addEventListener('click', () => {
     q.value = ''; State.query = '';
@@ -2154,12 +2322,75 @@ function dismissHero() {
   $('#hero').classList.remove('show');
 }
 function bindHero() {
-  $('#hero-dismiss').addEventListener('click', dismissHero);
+  $('#hero-dismiss').addEventListener('click', () => {
+    track('hero_dismissed', { trigger: 'manual' });
+    dismissHero();
+  });
   $('#hero-cta').addEventListener('click', () => {
+    track('hero_dismissed', { trigger: 'cta' });
     dismissHero();
     // Don't auto-open the form — let them see the empty state and choose.
     // (Empty state has its own "Add your first bite" + "Try with sample bites".)
     renderHome();
+  });
+}
+
+// --- Alpha tester welcome (?ref=alpha) ---------------------------------------
+// When someone arrives via ?ref=alpha:
+//   1. Mark them as tier='alpha' in localStorage (persists across sessions).
+//   2. Show a one-time bottom banner welcoming them.
+//   3. Re-badge the cookbook button so they see "free" instead of $9.99.
+function maybeMarkAlphaTier() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('ref') === 'alpha') {
+    try { localStorage.setItem(USER_TIER_KEY, 'alpha'); } catch (e) {}
+  }
+}
+function isAlphaTier() {
+  try { return localStorage.getItem(USER_TIER_KEY) === 'alpha'; } catch (e) { return false; }
+}
+function maybeShowAlphaBanner() {
+  if (!isAlphaTier()) return;
+  if (localStorage.getItem(ALPHA_BANNER_KEY)) return;
+  const banner = $('#alpha-banner');
+  if (!banner) return;
+  banner.classList.add('show');
+  document.body.classList.add('alpha-banner-active');
+  track('alpha_banner_shown', {});
+}
+function bindAlphaBanner() {
+  const banner = $('#alpha-banner');
+  const close = $('#alpha-banner-close');
+  if (!banner || !close) return;
+  close.addEventListener('click', () => {
+    banner.classList.remove('show');
+    document.body.classList.remove('alpha-banner-active');
+    try { localStorage.setItem(ALPHA_BANNER_KEY, '1'); } catch (e) {}
+    track('alpha_banner_dismissed', {});
+  });
+}
+function applyAlphaBadge() {
+  if (!isAlphaTier()) return;
+  // Cookbook buy button on the Stats tab — show a 'free for alpha' chip.
+  const buy = $('#cookbook-buy');
+  if (buy && !$('#alpha-cookbook-chip')) {
+    const chip = el('span', { id: 'alpha-cookbook-chip', class: 'alpha-cookbook-badge' }, ['Alpha — free']);
+    buy.parentElement && buy.parentElement.insertBefore(chip, buy.nextSibling);
+  }
+  // Replace the visible price line with a friendlier alpha note.
+  const price = $('.cookbook-price');
+  if (price && !price.dataset.alphaPatched) {
+    price.dataset.alphaPatched = '1';
+    price.innerHTML = '<strong style="color:var(--green)">Free for alpha testers.</strong> <span class="muted">($9.99 retail · you keep it.)</span>';
+  }
+}
+
+// --- Feedback button --------------------------------------------------------
+function bindFeedback() {
+  const btn = $('#feedback-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    track('feedback_clicked', { page: 'app', view: State.view, library_size: State.bites.length });
   });
 }
 
@@ -2409,10 +2640,14 @@ function bindInstall() {
     e.preventDefault();
     deferredPrompt = e;
     if (localStorage.getItem(INSTALL_DISMISSED_KEY)) return;
-    setTimeout(() => $('#install').classList.add('show'), 4000);
+    setTimeout(() => {
+      $('#install').classList.add('show');
+      track('install_banner_shown', {});
+    }, 4000);
   });
   $('#install-yes').addEventListener('click', async () => {
     $('#install').classList.remove('show');
+    track('install_banner_accepted', {});
     if (deferredPrompt) {
       deferredPrompt.prompt();
       try { await deferredPrompt.userChoice; } catch {}
@@ -2422,6 +2657,7 @@ function bindInstall() {
   });
   $('#install-no').addEventListener('click', () => {
     $('#install').classList.remove('show');
+    track('install_banner_dismissed', {});
     localStorage.setItem(INSTALL_DISMISSED_KEY, '1');
   });
 }
@@ -2483,6 +2719,7 @@ function showReservationsAdmin() {
 // --- Boot --------------------------------------------------------------------
 async function boot() {
   State.bites = loadAll();
+  maybeMarkAlphaTier(); // must run before binding so cookbook badge applies
   bindFormHandlers();
   bindDetailHandlers();
   bindIOHandlers();
@@ -2497,12 +2734,16 @@ async function boot() {
   bindIosHint();
   bindPullToRefresh();
   bindTabDoubleTap();
+  bindAlphaBanner();
+  bindFeedback();
   registerSW();
   await handleUrlFlags();
   // Re-load State in case ?ref=share seeded data
   State.bites = loadAll();
   renderHome();
   maybeShowHero();
+  maybeShowAlphaBanner();
+  applyAlphaBadge();
 }
 boot();
 </script>
