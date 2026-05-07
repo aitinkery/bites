@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#C84B31" />
 <title>Bites — Your Food Memory</title>
+<meta name="description" content="Bites is your private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten." />
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://aitinkery.github.io/bites/" />
+<meta property="og:title" content="Bites — Save dishes, not restaurants." />
+<meta property="og:description" content="Your private food journal. Save what you ate, when, and where — long after you've forgotten." />
+<meta property="og:image" content="https://aitinkery.github.io/bites/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="Bites" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Bites — Save dishes, not restaurants." />
+<meta name="twitter:description" content="Your private food journal. Save what you ate, when, and where." />
+<meta name="twitter:image" content="https://aitinkery.github.io/bites/og-image.png" />
 <link rel="manifest" href="./manifest.json" />
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="./icons/icon-192.png" />
@@ -120,6 +135,7 @@ header.topbar {
   transition: color .15s, border-color .15s;
 }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
 /* ---------------------------------------------------------------------------
    Search bar
@@ -178,6 +194,7 @@ header.topbar {
 }
 @media (min-width: 700px)  { .grid { column-count: 3; column-gap: 18px; } }
 @media (min-width: 1000px) { .grid { column-count: 4; column-gap: 20px; } }
+@media (min-width: 1400px) { .grid { column-count: 5; column-gap: 22px; } }
 
 .card {
   break-inside: avoid;
@@ -198,6 +215,8 @@ header.topbar {
   width: 100%;
   display: block;
   background: var(--bg-soft);
+  /* min-height prevents masonry reflow flash while lazy images decode. */
+  min-height: 60px;
 }
 .card .ph img { width: 100%; display: block; }
 .card .ph.no-img {
@@ -479,7 +498,6 @@ header.topbar {
    Detail view
 --------------------------------------------------------------------------- */
 .detail-photo {
-  width: 100%;
   background: var(--bg-soft);
   margin: -18px -18px 16px;
   width: calc(100% + 36px);
@@ -522,7 +540,7 @@ header.topbar {
   gap: 12px;
   margin-bottom: 24px;
 }
-@media (min-width: 700px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 700px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
 .stat {
   background: #fff;
   border-radius: var(--radius);
@@ -574,6 +592,137 @@ header.topbar {
 .menu-btn { background: transparent; border: 0; padding: 4px 8px; color: var(--ink-soft); border-radius: 6px; }
 .menu-btn:hover { background: var(--bg-soft); color: var(--ink); }
 
+/* ---------------------------------------------------------------------------
+   Landing hero (only shown to first-time strangers — empty localStorage)
+   Goal: tell a stranger arriving from a shared link what this thing IS
+   in three seconds, without selling. One CTA, one dismiss.
+--------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 28px 22px 22px;
+  margin: 4px 0 22px;
+  box-shadow: var(--shadow-1);
+  /* Belt-and-braces: hidden by default; shown only via .show */
+  display: none;
+}
+.hero.show { display: block; }
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.15;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.hero .lede {
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0 0 16px;
+  max-width: 56ch;
+}
+.hero .how {
+  display: flex; gap: 14px;
+  flex-wrap: wrap;
+  margin: 16px 0 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.hero .how .step {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--ink-soft);
+}
+.hero .how .step .dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex: 0 0 auto;
+}
+.hero .cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero .cta-row .btn { padding: 10px 18px; font-size: 14px; }
+.hero .dismiss {
+  position: absolute; top: 10px; right: 10px;
+  background: transparent; border: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  color: var(--ink-faint);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.hero .dismiss:hover { background: var(--bg-soft); color: var(--ink); }
+.hero .dismiss svg { width: 16px; height: 16px; }
+@media (min-width: 700px) {
+  .hero { padding: 36px 32px 26px; }
+  .hero h1 { font-size: 32px; }
+  .hero .lede { font-size: 16px; }
+}
+
+/* ---------------------------------------------------------------------------
+   Cookbook pre-order card (Stats → Coming soon)
+   Intent capture only. mailto: + localStorage. No payment yet.
+--------------------------------------------------------------------------- */
+.cookbook-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+.cookbook-glyph {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex: 0 0 auto;
+}
+.cookbook-titles h3 { display: inline-flex; align-items: center; gap: 8px; }
+.cookbook-titles .badge {
+  background: var(--green);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px;
+}
+.cookbook-desc { color: var(--ink-soft); font-size: 14px; line-height: 1.55; margin: 8px 0 8px; }
+.cookbook-price { font-size: 14px; margin: 0 0 14px; }
+.cookbook-price strong { color: var(--ink); font-weight: 600; }
+.cookbook-field {
+  display: flex; gap: 8px; align-items: stretch;
+  flex-wrap: wrap;
+}
+.cookbook-field input {
+  flex: 1; min-width: 200px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font: inherit; color: var(--ink);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.cookbook-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.cookbook-field .btn { flex: 0 0 auto; padding: 10px 18px; font-size: 14px; }
+.cookbook-msg { margin-top: 10px; font-size: 13px; min-height: 1em; }
+.cookbook-msg.ok { color: var(--green); }
+.cookbook-msg.err { color: #b03b22; }
+.cookbook.reserved .cookbook-form { display: none; }
+.cookbook.reserved .cookbook-thanks { display: block; }
+.cookbook-thanks {
+  display: none;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--ink);
+}
+.cookbook-thanks .muted { display: block; font-size: 12px; margin-top: 4px; }
+
 /* PWA install banner */
 .install {
   position: fixed; left: 12px; right: 12px; bottom: 12px;
@@ -613,6 +762,23 @@ header.topbar {
 
   <!-- HOME -->
   <section id="view-home">
+    <!-- Landing hero: shown only to first-time visitors with empty localStorage. -->
+    <div class="hero" id="hero" role="region" aria-label="Welcome to Bites">
+      <button class="dismiss" id="hero-dismiss" aria-label="Dismiss welcome" title="Dismiss">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <h1>Remember every bite worth remembering.</h1>
+      <p class="lede">Bites is your private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten.</p>
+      <div class="cta-row">
+        <button class="btn" id="hero-cta">Try it now — no signup</button>
+      </div>
+      <div class="how">
+        <div class="step"><span class="dot">📸</span> Capture</div>
+        <div class="step"><span class="dot">⭐</span> Rate</div>
+        <div class="step"><span class="dot">🔍</span> Recall</div>
+      </div>
+    </div>
+
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="text" placeholder="Search dish, restaurant, notes, tags…" autocomplete="off" />
@@ -663,6 +829,33 @@ header.topbar {
     <div class="stats-section">
       <h3 class="serif">Recently rated highest</h3>
       <div id="stats-best"></div>
+    </div>
+
+    <!-- Coming soon: Bites Cookbook pre-order. Intent capture only — no payment. -->
+    <div class="section-head" style="margin-top: 28px;">
+      <h2 class="serif">Coming soon</h2>
+    </div>
+    <div class="stats-section cookbook" id="cookbook-card">
+      <div class="cookbook-head">
+        <div class="cookbook-glyph" aria-hidden="true">📖</div>
+        <div class="cookbook-titles">
+          <h3 class="serif">Bites Cookbook <span class="badge" id="cookbook-reserved-badge" hidden>Reserved</span></h3>
+          <div class="muted" style="font-size:13px;">Coming this summer</div>
+        </div>
+      </div>
+      <p class="cookbook-desc">Export your year of bites as a beautiful printed-quality PDF. Every dish, every photo, every note — typeset like a real cookbook.</p>
+      <p class="cookbook-price"><strong>Pre-order $9.99</strong> <span class="muted">· charged when it ships</span></p>
+      <form class="cookbook-form" id="cookbook-form" novalidate>
+        <div class="cookbook-field">
+          <input id="cookbook-email" type="email" placeholder="you@example.com" autocomplete="email" required />
+          <button class="btn" id="cookbook-submit" type="submit">Reserve my copy</button>
+        </div>
+        <div class="cookbook-msg" id="cookbook-msg" aria-live="polite"></div>
+      </form>
+      <div class="cookbook-thanks" id="cookbook-thanks">
+        ✨ Thanks — we'll email you when it's ready.
+        <span class="muted">Reserved with <span id="cookbook-reserved-email"></span></span>
+      </div>
     </div>
   </section>
 </div>
@@ -845,6 +1038,9 @@ header.topbar {
 const STORAGE_KEY = 'bites.v0';
 const SEED_DISMISSED_KEY = 'bites.v0.seedDismissed';
 const INSTALL_DISMISSED_KEY = 'bites.v0.installDismissed';
+const HERO_SEEN_KEY = 'bites.v0.heroSeen';
+const RESERVATIONS_KEY = 'bites:reservations';
+const RESERVED_KEY = 'bites.v0.cookbookReserved';
 
 // --- Tiny utilities ---------------------------------------------------------
 const $  = (s, r=document) => r.querySelector(s);
@@ -1390,6 +1586,10 @@ function saveForm() {
     date: $('#f-date').value || todayISO(),
   };
 
+  // First save also dismisses the hero (they don't need the welcome anymore).
+  if (!localStorage.getItem(HERO_SEEN_KEY)) localStorage.setItem(HERO_SEEN_KEY, '1');
+  $('#hero').classList.remove('show');
+
   if (State.editingId) {
     const i = State.bites.findIndex(b => b.id === State.editingId);
     if (i >= 0) {
@@ -1634,6 +1834,109 @@ function bindGlobal() {
   });
 }
 
+// --- Landing hero (first-time stranger arrival) ------------------------------
+function maybeShowHero() {
+  // Only show when there are no bites AND user hasn't dismissed before.
+  if (State.bites.length > 0) return;
+  if (localStorage.getItem(HERO_SEEN_KEY)) return;
+  $('#hero').classList.add('show');
+}
+function dismissHero() {
+  localStorage.setItem(HERO_SEEN_KEY, '1');
+  $('#hero').classList.remove('show');
+}
+function bindHero() {
+  $('#hero-dismiss').addEventListener('click', dismissHero);
+  $('#hero-cta').addEventListener('click', () => {
+    dismissHero();
+    // Don't auto-open the form — let them see the empty state and choose.
+    // (Empty state has its own "Add your first bite" + "Try with sample bites".)
+    renderHome();
+  });
+}
+
+// --- Cookbook pre-order ------------------------------------------------------
+// Intent capture only. We do TWO things on submit:
+//   1. Open a mailto: so the user actually sends a real email — high-signal,
+//      and gives the founder a real address they can reply to.
+//   2. Stash the email in localStorage `bites:reservations` as a backup
+//      record (the schlep work — if the mailto fails or they cancel the
+//      compose window, we still have a local trace).
+function validEmail(s) {
+  // Pragmatic regex — not RFC 5322, just "looks like an email".
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim());
+}
+function loadReservations() {
+  try {
+    const raw = localStorage.getItem(RESERVATIONS_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function saveReservations(list) {
+  try { localStorage.setItem(RESERVATIONS_KEY, JSON.stringify(list)); }
+  catch (e) { console.warn('reservations save failed', e); }
+}
+function setReservedUI(email) {
+  const card = $('#cookbook-card');
+  const badge = $('#cookbook-reserved-badge');
+  const emailSlot = $('#cookbook-reserved-email');
+  if (!card) return;
+  card.classList.add('reserved');
+  if (badge) badge.hidden = false;
+  if (emailSlot) emailSlot.textContent = email || '';
+}
+function bindCookbook() {
+  const form = $('#cookbook-form');
+  if (!form) return;
+
+  // If user already reserved on this device, show the reserved state.
+  const prior = localStorage.getItem(RESERVED_KEY);
+  if (prior) setReservedUI(prior);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = $('#cookbook-email');
+    const msg = $('#cookbook-msg');
+    msg.classList.remove('ok', 'err');
+    const email = input.value.trim();
+    if (!validEmail(email)) {
+      msg.textContent = 'That email doesn’t look right — mind checking it?';
+      msg.classList.add('err');
+      input.focus();
+      return;
+    }
+
+    // 1. Local record (the schlep — always do this first, even if mail fails).
+    const list = loadReservations();
+    if (!list.some(r => r.email && r.email.toLowerCase() === email.toLowerCase())) {
+      list.push({ email, timestamp: new Date().toISOString() });
+      saveReservations(list);
+    }
+    localStorage.setItem(RESERVED_KEY, email);
+
+    // 2. mailto: — open the user's mail client with prefilled fields.
+    //    pg "do things that don't scale": for the first 50 pre-orders, the
+    //    founder reads each email personally. Higher-signal than a Formspree
+    //    blob, and a stranger sending an actual email is a stronger commit.
+    const subject = encodeURIComponent('Bites Cookbook Reservation');
+    const body = encodeURIComponent(
+      `Reserve me for the Bites Cookbook. — ${email}\n\n` +
+      `(Sent from the Bites pre-order form.)`
+    );
+    const mailto = `mailto:bites@aitinkery.com?subject=${subject}&body=${body}`;
+    // Use location.href so single-tap on iOS triggers Mail.app reliably.
+    window.location.href = mailto;
+
+    // 3. UI: optimistic success state. If the mail client never opened we
+    //    still have the local record — they can reach out and we can match.
+    setReservedUI(email);
+    msg.textContent = '';
+    toast('Reserved. Check your mail app to confirm.');
+  });
+}
+
 // --- PWA install banner ------------------------------------------------------
 let deferredPrompt = null;
 function bindInstall() {
@@ -1665,8 +1968,55 @@ function registerSW() {
   }
 }
 
+// --- URL-flag handlers (ship-grade dev affordances) -------------------------
+// ?ref=share  → first-time visitor from a shared link gets sample bites
+//             pre-loaded so the second screen they see is the actual product,
+//             not an empty grid. Higher "this is real" conversion.
+// ?admin=reservations → dump localStorage cookbook reservations as a
+//             readable list with copy/CSV download. Hidden URL only the CEO
+//             knows. Pure pg "do things that don't scale" affordance.
+async function handleUrlFlags() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('ref') === 'share') {
+    // Only seed on first visit (don't override an existing library)
+    if (!loadAll().length && !localStorage.getItem('bites.v0.heroSeen')) {
+      try { await loadSeed(); } catch {}
+    }
+  }
+  if (params.get('admin') === 'reservations') {
+    showReservationsAdmin();
+  }
+}
+
+function showReservationsAdmin() {
+  const raw = localStorage.getItem('bites:reservations');
+  let list = [];
+  try { list = raw ? JSON.parse(raw) : []; } catch {}
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const panel = document.createElement('div');
+  panel.style.cssText = 'background:#fff;max-width:600px;width:100%;max-height:80vh;overflow:auto;padding:24px;border-radius:12px;font-family:ui-monospace,Menlo,monospace;font-size:13px;';
+  const csv = 'email,timestamp\n' + list.map(r => `${r.email},${r.timestamp}`).join('\n');
+  panel.innerHTML = `
+    <h2 style="font-family:inherit;font-size:14px;margin:0 0 12px;">Cookbook Reservations (${list.length})</h2>
+    <pre style="background:#f6f3ed;padding:12px;border-radius:6px;white-space:pre-wrap;word-break:break-all;">${list.length ? list.map(r => `${r.email}  —  ${r.timestamp}`).join('\n') : '(none yet)'}</pre>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button id="adm-copy" style="padding:8px 14px;border:0;border-radius:6px;background:#C84B31;color:#fff;cursor:pointer;">Copy CSV</button>
+      <button id="adm-close" style="padding:8px 14px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;">Close</button>
+    </div>`;
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+  panel.querySelector('#adm-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(csv).then(() => {
+      panel.querySelector('#adm-copy').textContent = '✓ Copied';
+    });
+  });
+  panel.querySelector('#adm-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
 // --- Boot --------------------------------------------------------------------
-function boot() {
+async function boot() {
   State.bites = loadAll();
   bindFormHandlers();
   bindDetailHandlers();
@@ -1675,9 +2025,15 @@ function boot() {
   bindTabs();
   bindEmpty();
   bindGlobal();
+  bindHero();
+  bindCookbook();
   bindInstall();
   registerSW();
+  await handleUrlFlags();
+  // Re-load State in case ?ref=share seeded data
+  State.bites = loadAll();
   renderHome();
+  maybeShowHero();
 }
 boot();
 </script>
