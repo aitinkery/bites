@@ -197,23 +197,56 @@
         return finish(doc, ctx);
       }
 
+      // --- Pre-pass: assign page numbers per bite so the TOC reflects spreads.
+      const imgInfoPre = await preloadImages(filtered.bites);
+      const planning = [];
+      let plannedPage = 1;
+      for (const bite of filtered.bites) {
+        const info = imgInfoPre.get(bite.id) || null;
+        const hasPhoto = !!(info && info.dataUrl);
+        const isHero = hasPhoto && typeof bite.rating === 'number' && bite.rating >= 4.5;
+        planning.push({ bite, info, hasPhoto, isHero, page: plannedPage });
+        plannedPage += isHero ? 2 : 1;
+      }
+      const tocMap = new Map(planning.map(p => [p.bite.id, p.page]));
+      ctx.imgInfo = imgInfoPre;
+      ctx.planning = planning;
+      ctx.tocMap = tocMap;
+
       // --- TOC (one or two pages depending on count)
       const groups = Cookbook.groupByMonth(filtered.bites);
       doc.addPage([size.w, size.h]);
       drawTOC(ctx, groups);
 
-      // --- Body: one bite per page (need to preload images first so layout
-      //          knows actual aspect ratio). Photos are data URLs, so we can
-      //          read them synchronously via Image() but we await onload.
-      const imgInfo = await preloadImages(filtered.bites);
-      let pageNum = 1; // body page numbering starts at 1
-      for (const bite of filtered.bites) {
-        doc.addPage([size.w, size.h]);
-        drawBitePage(ctx, bite, imgInfo.get(bite.id) || null, pageNum);
-        pageNum += 1;
+      // --- Body: dispatch per bite. Three layouts:
+      //   * Spread (rating ≥ 4.5 AND photo): two pages, photo left / typo right.
+      //   * Photo: one page, refined photo-hero.
+      //   * No-photo: one page, magazine pull-quote treatment.
+      //  Page numbering starts at 1 and increments per *page emitted* so the
+      //  TOC links stay accurate even when spreads consume two slots.
+      let pageNum = 1;
+      for (const plan of ctx.planning) {
+        const { bite, info, hasPhoto, isHero } = plan;
+        if (isHero) {
+          doc.addPage([size.w, size.h]);
+          drawSpreadPhoto(ctx, bite, info, pageNum);
+          doc.addPage([size.w, size.h]);
+          drawSpreadCopy(ctx, bite, pageNum + 1);
+          pageNum += 2;
+        } else if (hasPhoto) {
+          doc.addPage([size.w, size.h]);
+          drawBitePagePhoto(ctx, bite, info, pageNum);
+          pageNum += 1;
+        } else {
+          doc.addPage([size.w, size.h]);
+          drawBitePageTypographic(ctx, bite, pageNum);
+          pageNum += 1;
+        }
       }
 
-      // --- Closing
+      // --- Closing — "What I Loved" auto-curated, then signature
+      doc.addPage([size.w, size.h]);
+      drawWhatILoved(ctx, filtered.bites);
       doc.addPage([size.w, size.h]);
       drawClosing(ctx, false);
 
@@ -239,7 +272,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(...COLOR.orange);
-    doc.text('A BITES COOKBOOK', margin, 1.3, { charSpace: 0.06 });
+    doc.text('THE BITES COOKBOOK', margin, 1.3, { charSpace: 0.06 });
 
     // Volume marker for personality, balances the right side a bit.
     const vol = `Vol. ${ctx.end.getFullYear()}`;
@@ -322,8 +355,13 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...COLOR.ink3);
-    doc.text('FIRST EDITION', size.w - margin, size.h - 0.62, {
-      align: 'right', charSpace: 0.04,
+    // 'FIRST EDITION' — charSpace expands width past the alignment anchor,
+    // which clips the last glyph. Pull the anchor in by the expansion delta.
+    const fe = 'FIRST EDITION';
+    const feCs = 0.04;
+    const feShift = (fe.length - 1) * feCs;
+    doc.text(fe, size.w - margin - feShift, size.h - 0.62, {
+      align: 'right', charSpace: feCs,
     });
   }
 
@@ -340,7 +378,7 @@
     doc.setFont('times', 'bold');
     doc.setFontSize(34);
     doc.setTextColor(...COLOR.ink);
-    doc.text('The Year, in Order', margin, margin + 1.0);
+    doc.text('The Year, in Order', margin, margin + 1.0, { charSpace: -0.014 });
 
     // Hairline
     doc.setDrawColor(...COLOR.sand);
@@ -348,7 +386,7 @@
     doc.line(margin, margin + 1.35, size.w - margin, margin + 1.35);
 
     let y = margin + 1.85;
-    let pageBite = 1; // body page number references
+    const tocMap = ctx.tocMap || new Map();
 
     for (const group of groups) {
       // Page break before a new month if too close to bottom
@@ -391,7 +429,7 @@
 
         // Right: date  [dots]  p.N. We compose right-aligned by measuring.
         const dateShort = b.date ? shortDate(b.date) : '';
-        const pageStr = `p.${pageBite}`;
+        const pageStr = `p.${tocMap.get(b.id) || ''}`;
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(...COLOR.ink3);
@@ -412,139 +450,484 @@
         }
 
         y += 0.32;
-        pageBite += 1;
       }
       y += 0.2;
     }
   }
 
-  function drawBitePage(ctx, bite, imgInfo, pageNum) {
+  /**
+   * PHOTO LAYOUT — refined.
+   *
+   * Kerning fix: the big serif heading used Times-bold via jsPDF's bundled
+   * core fonts. Long words like "Margherita" showed visible kerning gaps.
+   * Mitigations applied here:
+   *   1. Body text (notes, restaurant + city, eyebrow) moved to Helvetica
+   *      with explicit charSpace where appropriate. Helvetica's metrics in
+   *      jsPDF's core set are tighter and more uniform.
+   *   2. Display headlines kept in Times-bold but with a *negative* charSpace
+   *      tightening (~ -0.012) which collapses the awkward inter-letter air.
+   *   3. Headline size bumped slightly so the tracking issue is less visible
+   *      relative to letter widths.
+   *   We did not embed Fraunces/Inter (would push the bundle past 1MB; the
+   *   cookbook is meant to be email-attachable). Documented decision.
+   */
+  function drawBitePagePhoto(ctx, bite, imgInfo, pageNum) {
     const { doc, size, margin, innerW } = ctx;
     paintBackground(doc, size);
 
-    // ---- Photo region: ~45% of page height when present (still hero-sized
-    //      for real photos) but leaves enough room for notes + pills.
+    // ---- Photo region: hero, takes the upper half
     const photoTop = margin;
-    const hasPhoto = !!(imgInfo && imgInfo.dataUrl);
-    const photoBoxH = (hasPhoto ? 0.52 : 0.42) * size.h - margin;
+    const photoBoxH = 0.55 * size.h - margin;
     const photoBoxW = innerW;
 
-    if (imgInfo && imgInfo.dataUrl) {
-      // fit inside box keeping aspect ratio
-      const fit = fitContain(imgInfo.w, imgInfo.h, photoBoxW, photoBoxH);
-      const x = margin + (photoBoxW - fit.w) / 2;
-      const y = photoTop + (photoBoxH - fit.h) / 2;
-      try {
-        doc.addImage(imgInfo.dataUrl, imgInfo.format, x, y, fit.w, fit.h, undefined, 'FAST');
-      } catch (e) {
-        drawPhotoPlaceholder(doc, margin, photoTop, photoBoxW, photoBoxH);
-      }
-      // thin sand frame
-      doc.setDrawColor(...COLOR.sand);
-      doc.setLineWidth(0.008);
-      doc.rect(x, y, fit.w, fit.h);
-    } else {
-      drawPhotoPlaceholder(doc, margin, photoTop, photoBoxW, photoBoxH);
+    const fit = fitContain(imgInfo.w, imgInfo.h, photoBoxW, photoBoxH);
+    const px = margin + (photoBoxW - fit.w) / 2;
+    const py = photoTop + (photoBoxH - fit.h) / 2;
+    try {
+      doc.addImage(imgInfo.dataUrl, imgInfo.format, px, py, fit.w, fit.h, undefined, 'FAST');
+    } catch (e) {
+      // fall through to caption — don't draw a placeholder, the no-photo
+      // layout exists for that case
     }
+    doc.setDrawColor(...COLOR.sand);
+    doc.setLineWidth(0.008);
+    doc.rect(px, py, fit.w, fit.h);
 
     // ---- Caption block
     let y = photoTop + photoBoxH + 0.45;
 
     // Eyebrow: DATE  ••••○  ·  $$
-    // Rating drawn as filled/hollow dots so it reads as a visual scale. We
-    // place each segment with explicit gaps measured in inches, not via
-    // charSpace fudge — that caused JAN 18 to overlap the first dot.
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...COLOR.orange);
-    const GAP = 0.18; // breathing room between segments
+    const GAP = 0.18;
     let ex = margin;
-    // No charSpace on the date — it makes width math unreliable. Tracking is
-    // already implied by the small-caps treatment.
     if (bite.date) {
       const dlabel = shortDate(bite.date).toUpperCase();
-      doc.text(dlabel, ex, y);
-      ex += doc.getTextWidth(dlabel) + GAP;
+      doc.text(dlabel, ex, y, { charSpace: 0.04 });
+      ex += doc.getTextWidth(dlabel) + 5 * 0.04 + GAP;
     }
     if (bite.rating != null) {
       ex = drawDotRating(doc, bite.rating, ex, y - 0.05);
-      ex += GAP - 0.04; // drawDotRating already adds a tiny pad
+      ex += GAP - 0.04;
     }
     if (bite.price_estimate) {
-      // tiny middot separator
       doc.setTextColor(...COLOR.ink3);
       doc.text('·', ex, y);
       ex += doc.getTextWidth('·') + 0.08;
       doc.setTextColor(...COLOR.orange);
       doc.text(bite.price_estimate, ex, y);
     }
-    y += 0.35;
+    y += 0.4;
 
-    // Dish name (huge serif, possibly two lines)
+    // Dish name — big serif, slight negative tracking to fix kerning gaps
     doc.setFont('times', 'bold');
-    doc.setFontSize(34);
+    doc.setFontSize(36);
     doc.setTextColor(...COLOR.ink);
     const dishName = bite.dish_name || '(untitled bite)';
     const dishLines = doc.splitTextToSize(dishName, innerW);
-    // Limit to 2 lines visually
     const dishToShow = dishLines.slice(0, 2);
     for (const line of dishToShow) {
-      doc.text(line, margin, y);
-      y += 0.45;
+      doc.text(line, margin, y, { charSpace: -0.025 });
+      y += 0.5;
     }
 
-    // Restaurant + city
+    // Restaurant + city — Helvetica small caps for crisp rendering
     if (bite.restaurant_name || bite.city) {
-      doc.setFont('times', 'italic');
-      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
       doc.setTextColor(...COLOR.ink2);
-      const rc = [bite.restaurant_name, bite.city].filter(Boolean).join(' · ');
-      doc.text(rc, margin, y);
-      y += 0.32;
+      const rc = [bite.restaurant_name, bite.city].filter(Boolean).join('  ·  ').toUpperCase();
+      doc.text(rc, margin, y, { charSpace: 0.08 });
+      y += 0.3;
     }
 
     // Hairline
-    y += 0.05;
     doc.setDrawColor(...COLOR.sand);
     doc.setLineWidth(0.008);
     doc.line(margin, y, size.w - margin, y);
-    y += 0.25;
+    y += 0.28;
 
-    // Notes (italic serif)
+    // Notes — Times italic, the warm voice
     if (bite.notes) {
       doc.setFont('times', 'italic');
       doc.setFontSize(12);
       doc.setTextColor(...COLOR.ink);
       const lines = doc.splitTextToSize(bite.notes, innerW);
-      // line height ~ 1.45em at 12pt = ~0.24 in
       const lh = 0.22;
-      // Cap to whatever fits before tag pill region (reserve 0.6in bottom)
       const maxY = size.h - margin - 0.7;
       for (const line of lines) {
-        if (y > maxY) {
-          doc.text('…', margin, y);
-          break;
-        }
+        if (y > maxY) { doc.text('…', margin, y); break; }
         doc.text(line, margin, y);
         y += lh;
       }
-      y += 0.15; // breathing room before pills
+      y += 0.15;
     }
 
-    // Tags as pills, flowed right after notes (not orphaned at the bottom).
-    // Falls back to bottom-anchor if there's enough room left.
     if (Array.isArray(bite.tags) && bite.tags.length) {
       const pillY = Math.min(y + 0.05, size.h - margin - 0.3);
       drawTagPills(doc, bite.tags, margin, pillY, innerW);
     }
 
-    // Page number bottom-right
+    drawPageNumber(doc, size, margin, pageNum);
+  }
+
+  /**
+   * NO-PHOTO LAYOUT — the magazine pull-quote treatment.
+   *
+   * Considered three sketches before writing this:
+   *   (1) Vertical date anchor: "MARCH" set vertical along left margin.
+   *       Risk: jsPDF rotated text is finicky and reads as gimmick.
+   *   (2) Centered pull-quote with curly marks as the visual anchor.
+   *       The notes do the heavy lifting the photo would have done.
+   *   (3) Editorial folio: small eyebrow, dish name dominant, decorative
+   *       ornament. Solid but felt too card-like.
+   *   Picked (2): pull-quote replaces the photo's compositional weight,
+   *   dish name still gets a hero treatment, and the rating becomes a real
+   *   graphical element. Reads as a New Yorker callout, not a missing-data
+   *   template.
+   */
+  function drawBitePageTypographic(ctx, bite, pageNum) {
+    const { doc, size, margin, innerW } = ctx;
+    paintBackground(doc, size);
+
+    // ---- Eyebrow (top): DATE  ·  PRICE
+    let y = margin + 0.4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLOR.orange);
+    const eyebrow = [
+      bite.date ? shortDate(bite.date).toUpperCase() : null,
+      bite.price_estimate || null,
+    ].filter(Boolean).join('   ·   ');
+    if (eyebrow) doc.text(eyebrow, margin, y, { charSpace: 0.08 });
+
+    // Right side: small ornament — the orange square + thin rule
+    doc.setFillColor(...COLOR.orange);
+    doc.rect(size.w - margin - 0.16, y - 0.11, 0.16, 0.16, 'F');
+
+    // ---- Decorative rule under eyebrow
+    y += 0.18;
+    doc.setDrawColor(...COLOR.orange);
+    doc.setLineWidth(0.012);
+    doc.line(margin, y, size.w - margin, y);
+
+    // ---- Restaurant in small caps (magazine subhead)
+    y += 0.6;
+    if (bite.restaurant_name) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...COLOR.ink2);
+      // Try restaurant + city; if too wide for the available column, drop
+      // the city. Tracked-out caps eat width so we measure conservatively.
+      const subMaxW = innerW - 0.7; // leave room for vertical-tag gutter
+      const charSpaceSub = 0.12;
+      const measure = (s) => doc.getTextWidth(s) + (s.length - 1) * charSpaceSub;
+      let sub = (bite.city
+        ? `${bite.restaurant_name}   ·   ${bite.city}`
+        : bite.restaurant_name).toUpperCase();
+      if (measure(sub) > subMaxW && bite.city) {
+        sub = bite.restaurant_name.toUpperCase();
+      }
+      if (measure(sub) > subMaxW) {
+        // Still too long: hard-truncate with ellipsis.
+        while (sub.length > 6 && measure(sub + '…') > subMaxW) sub = sub.slice(0, -1);
+        sub = sub.trimEnd() + '…';
+      }
+      doc.text(sub, margin, y, { charSpace: charSpaceSub });
+      y += 0.85;
+    }
+
+    // ---- Dish name — hero display.
+    //      jsPDF bundles only core fonts (Helvetica/Times/Courier) with no
+    //      proper kerning tables, so long serif words like "Margherita" or
+    //      "Tonkotsu" show visible inter-letter gaps. Mitigation: use
+    //      Times-bold but apply aggressive negative tracking. Embedding
+    //      Fraunces would fix it but adds ~600KB to the bundle, breaking
+    //      the email-attachable target. Documented trade-off: ship a B+
+    //      that's 100KB over an A that's 800KB.
+    doc.setFont('times', 'bold');
+    doc.setFontSize(42);
+    doc.setTextColor(...COLOR.ink);
+    const dishName = bite.dish_name || '(untitled bite)';
+    const dishLines = doc.splitTextToSize(dishName, innerW - 0.6);
+    for (const line of dishLines.slice(0, 2)) {
+      doc.text(line, margin, y, { charSpace: -0.04 });
+      y += 0.58;
+    }
+
+    // ---- Rating: large graphic flush-left, with a hairline trailing right
+    //      that visually pulls the eye down toward the pull-quote.
+    if (bite.rating != null) {
+      y += 0.2;
+      drawDotRatingLarge(doc, bite.rating, margin + 0.6, y);
+      doc.setDrawColor(...COLOR.ink3);
+      doc.setLineWidth(0.005);
+      doc.line(margin + 1.9, y, size.w - margin - 1.0, y);
+      y += 0.45;
+    }
+
+    // ---- Pull-quote of the notes — fills the available vertical band.
+    //      We grow the type to fill the band TOP-anchored so the quote
+    //      reads from the upper-mid down to the foot, not floating in the
+    //      lower third with dead air above it.
+    if (bite.notes) {
+      const bandTop = y;
+      const bandBottom = size.h - margin - 1.05;
+      drawPullQuoteTopAnchored(doc, ctx, bite.notes, bandTop, bandBottom, bite);
+    }
+
+    // ---- Tags as a vertical strip pinned to the right margin
+    if (Array.isArray(bite.tags) && bite.tags.length) {
+      drawVerticalTags(doc, ctx, bite.tags);
+    }
+
+    // ---- Foot-system: a hairline runs across the page foot tying the
+    //      vertical tag gutter (right) into the folio (left). Reads as
+    //      designed margin, not abandoned space. Folio in italic serif,
+    //      cuisine tag in tracked-out caps on the right.
+    const footY_ = size.h - margin - 0.25;
+    doc.setDrawColor(...COLOR.sand);
+    doc.setLineWidth(0.006);
+    doc.line(margin, footY_, size.w - margin, footY_);
+    doc.setFont('times', 'italic');
+    doc.setFontSize(10);
+    doc.setTextColor(...COLOR.ink3);
+    doc.text(`Nº ${String(pageNum).padStart(2, '0')}`, margin, size.h - margin - 0.06);
+    const cuisineLabel = pickCuisineLabel(bite);
+    if (cuisineLabel) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...COLOR.ink3);
+      doc.text(cuisineLabel.toUpperCase(), size.w - margin - 0.45,
+               size.h - margin - 0.06,
+               { align: 'right', charSpace: 0.12 });
+    }
+  }
+
+  /**
+   * SPREAD LAYOUT — photo left page, full-bleed.
+   * Used for bites with rating ≥ 4.5 and an actual photo. Slows the reader
+   * down for the year's best moments.
+   */
+  function drawSpreadPhoto(ctx, bite, imgInfo, pageNum) {
+    const { doc, size, margin } = ctx;
+    paintBackground(doc, size);
+
+    // Full-bleed photo — no margins. If the image aspect ratio doesn't match
+    // the page, we cover-crop centrally.
+    const fit = fitCover(imgInfo.w, imgInfo.h, size.w, size.h);
+    const x = (size.w - fit.w) / 2;
+    const y = (size.h - fit.h) / 2;
+    try {
+      doc.addImage(imgInfo.dataUrl, imgInfo.format, x, y, fit.w, fit.h, undefined, 'FAST');
+    } catch (e) { /* fall through */ }
+
+    // Tiny page number on cream pill so it stays legible over the photo
+    doc.setFillColor(...COLOR.paper);
+    doc.rect(size.w - margin - 0.5, size.h - margin, 0.5, 0.25, 'F');
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...COLOR.ink3);
-    doc.text(String(pageNum), size.w - margin, size.h - margin + 0.05, {
-      align: 'right',
-    });
+    doc.text(String(pageNum), size.w - margin - 0.05, size.h - margin + 0.18, { align: 'right' });
+  }
+
+  /**
+   * SPREAD LAYOUT — right page, oversized typography. No photo here so the
+   * dish has air. Mirrors the typographic layout but with a "featured" feel.
+   */
+  function drawSpreadCopy(ctx, bite, pageNum) {
+    const { doc, size, margin, innerW } = ctx;
+    paintBackground(doc, size);
+
+    // Eyebrow: "FEATURED BITE" + date
+    let y = margin + 0.4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLOR.orange);
+    const dateStr = bite.date ? shortDate(bite.date).toUpperCase() : '';
+    doc.text(`FEATURED BITE${dateStr ? '  ·  ' + dateStr : ''}`, margin, y, { charSpace: 0.12 });
+
+    // Decorative rule
+    y += 0.18;
+    doc.setDrawColor(...COLOR.orange);
+    doc.setLineWidth(0.018);
+    doc.line(margin, y, margin + 1.5, y);
+
+    // Restaurant subhead
+    y += 0.55;
+    if (bite.restaurant_name) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(...COLOR.ink2);
+      const sub = (bite.city ? `${bite.restaurant_name}  ·  ${bite.city}` : bite.restaurant_name).toUpperCase();
+      doc.text(sub, margin, y, { charSpace: 0.12 });
+      y += 0.45;
+    }
+
+    // Hero dish name — even larger than typo layout, multi-line OK
+    doc.setFont('times', 'bold');
+    doc.setFontSize(54);
+    doc.setTextColor(...COLOR.ink);
+    const dishLines = doc.splitTextToSize(bite.dish_name || '(untitled)', innerW);
+    for (const line of dishLines.slice(0, 3)) {
+      doc.text(line, margin, y, { charSpace: -0.04 });
+      y += 0.72;
+    }
+
+    // Rating as big dots
+    if (bite.rating != null) {
+      y += 0.2;
+      drawDotRatingLarge(doc, bite.rating, margin + 0.8, y);
+      y += 0.55;
+    }
+
+    // Notes as a left-aligned italic block (not pull-quote here — the photo
+    // on the facing page already does the visual anchoring).
+    if (bite.notes) {
+      doc.setFont('times', 'italic');
+      doc.setFontSize(15);
+      doc.setTextColor(...COLOR.ink);
+      const lines = doc.splitTextToSize(bite.notes, innerW - 0.5);
+      const lh = 0.28;
+      const maxY = size.h - margin - 0.9;
+      for (const line of lines) {
+        if (y > maxY) { doc.text('…', margin, y); break; }
+        doc.text(line, margin, y);
+        y += lh;
+      }
+    }
+
+    // Tags as vertical strip on the right margin
+    if (Array.isArray(bite.tags) && bite.tags.length) {
+      drawVerticalTags(doc, ctx, bite.tags);
+    }
+
+    drawPageNumber(doc, size, margin, pageNum);
+  }
+
+  /**
+   * "What I Loved" closing — auto-curated from the bite list.
+   * Top 3 by rating, then a cuisine cluster if any cluster has ≥3 entries.
+   */
+  function drawWhatILoved(ctx, bites) {
+    const { doc, size, margin, innerW } = ctx;
+    paintBackground(doc, size);
+
+    // Eyebrow + title
+    let y = margin + 0.4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLOR.orange);
+    doc.text('WHAT I LOVED', margin, y, { charSpace: 0.12 });
+
+    y += 0.18;
+    doc.setDrawColor(...COLOR.orange);
+    doc.setLineWidth(0.012);
+    doc.line(margin, y, size.w - margin, y);
+
+    y += 0.6;
+    doc.setFont('times', 'bold');
+    doc.setFontSize(40);
+    doc.setTextColor(...COLOR.ink);
+    doc.text('The year, distilled.', margin, y, { charSpace: -0.014 });
+
+    y += 0.5;
+    doc.setFont('times', 'italic');
+    doc.setFontSize(13);
+    doc.setTextColor(...COLOR.ink2);
+    doc.text('Three bites that earned the highest marks, plus a cluster you kept coming back to.', margin, y);
+
+    // Top 3 by rating
+    const top3 = [...bites]
+      .filter(b => typeof b.rating === 'number')
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 3);
+
+    y += 0.55;
+    doc.setDrawColor(...COLOR.sand);
+    doc.setLineWidth(0.008);
+    doc.line(margin, y, size.w - margin, y);
+
+    y += 0.4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLOR.orange);
+    doc.text('TOP RATED', margin, y, { charSpace: 0.12 });
+    y += 0.32;
+
+    for (let i = 0; i < top3.length; i++) {
+      const b = top3[i];
+      // Numeral
+      doc.setFont('times', 'italic');
+      doc.setFontSize(28);
+      doc.setTextColor(...COLOR.ink3);
+      doc.text(String(i + 1).padStart(2, '0'), margin, y + 0.05);
+
+      // Dish name + meta
+      doc.setFont('times', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(...COLOR.ink);
+      doc.text(b.dish_name || '(untitled)', margin + 0.7, y - 0.05, { charSpace: -0.008 });
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...COLOR.ink2);
+      const meta = [b.restaurant_name, b.city].filter(Boolean).join(' · ').toUpperCase();
+      if (meta) doc.text(meta, margin + 0.7, y + 0.18, { charSpace: 0.08 });
+
+      // Note one-liner
+      if (b.notes) {
+        const oneLine = truncate(b.notes, 90);
+        doc.setFont('times', 'italic');
+        doc.setFontSize(11);
+        doc.setTextColor(...COLOR.ink);
+        doc.text(oneLine, margin + 0.7, y + 0.42, { maxWidth: innerW - 0.7 });
+      }
+
+      // Rating dots flush right
+      drawDotRating(doc, b.rating, size.w - margin - 0.8, y + 0.05);
+
+      y += 0.75;
+    }
+
+    // Cuisine cluster (if any tag has ≥3 bites)
+    const cluster = detectCuisineCluster(bites);
+    if (cluster) {
+      y += 0.15;
+      doc.setDrawColor(...COLOR.sand);
+      doc.setLineWidth(0.008);
+      doc.line(margin, y, size.w - margin, y);
+      y += 0.4;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...COLOR.orange);
+      doc.text(`KEPT COMING BACK — ${cluster.tag.toUpperCase()}`, margin, y, { charSpace: 0.12 });
+      y += 0.28;
+
+      doc.setFont('times', 'italic');
+      doc.setFontSize(13);
+      doc.setTextColor(...COLOR.ink);
+      doc.text(`${cluster.items.length} bites tagged “${cluster.tag}” this year:`, margin, y);
+      y += 0.32;
+
+      for (const b of cluster.items.slice(0, 5)) {
+        if (y > size.h - margin - 0.6) break;
+        doc.setFont('times', 'normal');
+        doc.setFontSize(11.5);
+        doc.setTextColor(...COLOR.ink);
+        doc.text(`— ${b.dish_name || '(untitled)'}`, margin + 0.1, y);
+        if (b.restaurant_name) {
+          const dishW = doc.getTextWidth(`— ${b.dish_name || '(untitled)'}`);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(...COLOR.ink3);
+          doc.text(` at ${b.restaurant_name}`.toUpperCase(), margin + 0.1 + dishW, y, { charSpace: 0.08 });
+        }
+        y += 0.26;
+      }
+    }
   }
 
   function drawClosing(ctx, isEmpty) {
@@ -756,6 +1139,272 @@
     if (!srcW || !srcH) return { w: boxW, h: boxH };
     const r = Math.min(boxW / srcW, boxH / srcH);
     return { w: srcW * r, h: srcH * r };
+  }
+
+  function fitCover(srcW, srcH, boxW, boxH) {
+    if (!srcW || !srcH) return { w: boxW, h: boxH };
+    const r = Math.max(boxW / srcW, boxH / srcH);
+    return { w: srcW * r, h: srcH * r };
+  }
+
+  function truncate(s, n) {
+    if (!s) return '';
+    const flat = String(s).replace(/\s+/g, ' ').trim();
+    if (flat.length <= n) return flat;
+    return flat.slice(0, n - 1).trimEnd() + '…';
+  }
+
+  function pickCuisineLabel(bite) {
+    const NON_CUISINE = new Set([
+      'repeat', 'splurge', 'lunch', 'dinner', 'breakfast', 'brunch',
+      'date-night', 'date night', 'winter', 'summer', 'fall', 'spring',
+      'spicy', 'cheap', 'expensive',
+    ]);
+    if (!Array.isArray(bite.tags)) return null;
+    for (const t of bite.tags) {
+      const k = String(t || '').toLowerCase().trim();
+      if (!k || NON_CUISINE.has(k)) continue;
+      return capitalize(k);
+    }
+    return null;
+  }
+
+  function detectCuisineCluster(bites) {
+    const NON_CUISINE = new Set([
+      'repeat', 'splurge', 'lunch', 'dinner', 'breakfast', 'brunch',
+      'date-night', 'date night', 'winter', 'summer', 'fall', 'spring',
+      'spicy', 'cheap', 'expensive', 'soup', 'bread',
+    ]);
+    const tagToBites = new Map();
+    for (const b of bites) {
+      if (!Array.isArray(b.tags)) continue;
+      for (const t of b.tags) {
+        const k = String(t || '').toLowerCase().trim();
+        if (!k || NON_CUISINE.has(k)) continue;
+        if (!tagToBites.has(k)) tagToBites.set(k, []);
+        tagToBites.get(k).push(b);
+      }
+    }
+    let best = null;
+    for (const [tag, items] of tagToBites) {
+      if (items.length < 3) continue;
+      if (!best || items.length > best.items.length) best = { tag, items };
+    }
+    return best;
+  }
+
+  /** Larger rating: 5 dots ~0.10in radius, centered horizontally if cx given. */
+  function drawDotRatingLarge(doc, rating, cx, cy) {
+    const r = 0.085;
+    const gap = 0.12;
+    const step = r * 2 + gap;
+    const totalW = 5 * step - gap;
+    const startX = cx - totalW / 2 + r;
+    const rounded = Math.round(rating);
+    const halfFlag = Math.abs(rating - Math.floor(rating)) >= 0.25 &&
+                     Math.abs(rating - Math.floor(rating)) < 0.75;
+    for (let i = 0; i < 5; i++) {
+      const x = startX + i * step;
+      if (i < rounded) {
+        doc.setFillColor(...COLOR.orange);
+        doc.circle(x, cy, r, 'F');
+      } else {
+        doc.setDrawColor(...COLOR.ink3);
+        doc.setLineWidth(0.014);
+        doc.circle(x, cy, r, 'S');
+      }
+    }
+    if (halfFlag) {
+      doc.setFont('times', 'italic');
+      doc.setFontSize(13);
+      doc.setTextColor(...COLOR.ink3);
+      doc.text('+½', cx + totalW / 2 + 0.1, cy + 0.07);
+    }
+  }
+
+  /**
+   * Pull-quote top-anchored, with line-height stretched so the block
+   * fills (or nearly fills) the available band. This produces a tall,
+   * generous quote that reads as the page's main body — the editorial
+   * equivalent of a full-bleed photo. We follow it with an attribution
+   * line ("— on [dish name]") so the lower edge has a typographic foot.
+   */
+  function drawPullQuoteTopAnchored(doc, ctx, notes, bandTop, bandBottom, bite) {
+    const { size, margin, innerW } = ctx;
+    const blockW = innerW - 1.0;
+    const blockX = margin + 0.55;
+    const availH = bandBottom - bandTop - 0.4; // reserve 0.4in for attribution
+
+    // Pick the largest size whose natural leading uses most of the band.
+    const candidates = [32, 28, 24, 20, 17, 15];
+    let chosen = 15, lhChosen = 0.3, linesChosen = [];
+    for (const fs of candidates) {
+      doc.setFont('times', 'italic');
+      doc.setFontSize(fs);
+      const lhMin = fs / 72 * 1.35;
+      const lines = doc.splitTextToSize(notes, blockW);
+      if (lines.length * lhMin <= availH) {
+        chosen = fs; linesChosen = lines;
+        // Stretch leading so the block FILLS the band (visual-rhythm trick).
+        const stretched = lines.length > 1 ? availH / lines.length : lhMin;
+        lhChosen = Math.min(stretched, fs / 72 * 1.85); // cap to avoid airy text
+        break;
+      }
+    }
+    if (!linesChosen.length) {
+      chosen = 14; lhChosen = 14 / 72 * 1.4;
+      doc.setFont('times', 'italic'); doc.setFontSize(chosen);
+      linesChosen = doc.splitTextToSize(notes, blockW).slice(0, Math.floor(availH / lhChosen));
+    }
+    // Cap leading stretch so the quote doesn't read as airy / forced.
+    {
+      const naturalLh = chosen / 72 * 1.45;
+      if (lhChosen > chosen / 72 * 1.62) lhChosen = chosen / 72 * 1.62;
+      if (lhChosen < naturalLh) lhChosen = naturalLh;
+    }
+
+    // Hanging open-quote — large faint orange, baseline-aligned with first line.
+    doc.setFont('times', 'bold');
+    doc.setFontSize(Math.max(80, chosen * 3.2));
+    doc.setTextColor(...COLOR.soft);
+    doc.text('“', blockX - 0.5, bandTop + 0.55);
+
+    // Set the quote
+    doc.setFont('times', 'italic');
+    doc.setFontSize(chosen);
+    doc.setTextColor(...COLOR.ink);
+    let y = bandTop + chosen / 72 * 0.85; // first line baseline below bandTop
+    for (const line of linesChosen) {
+      doc.text(line, blockX, y);
+      y += lhChosen;
+    }
+    y -= lhChosen; // back to last line baseline
+
+    // Closing curly quote
+    doc.setFont('times', 'italic');
+    doc.setFontSize(chosen);
+    doc.setTextColor(...COLOR.orange);
+    const lastLine = linesChosen[linesChosen.length - 1] || '';
+    const lastW = doc.getTextWidth(lastLine);
+    doc.text('”', blockX + Math.min(lastW + 0.05, blockW - 0.2), y);
+
+    // Attribution line: em-dash + restaurant. Doesn't repeat the eyebrow's
+    // date (already shown at top). Just one line, sets the typographic
+    // period to the page.
+    if (bite && bite.restaurant_name) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...COLOR.ink3);
+      const attrib = `—  ${bite.restaurant_name.toUpperCase()}`;
+      doc.text(attrib, blockX, y + 0.5, { charSpace: 0.12 });
+    }
+  }
+
+  /**
+   * (Legacy) Pull-quote bottom-anchored. Kept for reference but unused.
+   */
+  function drawPullQuoteBottomAnchored(doc, ctx, notes, bandTop, bandBottom) {
+    const { size, margin, innerW } = ctx;
+    const blockW = innerW - 1.0; // leave a sliver for the right-margin tag strip
+    const blockX = margin + 0.55;
+    const availH = bandBottom - bandTop;
+
+    // Try sizes 30, 26, 22, 19, 16. Pick the largest that fits.
+    const candidates = [30, 26, 22, 19, 16, 14];
+    let chosen = 14, lhChosen = 0.28, linesChosen = [];
+    for (const fs of candidates) {
+      doc.setFont('times', 'italic');
+      doc.setFontSize(fs);
+      const lh = fs / 72 * 1.42;
+      const lines = doc.splitTextToSize(notes, blockW);
+      if (lines.length * lh <= availH) {
+        chosen = fs; lhChosen = lh; linesChosen = lines; break;
+      }
+    }
+    if (!linesChosen.length) {
+      // Smallest fallback: truncate.
+      chosen = 14; lhChosen = 14 / 72 * 1.42;
+      doc.setFont('times', 'italic'); doc.setFontSize(chosen);
+      linesChosen = doc.splitTextToSize(notes, blockW).slice(0, Math.floor(availH / lhChosen));
+    }
+
+    const blockH = linesChosen.length * lhChosen;
+    // Bottom-anchor: place block so last line baseline = bandBottom.
+    const startY = bandBottom - blockH + lhChosen;
+
+    // Hanging open-quote — large, faint orange, positioned to the LEFT of the
+    // text block, baseline-aligned with the first line of the quote.
+    doc.setFont('times', 'bold');
+    doc.setFontSize(Math.max(72, chosen * 3.2));
+    doc.setTextColor(...COLOR.soft);
+    doc.text('“', blockX - 0.5, startY + 0.45);
+
+    // Set the quote
+    doc.setFont('times', 'italic');
+    doc.setFontSize(chosen);
+    doc.setTextColor(...COLOR.ink);
+    let y = startY;
+    for (const line of linesChosen) {
+      doc.text(line, blockX, y);
+      y += lhChosen;
+    }
+    // Closing curly quote at end of last line, in orange, as a typographic
+    // period to the page.
+    doc.setFont('times', 'italic');
+    doc.setFontSize(chosen);
+    doc.setTextColor(...COLOR.orange);
+    const lastLine = linesChosen[linesChosen.length - 1] || '';
+    const lastW = doc.getTextWidth(lastLine);
+    doc.text('”', blockX + Math.min(lastW + 0.05, blockW - 0.2), y - lhChosen);
+  }
+
+  /**
+   * Vertical tag strip pinned to the right margin. The strip runs from the
+   * upper-third of the page down toward the foot, so it acts as a true
+   * editorial sidebar that anchors the right side of the entire page —
+   * not just a corner ornament. Two tags max keeps the rhythm tight.
+   */
+  function drawVerticalTags(doc, ctx, tags) {
+    const { size, margin } = ctx;
+    // Truncate long tags so they don't clip off the top of the page when
+    // rotated 90°. ~10 chars at 8.5pt fits in 1.4in vertically.
+    const visible = tags.slice(0, 2).map(t => {
+      const s = String(t || '').toUpperCase();
+      return s.length > 10 ? s.slice(0, 9) + '…' : s;
+    });
+    if (!visible.length) return;
+    const colStep = 0.30;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...COLOR.ink2);
+    // Baseline of the rotated text. We start lower than the rating row so
+    // the strip extends the full height of the page's right gutter.
+    const baseY = size.h - margin - 0.6;
+    for (let i = 0; i < visible.length; i++) {
+      const t = visible[i];
+      const x = size.w - margin - 0.0 - i * colStep;
+      // Estimate text length so each tag's top sits at a consistent height.
+      // jsPDF's `text` with angle=90 anchors at (x, y) and extends UP. Tags
+      // of different lengths therefore have different tops; we accept that
+      // and place a single hairline tying their baselines together.
+      doc.text(t, x, baseY, { angle: 90, charSpace: 0.2 });
+    }
+    // Hairline at the baseline ties the tags together as one element.
+    const bandLeft  = size.w - margin - (visible.length - 1) * colStep - 0.18;
+    const bandRight = size.w - margin + 0.05;
+    doc.setDrawColor(...COLOR.sand);
+    doc.setLineWidth(0.006);
+    doc.line(bandLeft, baseY + 0.16, bandRight, baseY + 0.16);
+    // Top rule sits up high near the dish-name area so the gutter spans the
+    // page. Reads as a designed column.
+    doc.line(bandLeft, margin + 1.3, bandRight, margin + 1.3);
+  }
+
+  function drawPageNumber(doc, size, margin, pageNum) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...COLOR.ink3);
+    doc.text(String(pageNum), size.w - margin, size.h - margin + 0.05, { align: 'right' });
   }
 
   /** Preload images and collect natural dimensions. */
