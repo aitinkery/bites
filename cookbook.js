@@ -475,9 +475,10 @@
     const { doc, size, margin, innerW } = ctx;
     paintBackground(doc, size);
 
-    // ---- Photo region: hero, takes the upper half
+    // ---- Photo region: hero, takes the upper half. Tightened to leave
+    //      more breathing room for the larger body type below.
     const photoTop = margin;
-    const photoBoxH = 0.55 * size.h - margin;
+    const photoBoxH = 0.50 * size.h - margin;
     const photoBoxW = innerW;
 
     const fit = fitContain(imgInfo.w, imgInfo.h, photoBoxW, photoBoxH);
@@ -494,7 +495,7 @@
     doc.rect(px, py, fit.w, fit.h);
 
     // ---- Caption block
-    let y = photoTop + photoBoxH + 0.45;
+    let y = photoTop + photoBoxH + 0.40;
 
     // Eyebrow: DATE  ••••○  ·  $$
     doc.setFont('helvetica', 'normal');
@@ -522,14 +523,14 @@
 
     // Dish name — big serif, slight negative tracking to fix kerning gaps
     doc.setFont('times', 'bold');
-    doc.setFontSize(36);
+    doc.setFontSize(34);
     doc.setTextColor(...COLOR.ink);
     const dishName = bite.dish_name || '(untitled bite)';
     const dishLines = doc.splitTextToSize(dishName, innerW);
     const dishToShow = dishLines.slice(0, 2);
     for (const line of dishToShow) {
       doc.text(line, margin, y, { charSpace: -0.025 });
-      y += 0.5;
+      y += 0.46;
     }
 
     // Restaurant + city — Helvetica small caps for crisp rendering
@@ -539,37 +540,62 @@
       doc.setTextColor(...COLOR.ink2);
       const rc = [bite.restaurant_name, bite.city].filter(Boolean).join('  ·  ').toUpperCase();
       doc.text(rc, margin, y, { charSpace: 0.08 });
-      y += 0.3;
+      y += 0.28;
     }
 
     // Hairline
     doc.setDrawColor(...COLOR.sand);
     doc.setLineWidth(0.008);
     doc.line(margin, y, size.w - margin, y);
-    y += 0.28;
+    y += 0.32;
 
-    // Notes — Times italic, the warm voice
+    // Notes — Times italic, larger so it reads as body content not caption.
+    // First sentence gets a slightly larger lead-in to give the paragraph a
+    // typographic entry point (a soft drop-cap alternative).
     if (bite.notes) {
-      doc.setFont('times', 'italic');
-      doc.setFontSize(12);
+      const notes = String(bite.notes).trim();
+      // Split on first sentence boundary; fall back to whole-paragraph treatment.
+      const m = notes.match(/^([^.!?]+[.!?])(\s+)([\s\S]+)$/);
+      const lead = m ? m[1] : null;
+      const rest = m ? m[3] : notes;
+
+      const lh = 0.26;
+      const maxY = size.h - margin - 0.85; // reserve room for tag row + foot
       doc.setTextColor(...COLOR.ink);
-      const lines = doc.splitTextToSize(bite.notes, innerW);
-      const lh = 0.22;
-      const maxY = size.h - margin - 0.7;
+
+      if (lead) {
+        // Lead-in: 16pt, slightly heavier eye-pull. Wrap to inner width.
+        doc.setFont('times', 'italic');
+        doc.setFontSize(16);
+        const leadLh = 0.30;
+        const leadLines = doc.splitTextToSize(lead, innerW);
+        for (const line of leadLines) {
+          if (y > maxY) { doc.text('…', margin, y); break; }
+          doc.text(line, margin, y);
+          y += leadLh;
+        }
+        y += 0.04;
+      }
+
+      // Body: 14pt times italic
+      doc.setFont('times', 'italic');
+      doc.setFontSize(14);
+      const lines = doc.splitTextToSize(rest, innerW);
       for (const line of lines) {
         if (y > maxY) { doc.text('…', margin, y); break; }
         doc.text(line, margin, y);
         y += lh;
       }
-      y += 0.15;
+      y += 0.12;
     }
 
+    // Tags as small-caps separator-dot chain (replaces filled pills).
     if (Array.isArray(bite.tags) && bite.tags.length) {
-      const pillY = Math.min(y + 0.05, size.h - margin - 0.3);
-      drawTagPills(doc, bite.tags, margin, pillY, innerW);
+      const tagY = Math.min(y + 0.05, size.h - margin - 0.5);
+      drawTagsInline(doc, bite.tags, margin, tagY, innerW);
     }
 
-    drawPageNumber(doc, size, margin, pageNum);
+    drawFootSystem(doc, size, margin, pageNum, bite);
   }
 
   /**
@@ -673,7 +699,9 @@
     //      lower third with dead air above it.
     if (bite.notes) {
       const bandTop = y;
-      const bandBottom = size.h - margin - 1.05;
+      // Tighten band bottom: reserve room for the where/when finale (~0.6)
+      // plus the foot system (~0.35) so the lower third has structure.
+      const bandBottom = size.h - margin - 1.55;
       drawPullQuoteTopAnchored(doc, ctx, bite.notes, bandTop, bandBottom, bite);
     }
 
@@ -682,27 +710,18 @@
       drawVerticalTags(doc, ctx, bite.tags);
     }
 
-    // ---- Foot-system: a hairline runs across the page foot tying the
-    //      vertical tag gutter (right) into the folio (left). Reads as
-    //      designed margin, not abandoned space. Folio in italic serif,
-    //      cuisine tag in tracked-out caps on the right.
-    const footY_ = size.h - margin - 0.25;
-    doc.setDrawColor(...COLOR.sand);
-    doc.setLineWidth(0.006);
-    doc.line(margin, footY_, size.w - margin, footY_);
-    doc.setFont('times', 'italic');
-    doc.setFontSize(10);
-    doc.setTextColor(...COLOR.ink3);
-    doc.text(`Nº ${String(pageNum).padStart(2, '0')}`, margin, size.h - margin - 0.06);
-    const cuisineLabel = pickCuisineLabel(bite);
-    if (cuisineLabel) {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(...COLOR.ink3);
-      doc.text(cuisineLabel.toUpperCase(), size.w - margin - 0.45,
-               size.h - margin - 0.06,
-               { align: 'right', charSpace: 0.12 });
-    }
+    // ---- "Where & when" finale — restates already-known data as a
+    //      typographic anchor for the lower third. The pull-quote layout
+    //      previously left the bottom of the page unanchored; this band
+    //      gives it a designed foot. (Considered: extending the cuisine
+    //      sidebar full-height — visually heavier and fights the quote.
+    //      Considered: oversized rating glyph — already rendered above.
+    //      The where/when finale wins by adding info density without
+    //      competing with the quote.)
+    drawWhereWhenFinale(doc, ctx, bite);
+
+    // ---- Foot-system (shared with photo + spread pages).
+    drawFootSystem(doc, size, margin, pageNum, bite);
   }
 
   /**
@@ -723,13 +742,11 @@
       doc.addImage(imgInfo.dataUrl, imgInfo.format, x, y, fit.w, fit.h, undefined, 'FAST');
     } catch (e) { /* fall through */ }
 
-    // Tiny page number on cream pill so it stays legible over the photo
+    // Foot system on a cream pill so it stays legible over the photo.
+    // Same Nº/cuisine treatment as the bite pages, just background-cleared.
     doc.setFillColor(...COLOR.paper);
-    doc.rect(size.w - margin - 0.5, size.h - margin, 0.5, 0.25, 'F');
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(...COLOR.ink3);
-    doc.text(String(pageNum), size.w - margin - 0.05, size.h - margin + 0.18, { align: 'right' });
+    doc.rect(margin - 0.05, size.h - margin - 0.32, size.w - 2 * margin + 0.1, 0.40, 'F');
+    drawFootSystem(doc, size, margin, pageNum, bite);
   }
 
   /**
@@ -803,7 +820,7 @@
       drawVerticalTags(doc, ctx, bite.tags);
     }
 
-    drawPageNumber(doc, size, margin, pageNum);
+    drawFootSystem(doc, size, margin, pageNum, bite);
   }
 
   /**
@@ -1032,7 +1049,8 @@
 
   function drawTagPills(doc, tags, x, y, maxW) {
     // Warm cream pill with sand border, ink-soft text — matches the palette
-    // instead of feeling like a stock UI component.
+    // instead of feeling like a stock UI component. (Legacy: replaced by
+    // drawTagsInline on bite pages — kept in case other surfaces want it.)
     let cx = x;
     const padX = 0.1;
     const padY = 0.06;
@@ -1054,6 +1072,133 @@
     }
   }
 
+  /**
+   * Inline tag treatment: · PIZZA · ITALIAN · NEAPOLITAN ·
+   * Replaces filled rounded-rect pills (which read as CMS-default UI). The
+   * tracked-out small caps + dot separators pick up the same typographic
+   * voice as the eyebrow and restaurant subhead, so tags now feel like part
+   * of the editorial system instead of a tacked-on chip row.
+   */
+  function drawTagsInline(doc, tags, x, y, maxW) {
+    if (!tags || !tags.length) return;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...COLOR.ink2);
+    const charSpace = 0.14;
+    const sep = '   ·   ';
+    // Dots only BETWEEN tags. Earlier rev added leading/trailing dots which
+    // read as four arbitrary separators for two items — designer flagged it.
+    const upper = tags.slice(0, 8).map(t => String(t || '').toUpperCase()).filter(Boolean);
+    if (!upper.length) return;
+    let s = upper.join(sep);
+    const measure = (str) => doc.getTextWidth(str) + (str.length - 1) * charSpace;
+    while (upper.length > 1 && measure(s) > maxW) {
+      upper.pop();
+      s = upper.join(sep);
+    }
+    doc.text(s, x, y, { charSpace });
+  }
+
+  /**
+   * Where-and-when finale: three-column band restating place / date / rating
+   * as a typographic foot for the lower third of a no-photo page. Same
+   * tracked-caps language as the cover’s stats row, just smaller and quieter.
+   */
+  function drawWhereWhenFinale(doc, ctx, bite) {
+    const { size, margin, innerW } = ctx;
+    // Anchor band at the bottom of the type column, just above the foot rule.
+    const baseY = size.h - margin - 0.55;
+    const colCount = 3;
+    const colW = innerW / colCount;
+
+    // Top hairline.
+    doc.setDrawColor(...COLOR.sand);
+    doc.setLineWidth(0.006);
+    doc.line(margin, baseY - 0.30, size.w - margin, baseY - 0.30);
+
+    const cells = [
+      ['PLACE', bite.city ? bite.city : (bite.restaurant_name || '—')],
+      ['WHEN',  bite.date ? longDate(bite.date) : '—'],
+      ['RATING', bite.rating != null ? renderStarsString(bite.rating) : '—'],
+    ];
+    for (let i = 0; i < cells.length; i++) {
+      const [label, value] = cells[i];
+      const cx = margin + i * colW;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...COLOR.ink3);
+      doc.text(label, cx, baseY - 0.13, { charSpace: 0.14 });
+      // Value: serif, modest size; truncate if too long for the column.
+      doc.setFont('times', 'italic');
+      doc.setFontSize(13);
+      doc.setTextColor(...COLOR.ink);
+      let v = String(value);
+      const cap = colW - 0.12;
+      while (v.length > 4 && doc.getTextWidth(v) > cap) v = v.slice(0, -1);
+      if (v !== String(value)) v = v.trimEnd() + '…';
+      doc.text(v, cx, baseY + 0.12);
+    }
+  }
+
+  /**
+   * Foot system shared by every bite page (and the spread photo page).
+   *   left:  Nº 03   in italic serif
+   *   right: cuisine label in tracked-out caps
+   *   hairline tying them together at the foot margin
+   * Cover and TOC use a different bottom (wordmark / first-edition stamp);
+   * we don't want to override those.
+   */
+  function drawFootSystem(doc, size, margin, pageNum, bite) {
+    const footY = size.h - margin - 0.25;
+    doc.setDrawColor(...COLOR.sand);
+    doc.setLineWidth(0.006);
+    doc.line(margin, footY, size.w - margin, footY);
+    doc.setFont('times', 'italic');
+    doc.setFontSize(10);
+    doc.setTextColor(...COLOR.ink3);
+    doc.text(`Nº ${String(pageNum).padStart(2, '0')}`, margin, size.h - margin - 0.06);
+    const cuisineLabel = bite ? pickCuisineLabel(bite) : null;
+    if (cuisineLabel) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...COLOR.ink3);
+      doc.text(cuisineLabel.toUpperCase(), size.w - margin,
+               size.h - margin - 0.06,
+               { align: 'right', charSpace: 0.12 });
+    }
+  }
+
+  /**
+   * Half-filled dot for a 4.5-style rating glyph.
+   *   Right half: filled (paper-color rectangle masks the right side after
+   *               drawing a fully filled circle) — nope, do it the other
+   *               way: draw filled circle, then over-paint right half with
+   *               paper, then draw the stroked outline on top so the seam
+   *               disappears. Result reads as “half-full” at any zoom.
+   * jsPDF has no real arc/clip primitive that survives older renderers, so
+   * the rect-mask approach is the most portable.
+   */
+  function drawHalfDot(doc, cx, cy, r, fillColor, strokeColor) {
+    // 1) Solid filled circle.
+    doc.setFillColor(...fillColor);
+    doc.circle(cx, cy, r, 'F');
+    // 2) Mask right half with paper to leave only the LEFT half filled.
+    //    (We pick “left half filled” as the reading convention — matches
+    //    how scoring like “4.5” is built up: full dots fill from the left,
+    //    the trailing half-dot extends that fill into the next slot.)
+    doc.setFillColor(...COLOR.paper);
+    doc.rect(cx, cy - r - 0.005, r + 0.01, r * 2 + 0.01, 'F');
+    // 3) Re-stroke the outline on top so the divider vanishes into the curve.
+    doc.setDrawColor(...strokeColor);
+    doc.setLineWidth(0.01);
+    doc.circle(cx, cy, r, 'S');
+    // 4) Vertical hairline along the diameter to crisp the half/half seam
+    //    (otherwise the masked edge can look slightly ragged at print res).
+    doc.setDrawColor(...strokeColor);
+    doc.setLineWidth(0.01);
+    doc.line(cx, cy - r, cx, cy + r);
+  }
+
   // ------------------------------------------------------------------
   // Helpers — data
   // ------------------------------------------------------------------
@@ -1068,6 +1213,12 @@
     const d = new Date(iso);
     if (isNaN(d.getTime())) return iso;
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function longDate(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
   function formatDateRange(start, end) {
@@ -1104,35 +1255,26 @@
     const r = 0.045;
     const gap = 0.045;
     const step = r * 2 + gap;
-    const rounded = Math.round(rating); // 4.5 -> 5, 4.4 -> 4 (visual rounding)
-    const halfFlag = Math.abs(rating - Math.floor(rating)) >= 0.25 &&
-                     Math.abs(rating - Math.floor(rating)) < 0.75;
+    const floor = Math.floor(rating);
+    const frac = rating - floor;
+    const halfFlag = frac >= 0.25 && frac < 0.75;
+    const fullCount = halfFlag ? floor : Math.round(rating);
     for (let i = 0; i < 5; i++) {
       const cx = x + r + i * step;
       const cy = y;
-      if (i < rounded) {
+      if (i < fullCount) {
         doc.setFillColor(...COLOR.orange);
         doc.circle(cx, cy, r, 'F');
+      } else if (halfFlag && i === fullCount) {
+        // Real half-filled dot glyph (replaces the old "+½" text marker).
+        drawHalfDot(doc, cx, cy, r, COLOR.orange, COLOR.ink3);
       } else {
         doc.setDrawColor(...COLOR.ink3);
         doc.setLineWidth(0.01);
         doc.circle(cx, cy, r, 'S');
       }
     }
-    let endX = x + 5 * step + 0.02;
-    if (halfFlag) {
-      // Tiny "+½" marker, sits just past the dots, baseline-aligned with the
-      // eyebrow text. Reads as "and a half" without the ambiguous half-glyph.
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      const prevState = doc.getTextColor && doc.getTextColor();
-      doc.setTextColor(...COLOR.ink3);
-      doc.text('+½', endX, y + 0.04);
-      endX += doc.getTextWidth('+½') + 0.04;
-      doc.setFontSize(9);
-      doc.setTextColor(...COLOR.orange);
-    }
-    return endX;
+    return x + 5 * step + 0.02;
   }
 
   function fitContain(srcW, srcH, boxW, boxH) {
@@ -1200,25 +1342,23 @@
     const step = r * 2 + gap;
     const totalW = 5 * step - gap;
     const startX = cx - totalW / 2 + r;
-    const rounded = Math.round(rating);
-    const halfFlag = Math.abs(rating - Math.floor(rating)) >= 0.25 &&
-                     Math.abs(rating - Math.floor(rating)) < 0.75;
+    const floor = Math.floor(rating);
+    const frac = rating - floor;
+    const halfFlag = frac >= 0.25 && frac < 0.75;
+    const fullCount = halfFlag ? floor : Math.round(rating);
     for (let i = 0; i < 5; i++) {
       const x = startX + i * step;
-      if (i < rounded) {
+      if (i < fullCount) {
         doc.setFillColor(...COLOR.orange);
         doc.circle(x, cy, r, 'F');
+      } else if (halfFlag && i === fullCount) {
+        // Real half-filled dot glyph.
+        drawHalfDot(doc, x, cy, r, COLOR.orange, COLOR.ink3);
       } else {
         doc.setDrawColor(...COLOR.ink3);
         doc.setLineWidth(0.014);
         doc.circle(x, cy, r, 'S');
       }
-    }
-    if (halfFlag) {
-      doc.setFont('times', 'italic');
-      doc.setFontSize(13);
-      doc.setTextColor(...COLOR.ink3);
-      doc.text('+½', cx + totalW / 2 + 0.1, cy + 0.07);
     }
   }
 
@@ -1288,16 +1428,12 @@
     const lastW = doc.getTextWidth(lastLine);
     doc.text('”', blockX + Math.min(lastW + 0.05, blockW - 0.2), y);
 
-    // Attribution line: em-dash + restaurant. Doesn't repeat the eyebrow's
-    // date (already shown at top). Just one line, sets the typographic
-    // period to the page.
-    if (bite && bite.restaurant_name) {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(...COLOR.ink3);
-      const attrib = `—  ${bite.restaurant_name.toUpperCase()}`;
-      doc.text(attrib, blockX, y + 0.5, { charSpace: 0.12 });
-    }
+    // No closing attribution line on the no-photo page — the
+    // where/when finale at the foot of the page now does that work.
+    // (Previously we had “— RESTAURANT” which duplicated the eyebrow,
+    // then “— LONG DATE” which duplicated the finale’s WHEN cell. Both
+    // attempts triple-stamped the same data; better to let the finale
+    // stand as the page’s typographic period.)
   }
 
   /**
