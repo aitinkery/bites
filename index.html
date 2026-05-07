@@ -839,22 +839,21 @@ header.topbar {
       <div class="cookbook-head">
         <div class="cookbook-glyph" aria-hidden="true">📖</div>
         <div class="cookbook-titles">
-          <h3 class="serif">Bites Cookbook <span class="badge" id="cookbook-reserved-badge" hidden>Reserved</span></h3>
-          <div class="muted" style="font-size:13px;">Coming this summer</div>
+          <h3 class="serif">Bites Cookbook</h3>
+          <div class="muted" style="font-size:13px;">A magazine-style PDF of your year of food memories</div>
         </div>
       </div>
-      <p class="cookbook-desc">Export your year of bites as a beautiful printed-quality PDF. Every dish, every photo, every note — typeset like a real cookbook.</p>
-      <p class="cookbook-price"><strong>Pre-order $9.99</strong> <span class="muted">· charged when it ships</span></p>
-      <form class="cookbook-form" id="cookbook-form" novalidate>
-        <div class="cookbook-field">
-          <input id="cookbook-email" type="email" placeholder="you@example.com" autocomplete="email" required />
-          <button class="btn" id="cookbook-submit" type="submit">Reserve my copy</button>
-        </div>
-        <div class="cookbook-msg" id="cookbook-msg" aria-live="polite"></div>
-      </form>
-      <div class="cookbook-thanks" id="cookbook-thanks">
-        ✨ Thanks — we'll email you when it's ready.
-        <span class="muted">Reserved with <span id="cookbook-reserved-email"></span></span>
+      <p class="cookbook-desc">Beautiful, printable, yours to keep. Every dish, every photo, every note — typeset like a real cookbook. Delivered as a PDF within 24 hours of purchase.</p>
+      <p class="cookbook-price"><strong>$9.99</strong> <span class="muted">· one-time, no subscription</span></p>
+      <a class="btn cookbook-buy" id="cookbook-buy"
+         href="https://buy.stripe.com/test_4gMdRa1BS0OZ1Bx2Zh3F600"
+         target="_blank" rel="noopener"
+         aria-label="Buy Bites Cookbook for $9.99">
+        Buy now — $9.99
+      </a>
+      <div class="cookbook-meta muted" style="font-size:11px; margin-top:8px;">
+        <span id="cookbook-mode-badge" style="display:inline-block; padding:2px 6px; background:var(--accent-soft); color:var(--accent-deep); border-radius:4px; font-weight:600;">TEST MODE</span>
+        Use card 4242 4242 4242 4242 — no real charges in this build.
       </div>
     </div>
   </section>
