@@ -47,20 +47,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 32px 24px 80px; /* leave room for the floating nav */
   }
   .slide {
     width: min(96vw, 1200px);
-    height: min(70vh, 720px);
+    /* No fixed height — let content determine size, but cap to viewport so
+       we never blow past the bottom edge. Slide content scrolls if it must,
+       but we also size body text to fit gracefully on a 720px-tall window. */
+    max-height: calc(100vh - 112px);
     background: var(--cream);
     border-radius: 20px;
     box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-    padding: 60px 72px;
+    padding: 56px 64px;
     display: none;
     flex-direction: column;
     justify-content: flex-start;
     position: relative;
-    overflow: hidden;
+    overflow-y: auto;
   }
+  /* subtle scrollbar so it doesn't visually fight the brand */
+  .slide::-webkit-scrollbar { width: 6px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: rgba(35,32,28,0.15); border-radius: 4px; }
   .slide.active {
     display: flex;
     animation: fade-in 0.35s ease;
@@ -264,9 +272,39 @@
 
   /* Mobile */
   @media (max-width: 720px) {
-    .slide { padding: 32px 28px; height: 88vh; }
+    .slide { padding: 32px 28px; max-height: calc(100vh - 100px); }
     .two-col, .three-col { grid-template-columns: 1fr; gap: 16px; }
     table { font-size: 13px; }
+    h1.display { font-size: clamp(56px, 16vw, 92px); }
+    h1 { font-size: clamp(32px, 8vw, 48px); }
+    h2 { font-size: clamp(24px, 6vw, 32px); }
+    .pullquote { font-size: clamp(22px, 5vw, 32px); }
+    .lede { font-size: clamp(18px, 4.5vw, 24px); }
+  }
+
+  /* Short-viewport: scale down typography so 12 slides actually fit on a laptop */
+  @media (max-height: 800px) {
+    .slide { padding: 40px 56px; }
+    h1 { font-size: clamp(36px, 4.5vw, 56px); margin-bottom: 12px; }
+    h2 { font-size: clamp(24px, 3vw, 36px); margin-bottom: 10px; }
+    h3 { font-size: 18px; }
+    .lede { font-size: clamp(18px, 2vw, 24px); }
+    .pullquote { font-size: clamp(22px, 2.6vw, 32px); margin: 18px 0; }
+    .big-number { font-size: clamp(64px, 9vw, 140px); }
+    p, ul li, td, th { font-size: 14px; }
+    .metric-row { padding: 8px 0; }
+    .metric-row .value { font-size: 18px; }
+    table { margin: 12px 0; }
+    .moat { padding: 14px; }
+    .three-col { gap: 18px; }
+  }
+  @media (max-height: 700px) {
+    .slide { padding: 28px 48px; }
+    .eyebrow { margin-bottom: 12px; }
+    h1 { font-size: clamp(32px, 3.8vw, 48px); }
+    h2 { font-size: clamp(22px, 2.6vw, 30px); }
+    p, ul li, td, th { font-size: 13px; }
+    hr { margin: 12px 0; }
   }
 </style>
 </head>
@@ -277,13 +315,13 @@
   <!-- ============================================================
        SLIDE 1 — Title
   ============================================================== -->
-  <section class="slide" data-slide="1">
-    <div style="margin: auto 0;">
+  <section class="slide" data-slide="1" style="justify-content: center;">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
       <h1 class="display">Bites<span class="dot">.</span></h1>
       <p class="lede" style="margin-top: 24px;">Save dishes, not restaurants.</p>
-      <p style="margin-top: 36px; font-size: 18px; max-width: 600px;">A private journal of every meal worth remembering.</p>
+      <p style="margin-top: 28px; font-size: 18px; max-width: 600px;">A private journal of every meal worth remembering.</p>
     </div>
-    <div style="display: flex; gap: 24px; align-items: center; font-size: 14px; color: var(--ink-mute); border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;">
+    <div style="display: flex; gap: 24px; align-items: center; font-size: 14px; color: var(--ink-mute); border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px; flex: 0 0 auto;">
       <span><strong style="color: var(--ink);">Tinkery Labs</strong> · 2026 · v0.2</span>
       <span style="margin-left: auto;">aitinkery.github.io/bites</span>
     </div>
