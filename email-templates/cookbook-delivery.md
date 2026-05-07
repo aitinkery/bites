@@ -47,7 +47,7 @@ didn't, what you wish was different — I read every reply.
 Thanks again,
 [CEO signature]
 Bites
-https://aitinkery.github.io/bites/
+https://bites.kitchen/
 ```
 
 ---

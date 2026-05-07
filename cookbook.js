@@ -348,7 +348,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...COLOR.ink3);
-    doc.text('aitinkery.github.io/bites', margin, size.h - 0.5, { charSpace: 0.04 });
+    doc.text('bites.kitchen', margin, size.h - 0.5, { charSpace: 0.04 });
 
     // Edition stamp, right-aligned, balances the wordmark. Slightly tighter
     // tracking so it doesn't run past the right margin.
@@ -977,7 +977,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(...COLOR.ink3);
-    doc.text('aitinkery.github.io/bites', cx, baseY + 0.85, {
+    doc.text('bites.kitchen', cx, baseY + 0.85, {
       align: 'center', charSpace: 0.02,
     });
 
@@ -985,7 +985,7 @@
     doc.setFontSize(9);
     doc.setTextColor(...COLOR.ink3);
     doc.text(
-      'Want next year? Renew your cookbook at aitinkery.github.io/bites/renew',
+      'Want next year? Renew your cookbook at bites.kitchen/renew',
       cx, size.h - 0.7, { align: 'center' }
     );
   }

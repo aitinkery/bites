@@ -39,7 +39,7 @@ What I want from HN: I'd love feedback on (1) is the "personal not
 social" framing legible, and (2) what would make you actually use
 this past day 1?
 
-https://aitinkery.github.io/bites/
+https://bites.kitchen/
 
 — [me]
 ```
@@ -66,7 +66,7 @@ https://aitinkery.github.io/bites/
     Yelp = strangers' opinions. The Infatuation = critics.
     Bites = your own private memory.
 
-    Live now: https://aitinkery.github.io/bites/
+    Live now: https://bites.kitchen/
 
 2/  The killer query: "what did I think of that ramen
     place 8 months ago?"

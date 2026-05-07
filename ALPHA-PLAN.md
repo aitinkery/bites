@@ -45,7 +45,7 @@ The closest, highest-trust audience. These are people who'll text us back if som
 
 > Hey [name] — quick favor. I built a thing called Bites. It's a private food journal — you save dishes (not restaurants) so you can actually remember what you liked. I'm doing a 14-day alpha with 30 people. You'd get it free for life and you can shape what gets built.
 >
-> No signup, no app store, just open it: https://aitinkery.github.io/bites/?ref=alpha&from=dm-[name]
+> No signup, no app store, just open it: https://bites.kitchen/?ref=alpha&from=dm-[name]
 >
 > If it sticks for a couple of days, I'd love a 5-minute "what worked / what didn't" reply at end of week 2. That's the whole ask.
 
@@ -65,7 +65,7 @@ People who follow you for food/restaurant takes. Don't post publicly — DM. Pub
 >
 > I built a private food journal called Bites — saves dishes, not restaurants. Doing a 14-day alpha with 30 people. Free for life if you're in.
 >
-> https://aitinkery.github.io/bites/landing/?ref=alpha&from=tw
+> https://bites.kitchen/landing/?ref=alpha&from=tw
 >
 > Honest reply at day 14 is the only thing I want back. Up for it?
 
@@ -83,7 +83,7 @@ Pick ONE community where you're a known member. Not a stranger drop. Do not post
 >
 > Free for life if you're in. Honest "what worked / what didn't" at day 14 is the only ask.
 >
-> https://aitinkery.github.io/bites/landing/?ref=alpha&from=slack-[community-name]
+> https://bites.kitchen/landing/?ref=alpha&from=slack-[community-name]
 
 ### Channel D — In-person referrals (target: 4 testers)
 
@@ -108,7 +108,7 @@ Highest-quality data — they'll actually use it because you watched them instal
 | **7** | Mid-alpha pulse: 2-question DM | DM (all 30 testers): "Quick check — still using it? Anything broken?" | At least 50% reply |
 | **10** | Nudge: "Try the Search tab" | DM | Users discover search (it's the long-term retention loop) |
 | **14** | Day-14 survey: feedback email + cookbook willingness-to-pay | DM with link to the in-app Feedback button + analytics export | ≥20 of 30 testers reply with feedback email |
-| **14** | Collect `?stats=1` JSON exports | DM each tester: "When you have a sec, open https://aitinkery.github.io/bites/?stats=1 and email me the JSON. Takes 10 seconds." | ≥20 of 30 send the export |
+| **14** | Collect `?stats=1` JSON exports | DM each tester: "When you have a sec, open https://bites.kitchen/?stats=1 and email me the JSON. Takes 10 seconds." | ≥20 of 30 send the export |
 
 ### Day-14 survey (the only structured data we collect)
 
@@ -227,11 +227,11 @@ in their `?stats=1` export — match it to the name when they send the export at
 
 ## Operational links
 
-- **Live app:** https://aitinkery.github.io/bites/
-- **Landing (alpha):** https://aitinkery.github.io/bites/landing/
-- **Alpha entry URL:** https://aitinkery.github.io/bites/?ref=alpha&from=landing
+- **Live app:** https://bites.kitchen/
+- **Landing (alpha):** https://bites.kitchen/landing/
+- **Alpha entry URL:** https://bites.kitchen/?ref=alpha&from=landing
 - **Feedback inbox:** bites@aitinkery.com
-- **Stats overlay (per device):** https://aitinkery.github.io/bites/?stats=1
+- **Stats overlay (per device):** https://bites.kitchen/?stats=1
 
 ---
 

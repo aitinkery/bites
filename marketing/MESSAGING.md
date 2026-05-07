@@ -31,7 +31,7 @@ later. Solves my "what was that pasta place last winter" problem.
 
 10 minutes? I'll fix anything that breaks.
 
-→ aitinkery.github.io/bites/?ref=alpha&t=[their-initials]
+→ bites.kitchen/?ref=alpha&t=[their-initials]
 ```
 
 **Why it works:**
@@ -70,7 +70,7 @@ if you're in.
 10-minute first session is enough to know if it's for you. Would
 love your read on it.
 
-→ aitinkery.github.io/bites/?ref=alpha&from=stanford
+→ bites.kitchen/?ref=alpha&from=stanford
 
 — [signature]
 ```
@@ -99,7 +99,7 @@ phone, free forever for testers. 10-minute first try.
 
 Honest feedback welcome (and expected).
 
-→ aitinkery.github.io/bites/?ref=alpha&from=[community-tag]
+→ bites.kitchen/?ref=alpha&from=[community-tag]
 ```
 
 **Don't post in:**
@@ -141,7 +141,7 @@ Two questions for HN:
    off as "Yelp without ratings"?
 2. What would make you actually use this past day 1?
 
-→ aitinkery.github.io/bites/
+→ bites.kitchen/
 
 — [name]
 ```
@@ -161,7 +161,7 @@ Two questions for HN:
     Yelp = strangers' opinions.
     Bites = your private memory.
 
-    aitinkery.github.io/bites/
+    bites.kitchen/
 
 2/  The killer query: "what did I think of that ramen place
     last winter?"
@@ -224,7 +224,7 @@ You've posted about food UX a few times — I'd love your eyes on
 the capture flow specifically. No expectation; if it's not your
 thing, totally fine.
 
-→ aitinkery.github.io/bites/?ref=joel
+→ bites.kitchen/?ref=joel
 
 — [name]
 ```

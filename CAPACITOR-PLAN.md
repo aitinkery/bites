@@ -6,7 +6,7 @@
 
 ## Current state
 
-- ✅ Live as PWA at https://aitinkery.github.io/bites/
+- ✅ Live as PWA at https://bites.kitchen/
 - ✅ "Add to Home Screen" works on iOS + Android
 - ✅ Fully offline-capable (service worker)
 - ✅ Stripe Checkout wired in test mode

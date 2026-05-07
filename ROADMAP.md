@@ -10,7 +10,7 @@ First paying customer within 14 days.
 Every decision below serves that. Anything that doesn't is parked.
 
 ## v0 — SHIPPED ✅
-- Live at https://aitinkery.github.io/bites/
+- Live at https://bites.kitchen/
 - Vanilla web app, localStorage, mobile-first PWA
 - Capture, browse, search, edit, export
 - 7 seed bites for first-run
