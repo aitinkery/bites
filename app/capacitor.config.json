@@ -1,0 +1,24 @@
+{
+  "appId": "com.aitinkery.bites",
+  "appName": "Bites",
+  "webDir": "..",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "always",
+    "scheme": "Bites",
+    "backgroundColor": "#FAF6F0"
+  },
+  "server": {
+    "iosScheme": "bites"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 600,
+      "backgroundColor": "#FAF6F0",
+      "iosSpinnerStyle": "small",
+      "showSpinner": false
+    }
+  },
+  "_comment": "Placeholder for the Capacitor wrap. Not yet active. See ../BUILD-IOS.md."
+}
