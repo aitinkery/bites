@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Bites — Pitch</title>
+<meta name="description" content="Bites pitch deck — save dishes, not restaurants." />
+
+<!-- og / twitter -->
+<meta property="og:title" content="Bites — Pitch Deck" />
+<meta property="og:description" content="Save dishes, not restaurants. The pitch." />
+<meta property="og:image" content="https://aitinkery.github.io/bites/og-image.png" />
+<meta property="og:url" content="https://aitinkery.github.io/bites/deck/" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --paper: #F4EFE6;
+    --ink: #23201C;
+    --ink-soft: #4A453E;
+    --ink-mute: #8A8377;
+    --line: #E5DFD2;
+    --accent: #C84B31;
+    --accent-deep: #A33A24;
+    --accent-soft: rgba(200, 75, 49, 0.10);
+    --green: #4A7C59;
+    --gold: #C99B43;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--ink); /* off-stage */
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    overflow: hidden;
+    height: 100%;
+  }
+  .stage {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slide {
+    width: min(96vw, 1200px);
+    height: min(70vh, 720px);
+    background: var(--cream);
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    padding: 60px 72px;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide.active {
+    display: flex;
+    animation: fade-in 0.35s ease;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide-num {
+    position: absolute; bottom: 24px; right: 32px;
+    font-family: 'Fraunces', serif; font-size: 14px;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+  .brand-tag {
+    position: absolute; bottom: 24px; left: 32px;
+    font-family: 'Fraunces', serif;
+    font-style: italic; font-size: 14px; color: var(--ink-mute);
+  }
+
+  /* Typography */
+  h1.display {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(64px, 9vw, 144px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  h1.display .dot { color: var(--accent); }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(40px, 5.5vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 3.5vw, 44px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .lede {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(22px, 2.4vw, 32px);
+    line-height: 1.4;
+    color: var(--ink-soft);
+    max-width: 800px;
+  }
+  p { color: var(--ink-soft); margin-bottom: 14px; max-width: 900px; }
+  p strong { color: var(--ink); font-weight: 600; }
+  ul { margin: 10px 0 14px 22px; max-width: 900px; }
+  ul li { margin-bottom: 8px; color: var(--ink-soft); }
+  ul li strong { color: var(--ink); font-weight: 600; }
+  a { color: var(--accent); }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 18px 0;
+  }
+  th {
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    padding: 8px 14px 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  td {
+    padding: 10px 14px 10px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+  td.us { color: var(--accent); font-weight: 600; }
+  th.us { color: var(--accent); }
+
+  /* Pull quote */
+  .pullquote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(28px, 3.4vw, 44px);
+    line-height: 1.25;
+    color: var(--ink);
+    max-width: 920px;
+    margin: 30px 0;
+    padding-left: 24px;
+    border-left: 4px solid var(--accent);
+  }
+
+  /* Two-column */
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  }
+
+  /* Big number */
+  .big-number {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(80px, 12vw, 220px);
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+  }
+
+  /* List of metrics */
+  .metric-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .metric-row .label { font-family: 'Inter', sans-serif; font-weight: 500; color: var(--ink-soft); flex: 1; }
+  .metric-row .value { font-family: 'Fraunces', serif; font-weight: 700; font-size: 22px; color: var(--ink); }
+  .metric-row .why { font-size: 13px; color: var(--ink-mute); flex: 2; }
+
+  /* Pill / chip */
+  .pill {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .pill.green { background: rgba(74, 124, 89, 0.12); color: var(--green); }
+  .pill.muted { background: var(--paper); color: var(--ink-mute); }
+
+  /* Three columns for moats */
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 24px; }
+  .moat { padding: 20px; background: var(--paper); border-radius: 14px; border: 1px solid var(--line); }
+  .moat .num { font-family: 'Fraunces', serif; font-weight: 900; font-size: 32px; color: var(--accent); display: block; margin-bottom: 8px; }
+  .moat h3 { font-size: 18px; margin-bottom: 8px; }
+  .moat p { font-size: 14px; }
+
+  /* Speaker notes (hidden in normal view, shown with ?notes=1) */
+  .speaker-notes {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.92); color: #FFF;
+    padding: 16px 24px; font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    z-index: 100;
+    border-top: 1px solid #444;
+  }
+  body.notes .speaker-notes.active { display: block; }
+
+  /* Nav */
+  .nav {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+    padding: 8px 14px; border-radius: 999px;
+    color: #FFF; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    z-index: 50;
+  }
+  .nav button {
+    background: transparent; border: 0; color: #FFF; cursor: pointer;
+    font-size: 18px; padding: 4px 10px; border-radius: 50%;
+    transition: background 0.15s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.1); }
+  .nav .progress { font-variant-numeric: tabular-nums; min-width: 50px; text-align: center; }
+
+  /* Print: show all slides stacked */
+  @media print {
+    html, body { background: #FFF; overflow: visible; height: auto; }
+    .stage { display: block; height: auto; }
+    .slide { display: flex !important; page-break-after: always; box-shadow: none; border-radius: 0; height: 720px; max-height: 720px; }
+    .nav, .speaker-notes { display: none !important; }
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .slide { padding: 32px 28px; height: 88vh; }
+    .two-col, .three-col { grid-template-columns: 1fr; gap: 16px; }
+    table { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <!-- ============================================================
+       SLIDE 1 — Title
+  ============================================================== -->
+  <section class="slide" data-slide="1">
+    <div style="margin: auto 0;">
+      <h1 class="display">Bites<span class="dot">.</span></h1>
+      <p class="lede" style="margin-top: 24px;">Save dishes, not restaurants.</p>
+      <p style="margin-top: 36px; font-size: 18px; max-width: 600px;">A private journal of every meal worth remembering.</p>
+    </div>
+    <div style="display: flex; gap: 24px; align-items: center; font-size: 14px; color: var(--ink-mute); border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;">
+      <span><strong style="color: var(--ink);">Tinkery Labs</strong> · 2026 · v0.2</span>
+      <span style="margin-left: auto;">aitinkery.github.io/bites</span>
+    </div>
+    <div class="slide-num">1 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 2 — The problem
+  ============================================================== -->
+  <section class="slide" data-slide="2">
+    <div class="eyebrow">The problem</div>
+    <h1>8,000 photos.</h1>
+    <h1 style="color: var(--accent);">No memory.</h1>
+
+    <div class="pullquote">
+      What was that incredible ramen place last winter?
+    </div>
+
+    <p style="font-size: 18px;">You can't answer.</p>
+    <p style="font-size: 18px;">Yelp tells you what <strong>strangers</strong> think. Google Maps tells you what <strong>advertisers</strong> paid for. The Infatuation tells you what <strong>critics</strong> think.</p>
+    <p style="font-size: 20px; color: var(--ink); font-weight: 600; margin-top: 14px;">Nothing tells you what <em>you</em> thought.</p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">2 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 3 — Differentiator
+  ============================================================== -->
+  <section class="slide" data-slide="3">
+    <div class="eyebrow">The thesis</div>
+    <h2>The unit is the dish.<br>The audience is yourself.<br>The function is memory.</h2>
+
+    <table style="margin-top: 28px;">
+      <thead>
+        <tr><th></th><th>Yelp</th><th>Beli</th><th>Infatuation</th><th class="us">Bites</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong style="color: var(--ink);">Unit</strong></td><td>Restaurant</td><td>Restaurant</td><td>Restaurant</td><td class="us">Dish</td></tr>
+        <tr><td><strong style="color: var(--ink);">Audience</strong></td><td>Aggregate strangers</td><td>Your friends</td><td>Critics</td><td class="us">You</td></tr>
+        <tr><td><strong style="color: var(--ink);">Function</strong></td><td>Discovery</td><td>Ranking</td><td>Recommendation</td><td class="us">Memory</td></tr>
+        <tr><td><strong style="color: var(--ink);">Privacy</strong></td><td>Public profile</td><td>Friends-only</td><td>n/a</td><td class="us">Yours alone</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 20px; font-size: 16px;">Yelp can't pivot here without destroying its ad business. Beli can't go dish-level without re-onboarding every user. <strong>We are alone in this corner of the market.</strong></p>
+
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">3 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 4 — The product
+  ============================================================== -->
+  <section class="slide" data-slide="4">
+    <div class="eyebrow">The product</div>
+    <h2>A private, mobile-first, photo-driven food journal.</h2>
+
+    <div class="two-col" style="margin-top: 28px;">
+      <div>
+        <h3>Capture in &lt;30 seconds</h3>
+        <p style="font-size: 15px;">Photo, dish, restaurant, rating, notes, tags.</p>
+
+        <h3 style="margin-top: 18px;">Recall in &lt;2 seconds</h3>
+        <p style="font-size: 15px;">Search by restaurant, dish, city, tag, or freeform.</p>
+      </div>
+      <div>
+        <h3>Own your data</h3>
+        <p style="font-size: 15px;">Works offline. Exports to JSON. No account required.</p>
+
+        <h3 style="margin-top: 18px;">Share selectively</h3>
+        <p style="font-size: 15px;">Copy a saved list. Email a curated cookbook.</p>
+      </div>
+    </div>
+
+    <div style="background: var(--paper); padding: 16px 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid var(--accent);">
+      <strong style="color: var(--ink);">Live now:</strong> <span style="font-family: ui-monospace, monospace;">aitinkery.github.io/bites</span>
+      <span class="pill" style="margin-left: 12px;">PWA</span>
+      <span class="pill green">Offline</span>
+      <span class="pill muted">Soon: iOS</span>
+    </div>
+
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">4 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 5 — Why now
+  ============================================================== -->
+  <section class="slide" data-slide="5">
+    <div class="eyebrow">Why now</div>
+    <h2>Three things make this winnable in 2026.</h2>
+
+    <div class="two-col" style="margin-top: 24px; grid-template-columns: 1fr;">
+      <div>
+        <h3 style="color: var(--accent);">1 · AI-native retrieval is finally cheap.</h3>
+        <p style="font-size: 15px;">"What do I usually order at Italian places?" was impossible in 2022. Now it's a $0.02 query. The unlock is structural, not incremental.</p>
+      </div>
+      <div>
+        <h3 style="color: var(--accent);">2 · Camera-roll fatigue is documented behavior.</h3>
+        <p style="font-size: 15px;">70% of iPhone users say they have too many photos to find anything. Apple's own pitch for Photos AI. The pain is mainstream.</p>
+      </div>
+      <div>
+        <h3 style="color: var(--accent);">3 · The vibe-coding stack lowered build cost.</h3>
+        <p style="font-size: 15px;">A $500k MVP in 2020 is a $50/mo solo founder in 2026. We can ship and iterate at the speed of a journalist publishing.</p>
+      </div>
+    </div>
+
+    <p style="margin-top: 24px; font-size: 17px; color: var(--ink); font-weight: 500;">Bites without AI is a tool. Bites with AI is a memory prosthetic. We build both, in that order.</p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">5 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 6 — Business model
+  ============================================================== -->
+  <section class="slide" data-slide="6">
+    <div class="eyebrow">Business model</div>
+    <h2>Subscriptions + premium SKUs. No ads. Ever.</h2>
+
+    <table style="margin-top: 24px;">
+      <thead><tr><th>Tier</th><th>Price</th><th>What you get</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color: var(--ink);">Free</strong></td><td>$0 forever</td><td>Unlimited capture, search, export, 1 GB photos</td></tr>
+        <tr><td><strong style="color: var(--ink);">Pro</strong></td><td>$4.99/mo · $39/yr</td><td>Cloud sync, AI features, unlimited storage</td></tr>
+        <tr><td><strong style="color: var(--ink);">Cookbook</strong></td><td>$9.99 once</td><td>Magazine PDF of your year of bites</td></tr>
+        <tr><td><strong style="color: var(--ink);">Circle</strong></td><td>$9.99/mo per host</td><td>Group dish wishlists + "where should we go" recommender</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <p style="font-size: 14px; color: var(--ink-mute);"><strong style="color: var(--ink);">Permanent rules:</strong>
+      <span class="pill" style="margin-left: 6px;">No ads</span>
+      <span class="pill">No data sale</span>
+      <span class="pill">No paid promotion</span>
+    </p>
+
+    <p style="font-size: 15px; margin-top: 14px; color: var(--ink); font-style: italic;">People don't pay for ad-free. They pay for capability.</p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">6 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 7 — Unit economics
+  ============================================================== -->
+  <section class="slide" data-slide="7">
+    <div class="eyebrow">Unit economics · Year 2 target</div>
+    <h2>$402k ARR. One founder + AI co-founder. Profitable from week 6.</h2>
+
+    <div style="margin-top: 24px;">
+      <div class="metric-row"><span class="label">MAU</span><span class="value">100,000</span><span class="why">Below comparable apps' Y2 (Day One reached 200k)</span></div>
+      <div class="metric-row"><span class="label">Pro conversion</span><span class="value">8%</span><span class="why">10x utility-app norm; defensible because product gets stickier with use</span></div>
+      <div class="metric-row"><span class="label">Cookbook attach</span><span class="value">4% / yr</span><span class="why">One-time, low-effort, high-charm</span></div>
+      <div class="metric-row"><span class="label">Pro ARR</span><span class="value">$312k</span><span class="why">8,000 × $39</span></div>
+      <div class="metric-row"><span class="label">Cookbook ARR</span><span class="value">$40k</span><span class="why">4,000 × $9.99</span></div>
+      <div class="metric-row"><span class="label">Affiliate ARR</span><span class="value">$50k</span><span class="why">Conservative; Resy + DoorDash</span></div>
+      <div class="metric-row" style="border-top: 2px solid var(--ink); padding-top: 14px; margin-top: 10px; border-bottom: 0;"><span class="label" style="color: var(--ink); font-weight: 600;">Total Y2 ARR</span><span class="value" style="color: var(--accent); font-size: 26px;">~$402k</span><span class="why">Path to $1M = 250k MAU</span></div>
+    </div>
+
+    <p style="margin-top: 16px; font-size: 14px; font-style: italic; color: var(--ink-mute);">A profitable lifestyle product, not a unicorn. <strong style="color: var(--ink);">That's a feature.</strong></p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">7 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 8 — Defensibility
+  ============================================================== -->
+  <section class="slide" data-slide="8">
+    <div class="eyebrow">Defensibility</div>
+    <h2>Three moats. Each compounds with use.</h2>
+
+    <div class="three-col">
+      <div class="moat">
+        <span class="num">01</span>
+        <h3>Personal data moat</h3>
+        <p>A user with 6 months of bites can't switch — their food memory IS the product. Like Day One for journaling, Strava for running.</p>
+      </div>
+      <div class="moat">
+        <span class="num">02</span>
+        <h3>Dish-level structure</h3>
+        <p>Competitors who index restaurants can't retrofit dish primacy without re-architecting AND re-onboarding. We're 3 years ahead structurally.</p>
+      </div>
+      <div class="moat">
+        <span class="num">03</span>
+        <h3>AI × personal data</h3>
+        <p>Yelp's AI gets smarter on aggregate. Bites' AI gets smarter for <em>you specifically</em> the more you use it. The durable advantage.</p>
+      </div>
+    </div>
+
+    <hr>
+    <p style="font-size: 15px;">Plus: <strong>camera-first capture</strong> is lower friction than typing reviews. We win the "added a bite while waiting for the check" use case Yelp never reached.</p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">8 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 9 — Traction
+  ============================================================== -->
+  <section class="slide" data-slide="9">
+    <div class="eyebrow">Traction</div>
+    <h2>We're not pre-product. We're pre-revenue, by 7 days.</h2>
+
+    <ul style="margin-top: 24px; font-size: 17px; list-style: none; padding-left: 0;">
+      <li style="margin-bottom: 16px;"><span style="color: var(--green); font-weight: 700;">✓</span> &nbsp; v0 live: vanilla web PWA, working offline, public URL</li>
+      <li style="margin-bottom: 16px;"><span style="color: var(--green); font-weight: 700;">✓</span> &nbsp; Cookbook PDF generator built (cover + TOC ship-quality)</li>
+      <li style="margin-bottom: 16px;"><span style="color: var(--green); font-weight: 700;">✓</span> &nbsp; Stripe Checkout wired in test mode — first sale is one config flip from real money</li>
+      <li style="margin-bottom: 16px;"><span style="color: var(--green); font-weight: 700;">✓</span> &nbsp; Sub-$100 monthly burn · ~30 commits in 7 days · single founder</li>
+      <li style="margin-bottom: 16px;"><span style="color: var(--gold);">◐</span> &nbsp; First paying customer target: within 14 days of v0.2</li>
+      <li><span style="color: var(--gold);">◐</span> &nbsp; Beta cohort target: 30 friends adding ≥3 bites each in week 1</li>
+    </ul>
+
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">9 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 — Channels
+  ============================================================== -->
+  <section class="slide" data-slide="10">
+    <div class="eyebrow">Distribution</div>
+    <h2>We don't buy growth. We earn it.</h2>
+
+    <div class="two-col" style="margin-top: 22px; grid-template-columns: 1fr 1fr;">
+      <div>
+        <h3>Phase 1 — organic launch</h3>
+        <p style="font-size: 14px;">Show HN · founder Twitter thread · targeted r/foodporn · 4 named contacts (Patrick Collison, Ben Sandofsky, Casey Newton, Joel Califa)</p>
+
+        <h3 style="margin-top: 14px;">Phase 2 — built-in viral</h3>
+        <p style="font-size: 14px;">Share-link og:image · "Made with Bites" cookbook footer · saved-list email signature</p>
+
+        <h3 style="margin-top: 14px;">Phase 3 — only after PMF</h3>
+        <p style="font-size: 14px;">App Store launch (Capacitor wrap, 1-day flip ready) · co-branded cookbook with one publication · paid ads only after $5k MRR</p>
+      </div>
+      <div>
+        <div style="padding: 18px; background: rgba(200,75,49,0.04); border: 1px dashed var(--accent-soft); border-radius: 12px;">
+          <h3 style="color: var(--accent);">Anti-channels we skip</h3>
+          <ul style="font-size: 13px; margin: 12px 0 0 18px;">
+            <li><strong style="color: var(--ink);">Product Hunt</strong> — race to the bottom</li>
+            <li><strong style="color: var(--ink);">TikTok</strong> — wrong founder</li>
+            <li><strong style="color: var(--ink);">Mass cold-email</strong> — burns goodwill</li>
+            <li><strong style="color: var(--ink);">VC pitches before $5k MRR</strong> — premature</li>
+          </ul>
+          <p style="font-size: 13px; margin-top: 14px; font-style: italic;">Discipline is a moat too.</p>
+        </div>
+      </div>
+    </div>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">10 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 11 — Team
+  ============================================================== -->
+  <section class="slide" data-slide="11">
+    <div class="eyebrow">The team</div>
+    <h2>A two-person company doing the work of ten.</h2>
+
+    <div class="two-col" style="margin-top: 28px;">
+      <div>
+        <h3 style="color: var(--accent); font-size: 26px;">Founder</h3>
+        <p style="font-size: 15px;">Stanford-affiliated. Builds. Ships fast. Has lived the problem for 8 years — the camera roll full of food, the "remember that pasta?" texts to a partner.</p>
+        <p style="font-size: 14px; margin-top: 8px; color: var(--ink-mute);"><em>Calls the product. Owns the customer. Writes the checks.</em></p>
+      </div>
+      <div>
+        <h3 style="color: var(--accent); font-size: 26px;">AI co-founder</h3>
+        <p style="font-size: 15px;">Operates as full-time CTO/COO. Codes, copies, deploys, reviews. <strong style="color: var(--ink);">~50 commits per week.</strong> Frees the human founder for product calls and customer love.</p>
+        <p style="font-size: 14px; margin-top: 8px; color: var(--ink-mute);"><em>The thesis isn't science fiction. It's already here.</em></p>
+      </div>
+    </div>
+
+    <hr>
+    <p style="font-size: 16px; font-style: italic; color: var(--ink);">"What if AI-native solo founders ship faster than the social-network giants can react?"</p>
+    <p style="font-size: 14px; color: var(--ink-mute);">Bites is the proof point.</p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">11 / 12</div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 12 — Ask
+  ============================================================== -->
+  <section class="slide" data-slide="12">
+    <div class="eyebrow">The ask</div>
+    <h2>Different for everyone in the room.</h2>
+
+    <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 14px;">
+      <div style="padding: 18px 22px; background: var(--paper); border-radius: 12px; border-left: 4px solid var(--accent);">
+        <strong style="color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">If you're an early customer</strong>
+        Buy the cookbook ($9.99). Your first purchase trains us on what to build next.
+      </div>
+      <div style="padding: 18px 22px; background: var(--paper); border-radius: 12px; border-left: 4px solid var(--accent);">
+        <strong style="color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">If you're an angel ($25k–$100k)</strong>
+        Convertible note, $4M cap. Money goes to: 30 days of paid CAC tests, iOS launch, and a part-time designer for the cookbook fast-follow.
+      </div>
+      <div style="padding: 18px 22px; background: var(--paper); border-radius: 12px; border-left: 4px solid var(--accent);">
+        <strong style="color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">If you're a friend</strong>
+        Use it for a week. Tell us what's broken. Worth more than money.
+      </div>
+      <div style="padding: 18px 22px; background: var(--paper); border-radius: 12px; border-left: 4px solid var(--accent);">
+        <strong style="color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">If you're a journalist</strong>
+        The story isn't "another food app." It's <em>"AI-native solo founders ship faster than incumbents can react."</em>
+      </div>
+    </div>
+
+    <p style="margin-top: 28px; font-size: 16px; text-align: center;">
+      <strong style="color: var(--ink); font-size: 18px;">aitinkery.github.io/bites</strong> &nbsp; · &nbsp; bites@aitinkery.com
+    </p>
+    <div class="brand-tag">Bites</div>
+    <div class="slide-num">12 / 12</div>
+  </section>
+
+</div>
+
+<!-- Speaker notes container (populated per slide) -->
+<div class="speaker-notes" id="notes"></div>
+
+<!-- Nav -->
+<div class="nav">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span class="progress" id="progress">1 / 12</span>
+  <button id="next" aria-label="Next slide">→</button>
+</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const progress = document.getElementById('progress');
+  const notesEl = document.getElementById('notes');
+
+  // Speaker notes per slide
+  const NOTES = {
+    1: 'Open with a beat. "Bites — save dishes, not restaurants." Pause. Don\'t rush.',
+    2: 'Show your phone\'s camera roll if you can. Ask the question. Watch them try to answer.',
+    3: 'Walk the table left to right. Land hard on "we are alone in this corner."',
+    4: 'Live demo if possible. Pull up the URL. Don\'t describe — show.',
+    5: 'Don\'t oversell AI. Position as memory prosthetic, not Yelp killer.',
+    6: 'Acknowledge the no-ads stance is unusual. Frame as advantage, not constraint.',
+    7: 'Land the "profitable lifestyle product" line. Investors will be relieved by realism.',
+    8: 'Three moats, fast. Don\'t belabor.',
+    9: 'Traction is short on purpose. Don\'t overstate.',
+    10: 'Anti-channels matter — shows discipline. Read the dashed-box bullets out loud.',
+    11: 'The AI-co-founder angle IS the meta-story. Don\'t shy from it.',
+    12: 'Different ask per audience. Pick the one that fits the room.'
+  };
+
+  let current = parseInt(new URLSearchParams(location.search).get('s') || '1', 10);
+  if (current < 1 || current > total) current = 1;
+
+  function show(n) {
+    current = Math.max(1, Math.min(total, n));
+    slides.forEach(s => s.classList.toggle('active', parseInt(s.dataset.slide,10) === current));
+    progress.textContent = `${current} / ${total}`;
+    notesEl.innerHTML = `<strong>Slide ${current}:</strong> ${NOTES[current] || ''}`;
+    notesEl.classList.add('active');
+    history.replaceState(null, '', `?s=${current}${location.search.includes('notes=1') ? '&notes=1' : ''}`);
+  }
+
+  document.getElementById('prev').addEventListener('click', () => show(current - 1));
+  document.getElementById('next').addEventListener('click', () => show(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(current + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')  { e.preventDefault(); show(current - 1); }
+    if (e.key === 'Home') show(1);
+    if (e.key === 'End')  show(total);
+    if (e.key === 'n') document.body.classList.toggle('notes');
+  });
+
+  // Touch swipe
+  let touchStart = null;
+  document.addEventListener('touchstart', e => { touchStart = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (touchStart == null) return;
+    const dx = e.changedTouches[0].clientX - touchStart;
+    if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    touchStart = null;
+  });
+
+  // Auto-show notes if ?notes=1
+  if (new URLSearchParams(location.search).get('notes') === '1') {
+    document.body.classList.add('notes');
+  }
+
+  show(current);
+</script>
+</body>
+</html>
