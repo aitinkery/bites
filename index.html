@@ -329,9 +329,29 @@ header.topbar {
 .card .body { padding: 12px 14px 14px; }
 .card .dish { font-family: var(--serif); font-weight: 500; font-size: 17px; line-height: 1.25; }
 .card .restaurant { color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
-.card .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-.card .meta .stars-mini { font-size: 13px; color: var(--gold); letter-spacing: 1px; }
+.card .meta { display: flex; justify-content: flex-end; align-items: center; margin-top: 8px; }
 .card .meta .date { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Rating as a corner badge on the photo (UPD: Hierarchy + Inverted Pyramid).
+   Chose Option A (translucent dark pill, top-left) over chip-aligned-with-
+   title and first-line-below-photo, because it keeps the photo as the visual
+   anchor while making the most decision-relevant data ("what did I think of
+   this?") legible at a glance from the grid. Top-LEFT not top-right because
+   .card-price already lives top-right. */
+.card-rating {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(35,32,28,0.78);
+  color: var(--gold);
+  font-size: 13px; font-weight: 700;
+  padding: 4px 10px; border-radius: 999px;
+  letter-spacing: 1px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: inline-flex; align-items: center; gap: 4px;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.card .ph.no-img + .card-rating { display: none; } /* off if no photo */
 .card .price-tag {
   position: absolute;
 }
@@ -517,6 +537,34 @@ header.topbar {
 .field textarea { resize: vertical; min-height: 78px; font-family: var(--sans); }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
+/* Form progressive-disclosure sections (UPD: Progressive Disclosure + 80/20) */
+details.form-more {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+details.form-more > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 4px 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  user-select: none;
+  display: flex; align-items: center; gap: 6px;
+}
+details.form-more > summary::-webkit-details-marker { display: none; }
+details.form-more > summary::after {
+  content: '+';
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink-mute);
+}
+details.form-more[open] > summary::after { content: '−'; }
+
 /* Photo capture */
 .photo-input {
   position: relative;
@@ -680,8 +728,22 @@ header.topbar {
   pointer-events: none;
   transition: opacity .2s, transform .2s;
   box-shadow: var(--shadow-2);
+  display: flex; align-items: center; gap: 12px;
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.toast .undo {
+  background: transparent;
+  border: 0;
+  color: var(--accent-soft);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.toast .undo:hover { color: #fff; }
 
 /* ---------------------------------------------------------------------------
    Misc
@@ -689,6 +751,55 @@ header.topbar {
 .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
 .section-head .count { color: var(--ink-faint); font-size: 13px; }
 .divider { height: 1px; background: var(--line); margin: 18px 0; }
+
+/* I/O sheet tiers (UPD: Hick's Law + Hierarchy + Progressive Disclosure) */
+.io-tier {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.io-tier:first-child { padding-top: 0; border-top: 0; }
+.io-tier-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 10px;
+}
+details.io-more {
+  padding: 0;
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+}
+details.io-more > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  user-select: none;
+  display: flex; align-items: center; gap: 6px;
+}
+details.io-more > summary::-webkit-details-marker { display: none; }
+details.io-more > summary::after {
+  content: '+';
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink-mute);
+  transition: transform .15s;
+}
+details.io-more[open] > summary::after { content: '−'; }
+details.io-more[open] > summary { margin-bottom: 6px; }
+.io-tier.io-danger {
+  margin-top: 18px;
+  padding-top: 18px;
+  opacity: 0.85;
+}
+.io-danger-label { color: #b03b22; }
 .row-flex { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .hidden { display: none !important; }
 .menu-btn { background: transparent; border: 0; padding: 4px 8px; color: var(--ink-soft); border-radius: 6px; }
@@ -1121,8 +1232,8 @@ html.standalone header.topbar { padding-bottom: 10px; }
 
     <div id="empty" class="empty hidden">
       <div class="glyph">🍜</div>
-      <h2>Your food memory starts here.</h2>
-      <p>Capture your first bite — a photo, a name, a star or four. Future-you will be glad you did.</p>
+      <h2>Tap + to save your first dish.</h2>
+      <p>A photo, a name, a star or four. That's it.</p>
       <div class="actions">
         <button class="btn" id="empty-add">Add your first bite</button>
         <button class="btn ghost" id="empty-seed">Try with sample bites</button>
@@ -1226,11 +1337,10 @@ html.standalone header.topbar { padding-bottom: 10px; }
       <input id="f-dish" type="text" placeholder="Spicy tonkotsu ramen" required />
     </div>
 
-    <div class="field">
-      <label for="f-rest">Restaurant</label>
-      <input id="f-rest" type="text" placeholder="Tatsu Ramen" />
-    </div>
-
+    <!-- FAST PATH (always visible) — Photo, Dish, Rating.
+         UPD: Progressive Disclosure + 80/20. The killer feature is
+         "saved in <30s." Three fields beats nine. Optional fields are
+         one tap away in the More section below. -->
     <div class="field">
       <label>Rating
         <!--
@@ -1252,37 +1362,53 @@ html.standalone header.topbar { padding-bottom: 10px; }
       </div>
     </div>
 
-    <div class="field">
-      <label>Price</label>
-      <div class="segmented" id="f-price">
-        <button type="button" data-v="$">$</button>
-        <button type="button" data-v="$$">$$</button>
-        <button type="button" data-v="$$$">$$$</button>
-        <button type="button" data-v="$$$$">$$$$</button>
-      </div>
-    </div>
-
-    <div class="field-row">
+    <!-- MORE (collapsed by default) — Restaurant, Notes, Tags.
+         These all matter for retrieval ("what did I have at that place?")
+         but the user can tap Save without them on the first run. Future
+         edits surface the form again with the existing values. -->
+    <details class="form-more" id="f-more">
+      <summary>More</summary>
       <div class="field">
-        <label for="f-date">Date</label>
-        <input id="f-date" type="date" />
+        <label for="f-rest">Restaurant</label>
+        <input id="f-rest" type="text" placeholder="Tatsu Ramen" />
       </div>
       <div class="field">
-        <label for="f-city">City</label>
-        <input id="f-city" type="text" placeholder="San Francisco" />
+        <label for="f-notes">Notes</label>
+        <textarea id="f-notes" placeholder="Rich broth, perfect chashu. Get the egg."></textarea>
       </div>
-    </div>
+      <div class="field">
+        <label for="f-tags">Tags</label>
+        <input id="f-tags" type="text" placeholder="ramen, spicy, repeat" />
+        <div class="muted" style="font-size:12px; margin-top:4px;">Separate with commas.</div>
+      </div>
+    </details>
 
-    <div class="field">
-      <label for="f-tags">Tags</label>
-      <input id="f-tags" type="text" placeholder="ramen, spicy, repeat" />
-      <div class="muted" style="font-size:12px; margin-top:4px;">Separate with commas.</div>
-    </div>
-
-    <div class="field">
-      <label for="f-notes">Notes</label>
-      <textarea id="f-notes" placeholder="Rich broth, perfect chashu. Get the egg."></textarea>
-    </div>
+    <!-- DETAILS (collapsed by default) — City, Price, Date.
+         Almost always set automatically: city = last-used, price = $$ default,
+         date = today. Hidden by default; reveal only if a user wants to
+         override. Cuts the visible field count from 9 to 3 on first capture. -->
+    <details class="form-more" id="f-details">
+      <summary>Details</summary>
+      <div class="field">
+        <label>Price</label>
+        <div class="segmented" id="f-price">
+          <button type="button" data-v="$">$</button>
+          <button type="button" data-v="$$">$$</button>
+          <button type="button" data-v="$$$">$$$</button>
+          <button type="button" data-v="$$$$">$$$$</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-date">Date</label>
+          <input id="f-date" type="date" />
+        </div>
+        <div class="field">
+          <label for="f-city">City</label>
+          <input id="f-city" type="text" placeholder="San Francisco" />
+        </div>
+      </div>
+    </details>
   </div>
   <div class="sheet-foot">
     <button class="btn ghost" id="form-cancel">Cancel</button>
@@ -1313,38 +1439,46 @@ html.standalone header.topbar { padding-bottom: 10px; }
 <aside class="sheet" id="sheet-io" role="dialog" aria-modal="true">
   <div class="sheet-handle"></div>
   <div class="sheet-head">
-    <h2>Backup &amp; restore</h2>
+    <h2>Settings</h2>
     <button class="icon-btn" id="io-close" aria-label="Close">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
   <div class="sheet-body">
-    <p class="muted" style="margin-top:0">Your bites live on this device only. Export a JSON file to back them up — or import one to restore.</p>
-    <div class="field">
-      <button class="btn full" id="io-export-btn">Download bites.json</button>
+    <!-- TIER 1 — Your data: always visible. UPD: Hick's Law + Hierarchy. -->
+    <div class="io-tier">
+      <div class="io-tier-label">Your data</div>
+      <p class="muted" style="margin:0 0 12px">Bites live on this device. Back them up here.</p>
+      <div class="field">
+        <button class="btn full" id="io-export-btn">Download bites.json</button>
+      </div>
+      <div class="field">
+        <label>Import from JSON</label>
+        <input id="io-import-file" type="file" accept="application/json,.json" />
+        <div class="muted" style="font-size:12px; margin-top:6px;">Merged by id. Existing entries aren't overwritten unless ids match.</div>
+      </div>
     </div>
-    <div class="divider"></div>
-    <div class="field">
-      <label>Import from JSON</label>
-      <input id="io-import-file" type="file" accept="application/json,.json" />
-      <div class="muted" style="font-size:12px; margin-top:6px;">Imported bites are merged by id. Existing entries are not overwritten unless ids match.</div>
-    </div>
-    <div class="divider"></div>
-    <div class="field" id="io-cookbook-field">
-      <label>Year-end cookbook <span class="badge" id="io-cookbook-lock" style="display:none; background:var(--accent-soft); color:var(--accent-deep); font-size:11px; padding:2px 8px; border-radius:999px; margin-left:6px;">Pre-order</span></label>
-      <button class="btn full" id="io-cookbook-btn">Export Cookbook · PDF</button>
-      <div class="muted" style="font-size:12px; margin-top:6px;" id="io-cookbook-hint">Generates a magazine-style PDF of your last 12 months. <a href="cookbook.html" target="_blank" rel="noopener" style="color:var(--accent)">Preview the layout</a>.</div>
-    </div>
-    <div class="divider"></div>
-    <div class="field">
-      <label>Sample data</label>
-      <button class="btn ghost full" id="io-seed-btn">Load sample bites</button>
-      <div class="muted" style="font-size:12px; margin-top:6px;">Adds 7 example bites so you can see how a populated library feels.</div>
-    </div>
-    <div class="divider"></div>
-    <div class="field">
-      <label>Danger zone</label>
+
+    <!-- TIER 2 — More: collapsed by default. Cookbook + sample data. -->
+    <details class="io-tier io-more">
+      <summary>More</summary>
+      <div class="field" id="io-cookbook-field">
+        <label>Year-end cookbook <span class="badge" id="io-cookbook-lock" style="display:none; background:var(--accent-soft); color:var(--accent-deep); font-size:11px; padding:2px 8px; border-radius:999px; margin-left:6px;">Pre-order</span></label>
+        <button class="btn full" id="io-cookbook-btn">Export Cookbook · PDF</button>
+        <div class="muted" style="font-size:12px; margin-top:6px;" id="io-cookbook-hint">A magazine-style PDF of your last 12 months. <a href="cookbook.html" target="_blank" rel="noopener" style="color:var(--accent)">Preview the layout</a>.</div>
+      </div>
+      <div class="field">
+        <label>Sample data</label>
+        <button class="btn ghost full" id="io-seed-btn">Load sample bites</button>
+        <div class="muted" style="font-size:12px; margin-top:6px;">Adds 7 example bites so you can see how a populated library feels.</div>
+      </div>
+    </details>
+
+    <!-- TIER 3 — Danger zone: visually muted, separated, deliberate to reach. -->
+    <div class="io-tier io-danger">
+      <div class="io-tier-label io-danger-label">Danger zone</div>
       <button class="btn danger full" id="io-clear-btn">Delete all bites</button>
+      <div class="muted" style="font-size:12px; margin-top:6px;">Moves bites to trash. 8-second undo, 30-day restore window before permanent deletion.</div>
     </div>
   </div>
 </aside>
@@ -1486,10 +1620,38 @@ function fmtDateShort(iso) {
 let toastTimer;
 function toast(msg) {
   const t = $('#toast');
-  t.textContent = msg;
+  t.innerHTML = '';
+  t.appendChild(document.createTextNode(msg));
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// Toast with an UNDO action. Stays visible 8s; calls undoFn() if tapped.
+// onTimeout fires when the user did NOT undo (the action is now committed).
+function toastWithUndo(msg, undoFn, onTimeout) {
+  const t = $('#toast');
+  t.innerHTML = '';
+  t.appendChild(document.createTextNode(msg));
+  const btn = document.createElement('button');
+  btn.className = 'undo';
+  btn.type = 'button';
+  btn.textContent = 'Undo';
+  let used = false;
+  btn.addEventListener('click', () => {
+    if (used) return;
+    used = true;
+    clearTimeout(toastTimer);
+    t.classList.remove('show');
+    try { undoFn(); } catch (e) { console.error(e); }
+  });
+  t.appendChild(btn);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    t.classList.remove('show');
+    if (!used && onTimeout) try { onTimeout(); } catch (e) { console.error(e); }
+  }, 8000);
 }
 
 // --- Storage ----------------------------------------------------------------
@@ -1513,6 +1675,69 @@ function saveAll(items) {
     toast("Storage full. Try smaller photos or export & clear.");
     throw e;
   }
+}
+
+// --- Trash (soft-delete with undo) ------------------------------------------
+// Forgiveness > Confirmation > Prevention (UPD p. 90).
+// Deleted bites move to a trash array with a timestamp. They can be restored
+// via the undo toast (8s window) or — once a Trash view ships — manually.
+// Auto-purged after 30 days on app boot to keep storage tidy.
+const TRASH_KEY = 'bites.v0.trash';
+const TRASH_RETENTION_DAYS = 30;
+
+function loadTrash() {
+  try {
+    const raw = localStorage.getItem(TRASH_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
+  } catch (e) { console.warn('loadTrash failed', e); return []; }
+}
+function saveTrash(items) {
+  try { localStorage.setItem(TRASH_KEY, JSON.stringify(items)); }
+  catch (e) { console.error('saveTrash failed', e); }
+}
+function softDelete(bites) {
+  // bites: array of bite objects to move to trash
+  const trash = loadTrash();
+  const now = new Date().toISOString();
+  for (const b of bites) {
+    trash.push({ ...b, deletedAt: now });
+  }
+  saveTrash(trash);
+}
+function restoreFromTrash(ids) {
+  // Move bites with these ids back from trash to the live set.
+  const trash = loadTrash();
+  const idSet = new Set(ids);
+  const toRestore = [];
+  const toKeepInTrash = [];
+  for (const t of trash) {
+    if (idSet.has(t.id)) {
+      const { deletedAt, ...clean } = t;
+      toRestore.push(clean);
+    } else {
+      toKeepInTrash.push(t);
+    }
+  }
+  saveTrash(toKeepInTrash);
+  // Merge restored bites back into live set, then save.
+  const live = loadAll();
+  // De-dup by id (in case something weird happened)
+  const liveIds = new Set(live.map(b => b.id));
+  for (const r of toRestore) if (!liveIds.has(r.id)) live.push(r);
+  saveAll(live);
+  return toRestore.length;
+}
+function purgeOldTrash() {
+  const trash = loadTrash();
+  if (!trash.length) return;
+  const cutoff = Date.now() - TRASH_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+  const kept = trash.filter(t => {
+    const ts = t.deletedAt ? Date.parse(t.deletedAt) : Date.now();
+    return ts > cutoff;
+  });
+  if (kept.length !== trash.length) saveTrash(kept);
 }
 
 // --- State ------------------------------------------------------------------
@@ -1675,12 +1900,16 @@ function biteCard(b) {
   body.appendChild(el('div', { class: 'dish' }, [b.dish_name || 'Untitled bite']));
   if (b.restaurant_name) body.appendChild(el('div', { class: 'restaurant' }, [b.restaurant_name + (b.city ? ' · ' + b.city : '')]));
   const meta = el('div', { class: 'meta' });
-  meta.appendChild(el('span', { class: 'stars-mini', html: starsText(b.rating) }));
   meta.appendChild(el('span', { class: 'date' }, [fmtDateShort(b.date)]));
   body.appendChild(meta);
   card.appendChild(body);
 
   wrap.appendChild(card);
+  // Rating badge on the photo (top-left). Hierarchy: rating is the most
+  // decision-relevant data when scanning, so it earns prominent placement.
+  if (hasImg && b.rating != null && b.rating > 0) {
+    wrap.appendChild(el('span', { class: 'card-rating', html: starsText(b.rating), 'aria-label': 'Rating: ' + b.rating + ' of 5' }));
+  }
   if (b.price_estimate) {
     wrap.appendChild(el('span', { class: 'card-price' }, [b.price_estimate]));
   }
@@ -1857,22 +2086,46 @@ const Sheets = {
 };
 
 // --- Add / Edit -------------------------------------------------------------
+// Last-used city is remembered so users don't re-type it for every bite at
+// home. UPD: Recognition over Recall. Default price is $$ (the modal value)
+// so the field doesn't demand a decision on first capture.
+const LAST_CITY_KEY = 'bites.v0.lastCity';
+const DEFAULT_PRICE = '$$';
+
 function openForm(id=null) {
   State.editingId = id;
   const b = id ? State.bites.find(x => x.id === id) : null;
   $('#sheet-form-title').textContent = b ? 'Edit bite' : 'Add a bite';
   $('#f-dish').value = b?.dish_name || '';
   $('#f-rest').value = b?.restaurant_name || '';
-  $('#f-city').value = b?.city || '';
+  // Smart defaults for NEW bites only. Editing preserves whatever was saved.
+  const lastCity = localStorage.getItem(LAST_CITY_KEY) || '';
+  $('#f-city').value = b?.city ?? lastCity;
   $('#f-tags').value = (b?.tags || []).join(', ');
   $('#f-notes').value = b?.notes || '';
   $('#f-date').value = b?.date || todayISO();
   State.pendingPhotoDataUrl = b?.photo_data_url || null;
   State.pendingRating = b?.rating || 0;
-  State.pendingPrice = b?.price_estimate || '';
+  State.pendingPrice = b?.price_estimate || (b ? '' : DEFAULT_PRICE);
   paintPhoto();
   paintStars();
   paintPrice();
+
+  // Auto-expand the More / Details sections if editing an existing bite that
+  // has values in those fields — otherwise editing would silently hide their
+  // own data behind a collapsed section. New bites always start collapsed.
+  const moreEl = $('#f-more');
+  const detailsEl = $('#f-details');
+  if (b) {
+    const hasMore = !!(b.restaurant_name || b.notes || (b.tags && b.tags.length));
+    const hasDetails = !!(b.price_estimate || b.city || (b.date && b.date !== todayISO()));
+    if (moreEl) moreEl.open = hasMore;
+    if (detailsEl) detailsEl.open = hasDetails;
+  } else {
+    if (moreEl) moreEl.open = false;
+    if (detailsEl) detailsEl.open = false;
+  }
+
   Sheets.open('sheet-form');
   setTimeout(() => $('#f-dish').focus(), 250);
 }
@@ -2011,6 +2264,11 @@ function saveForm() {
   } catch (e) {
     return; // toast already fired
   }
+  // Remember the city so next bite uses it as default. UPD: Recognition over
+  // Recall — don't make the user re-type their own city every time.
+  if (data.city) {
+    try { localStorage.setItem(LAST_CITY_KEY, data.city); } catch {}
+  }
   Sheets.close();
   if (State.view === 'stats') renderStats(); else renderHome();
   toast(State.editingId ? 'Bite updated' : 'Bite saved');
@@ -2088,12 +2346,19 @@ function bindDetailHandlers() {
   $('#detail-delete').addEventListener('click', () => {
     const b = State.bites.find(x => x.id === State.detailId);
     if (!b) return;
-    if (!confirm(`Delete "${b.dish_name || 'this bite'}"? This can't be undone.`)) return;
-    State.bites = State.bites.filter(x => x.id !== State.detailId);
+    // Soft-delete: no confirm dialog (the undo toast IS the confirmation step).
+    // UPD: Forgiveness > Confirmation. Confirms train users to click through.
+    State.bites = State.bites.filter(x => x.id !== b.id);
     saveAll(State.bites);
+    softDelete([b]);
     Sheets.close();
     if (State.view === 'stats') renderStats(); else renderHome();
-    toast('Bite deleted');
+    toastWithUndo(`Deleted “${b.dish_name || 'bite'}”`, () => {
+      restoreFromTrash([b.id]);
+      State.bites = loadAll();
+      if (State.view === 'stats') renderStats(); else renderHome();
+      toast('Restored');
+    });
   });
 }
 
@@ -2211,12 +2476,22 @@ function bindIOHandlers() {
 
   $('#io-clear-btn').addEventListener('click', () => {
     if (!State.bites.length) { toast('Nothing to delete'); return; }
-    if (!confirm(`Delete all ${State.bites.length} bites? This can't be undone.`)) return;
+    // Mass delete is destructive enough to deserve a confirm (defensive layer
+    // beyond undo). UPD: confirmation reserved for irreversible-after-grace.
+    const n = State.bites.length;
+    if (!confirm(`Move all ${n} bites to trash? You'll have 8 seconds to undo, and 30 days to restore from trash before they're permanently deleted.`)) return;
+    const removed = State.bites.slice();
+    softDelete(removed);
     State.bites = [];
     saveAll(State.bites);
     Sheets.close();
     renderHome();
-    toast('All bites deleted');
+    toastWithUndo(`Moved ${n} bites to trash`, () => {
+      restoreFromTrash(removed.map(b => b.id));
+      State.bites = loadAll();
+      renderHome();
+      toast('Restored');
+    });
   });
 }
 
@@ -2718,6 +2993,7 @@ function showReservationsAdmin() {
 
 // --- Boot --------------------------------------------------------------------
 async function boot() {
+  purgeOldTrash(); // silent cleanup of soft-deletes older than 30 days
   State.bites = loadAll();
   maybeMarkAlphaTier(); // must run before binding so cookbook badge applies
   bindFormHandlers();
