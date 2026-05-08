@@ -39,9 +39,13 @@
   // Optional ingest endpoint. When set (with the matching shared secret),
   // users can tap "Send to founder" in the ?stats=1 overlay to ship their
   // event log to the central Google Sheet via Apps Script proxy.
-  // Empty by default — set after deploying scripts/analytics-ingest.gs.
-  var ANALYTICS_INGEST_URL = '';
-  var ANALYTICS_INGEST_SECRET = '';
+  // CEO note: this secret IS in the public client, by design — it's the
+  // browser-side key for the Apps Script. Rotate it any time by editing
+  // SHARED_SECRET in scripts/analytics-ingest.gs and bumping the value here.
+  // Worst-case threat: someone scrapes it and writes junk rows to the Sheet.
+  // Mitigation: rate limits in the Apps Script + sheet is easy to clean.
+  var ANALYTICS_INGEST_URL = 'https://script.google.com/macros/s/AKfycbxXlo2LBqqKnKs29CXnFrcpQSG0DSSLS_nuKHDzwQCl9XQu6-aSVa1dL8fhcj8QfaUi/exec';
+  var ANALYTICS_INGEST_SECRET = 'Hello World';
 
   function uuid() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
