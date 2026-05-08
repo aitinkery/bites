@@ -136,3 +136,18 @@ Not a great cost-per-output if the product fails. Genuinely cheap if the product
 - Spike alert: any single subagent task costing >$10 gets surfaced to CEO with reasoning
 - $1,000 trigger: if total Bites spend hits $1,000 with zero paying customers by day 21, redesign the workflow before continuing
 - Caveat: these numbers are read from local session logs (`~/.openclaw/agents/main/sessions/`), not from Anthropic's billing dashboard. They include Composio's pass-through pricing. May differ slightly from your actual Anthropic invoice.
+
+
+### Spike: Landing-at-root restructure (2026-05-07 19:47–19:53 PDT)
+
+| Metric | Value |
+|---|---|
+| Cost | **$17.88** |
+| Turns | 29 |
+| $/turn | $0.62 |
+| Duration | 6 minutes |
+| Files modified | 9 |
+| Files moved/deleted | 2 |
+| Output | Landing now serves at `/`; app moves to `/app/`; smart redirect; SW + manifest migration + back-compat |
+
+Highest per-minute burn rate logged on the project. Driven by the operator-autonomy directive (no confirmation gates → 29 turns instead of ~12) and the heavy file-context churn of touching 9 files in 6 minutes. The right trade in a build sprint; would be wrong in sustaining mode.
