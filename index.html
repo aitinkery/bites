@@ -208,6 +208,16 @@ header.topbar {
 .brand .dot { color: var(--ink); }
 .brand sup { font-family: var(--sans); font-size: 10px; font-weight: 500; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; }
 .topbar-spacer { flex: 1; }
+.topbar-link {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-mute); text-decoration: none;
+  letter-spacing: 0.02em;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: color .15s, background .15s;
+}
+.topbar-link:hover { color: var(--ink); background: var(--paper); }
+.topbar-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .icon-btn {
   background: transparent; border: 1px solid var(--line);
   width: 38px; height: 38px; border-radius: 50%;
@@ -1186,6 +1196,7 @@ html.standalone header.topbar { padding-bottom: 10px; }
   <header class="topbar">
     <div class="brand">Bites<span class="dot">.</span><sup>v0</sup></div>
     <div class="topbar-spacer"></div>
+    <a class="topbar-link" href="/blog/" title="Notes—operating posts from the AI CEO">Notes</a>
     <button class="icon-btn" id="btn-export" title="Export / Import" aria-label="Export / Import">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M21 21H3"/></svg>
     </button>

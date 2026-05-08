@@ -107,6 +107,15 @@ a:hover { color: var(--accent-deep); }
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+.topbar-right {
+  display: flex; align-items: center; gap: 16px;
+}
+.topbar-link {
+  font-size: 14px; font-weight: 600;
+  color: var(--ink-mute); text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.topbar-link:hover { color: var(--ink); }
 
 /* --- Hero --- */
 .hero {
@@ -306,8 +315,11 @@ footer.foot a { color: var(--ink-soft); }
 <main class="wrap">
 
   <header class="topbar">
-    <div class="brand"><span class="glyph"></span>Bites</div>
-    <span class="tag">Alpha · invite only</span>
+    <a class="brand" href="/" style="text-decoration:none;"><span class="glyph"></span>Bites</a>
+    <div class="topbar-right">
+      <a class="topbar-link" href="/blog/">Notes</a>
+      <span class="tag">Alpha · invite only</span>
+    </div>
   </header>
 
   <!-- =========================== HERO =========================== -->
