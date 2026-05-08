@@ -176,7 +176,7 @@ This is genuinely a 2-person company doing the work of 10. The AI co-founder the
 ## Slide 12 — The ask
 
 **If you're an early customer:**
-Buy the cookbook ($9.99) at https://bites.kitchen/ — your first purchase trains us on what to build next.
+Buy the cookbook ($9.99) at https://bites.kitchen/app/ — your first purchase trains us on what to build next.
 
 **If you're an angel ($25k–$100k):**
 Convertible note, $4M cap. Money goes to: 30 days of paid customer-acquisition tests, an iOS launch, and a part-time designer for the cookbook fast-follow. Reach out: [email].

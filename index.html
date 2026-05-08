@@ -3,1127 +3,299 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<!-- Theme color: cream-on-light, ink-on-dark. iOS uses this to tint the
-     status bar / address bar / standalone notch. -->
-<meta name="theme-color" content="#FAF6F0" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#C84B31" media="(prefers-color-scheme: dark)" />
-<!-- iOS standalone (Add to Home Screen) plumbing -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Bites" />
-<meta name="format-detection" content="telephone=no" />
-<title>Bites — Your Food Memory</title>
-<meta name="description" content="Bites is your private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten." />
+<title>Bites — Remember every dish worth remembering.</title>
+<meta name="description" content="Bites is a private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten." />
+<meta name="theme-color" content="#FAF6F0" />
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://bites.kitchen/" />
+<meta property="og:url" content="https://bites.kitchen/landing/" />
 <meta property="og:title" content="Bites — Save dishes, not restaurants." />
 <meta property="og:description" content="Your private food journal. Save what you ate, when, and where — long after you've forgotten." />
 <meta property="og:image" content="https://bites.kitchen/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:site_name" content="Bites" />
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Bites — Save dishes, not restaurants." />
 <meta name="twitter:description" content="Your private food journal. Save what you ate, when, and where." />
 <meta name="twitter:image" content="https://bites.kitchen/og-image.png" />
-<link rel="manifest" href="./manifest.json" />
-<link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
-<!-- Apple touch icons — iOS picks the closest match for the device. -->
-<link rel="apple-touch-icon" href="./icons/apple/apple-touch-icon-180.png" />
-<link rel="apple-touch-icon" sizes="57x57"   href="./icons/apple/apple-touch-icon-57.png" />
-<link rel="apple-touch-icon" sizes="60x60"   href="./icons/apple/apple-touch-icon-60.png" />
-<link rel="apple-touch-icon" sizes="72x72"   href="./icons/apple/apple-touch-icon-72.png" />
-<link rel="apple-touch-icon" sizes="76x76"   href="./icons/apple/apple-touch-icon-76.png" />
-<link rel="apple-touch-icon" sizes="114x114" href="./icons/apple/apple-touch-icon-114.png" />
-<link rel="apple-touch-icon" sizes="120x120" href="./icons/apple/apple-touch-icon-120.png" />
-<link rel="apple-touch-icon" sizes="144x144" href="./icons/apple/apple-touch-icon-144.png" />
-<link rel="apple-touch-icon" sizes="152x152" href="./icons/apple/apple-touch-icon-152.png" />
-<link rel="apple-touch-icon" sizes="167x167" href="./icons/apple/apple-touch-icon-167.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple/apple-touch-icon-180.png" />
-<!-- iOS launch screens. Media queries match device-width × device-height @ pixel ratio.
-     If none match, iOS falls back to a plain background_color screen. -->
-<link rel="apple-touch-startup-image" href="./icons/splash/splash-750x1334.png"
-      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
-<link rel="apple-touch-startup-image" href="./icons/splash/splash-1170x2532.png"
-      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-<link rel="apple-touch-startup-image" href="./icons/splash/splash-1284x2778.png"
-      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-<link rel="apple-touch-startup-image" href="./icons/splash/splash-1290x2796.png"
-      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+<link rel="icon" href="../icons/icon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<!--
-  Type pairing: Fraunces (warm, slightly literary display serif) for headings,
-  Inter for UI body. This pairing leans "personal journal" not "data app".
--->
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-/* ---------------------------------------------------------------------------
-   Bites v0 — design tokens
-   Palette is warm-cream + burnt-orange + ink. Resists "clinical" by leaning
-   on serif display + generous whitespace + soft shadows (not Material).
---------------------------------------------------------------------------- */
 :root {
-  --bg: #FAF6F0;          /* cream */
-  --bg-soft: #F2EBDF;     /* deeper cream for cards-on-cream */
-  --ink: #2A2118;         /* near-black, warm */
-  --ink-soft: #6B5E50;    /* secondary text */
-  --ink-faint: #A89E91;   /* tertiary */
-  --line: #E5DDD0;        /* hairline */
-  --accent: #C84B31;      /* burnt orange */
-  --accent-deep: #9C3621; /* hover */
-  --accent-soft: #F4D8CC; /* tinted bg */
-  --gold: #D9A441;        /* star fill */
-  --gold-empty: #E8DFCB;  /* star empty */
-  --green: #5C7A4A;       /* used sparingly (success / repeat tag) */
+  --bg: #FAF6F0;
+  --bg-soft: #F2EBDF;
+  --ink: #2A2118;
+  --ink-soft: #6B5E50;
+  --ink-faint: #A89E91;
+  --line: #E5DDD0;
+  --accent: #C84B31;
+  --accent-deep: #9C3621;
+  --accent-soft: #F4D8CC;
+  --gold: #D9A441;
+  --green: #5C7A4A;
   --shadow-1: 0 1px 2px rgba(42,33,24,.06), 0 4px 12px rgba(42,33,24,.06);
   --shadow-2: 0 4px 16px rgba(42,33,24,.10), 0 16px 40px rgba(42,33,24,.10);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --radius-lg: 22px;
   --serif: "Fraunces", Georgia, "Times New Roman", serif;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-  /* Kill the blue/grey tap flash everywhere; we'll do our own :active states. */
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body {
   margin: 0; padding: 0;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: transparent;
-  /* Cream-on-overscroll: any rubberband bounce shows brand color, not white. */
-  background-color: var(--bg);
 }
-html { background: var(--bg); }
-body {
-  min-height: 100vh;
-  min-height: 100dvh;
-  /* Chrome/UI is non-selectable by default; long-form text opts back in below. */
-  -webkit-user-select: none;
-  user-select: none;
-  /* Don't let body bounce-scroll past its bounds (rubberband). The .app
-     container is the real scroller — contain keeps the chrome locked. */
-  overscroll-behavior-y: contain;
-  /* Block iOS's auto text-size adjust, which can quietly enlarge body type
-     in landscape and break the masonry rhythm. */
-  -webkit-text-size-adjust: 100%;
-  /* Belt-and-braces: any rogue overflow from a wide image / weird URL
-     should not cause horizontal scroll. The grid is masonry inside .app. */
-  overflow-x: hidden;
+body { min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.1;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }
-/* Re-enable selection where users actually want it: notes, descriptions,
-   long text. Lists/cards/buttons stay non-selectable (feels native). */
-p, .detail-notes, .detail-title, .detail-rest, .empty p, .hero .lede,
-.field input, .field textarea, .search input, .cookbook-field input,
-.cookbook-desc, .cookbook-price, .stat .num, [contenteditable="true"] {
-  -webkit-user-select: text;
-  user-select: text;
-}
-/* Smooth-scroll for in-page anchor jumps, but never against the user's
-   reduced-motion preference. */
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
-}
-/* Inputs / textareas: 16px floor stops iOS from auto-zooming on focus.
-   Body is already 16px, but iOS sometimes inherits oddly — belt & braces. */
-input, textarea, select { font-size: 16px; }
+p { margin: 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-deep); }
 
-/* Typography */
-h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01em; margin: 0; }
-h1 { font-size: 28px; }
-h2 { font-size: 22px; }
-h3 { font-size: 18px; }
-.serif { font-family: var(--serif); }
-.muted { color: var(--ink-soft); }
-.faint { color: var(--ink-faint); }
-button {
-  font: inherit; color: inherit; cursor: pointer;
-  /* No double-tap zoom; instant feedback on tap (iOS-style). */
-  touch-action: manipulation;
-}
-/* All tappable surfaces share the no-zoom rule. */
-.btn, .icon-btn, .tab, .chip, .fab, .menu-btn, .segmented button,
-.card, .photo-input, .stars, .empty .actions button, .install .btn,
-.install .close, .hero .dismiss, .hero .btn, .cookbook-field .btn {
-  touch-action: manipulation;
-}
-/* Tactile press: subtle scale on tap. iOS-native feel — no transition delay,
-   crisp ease, snaps back fast. */
-.btn:active        { transform: scale(0.97); }
-.icon-btn:active   { transform: scale(0.92); }
-.fab:active        { transform: scale(0.92); }
-.tab:active        { opacity: 0.6; }
-.chip:active       { transform: scale(0.95); }
-.card:active       { transform: scale(0.985); transition: transform .08s ease; }
-.menu-btn:active   { background: var(--bg-soft); }
-
-/* ---------------------------------------------------------------------------
-   App shell
---------------------------------------------------------------------------- */
-.app {
-  max-width: 1200px;
+.wrap {
+  max-width: 980px;
   margin: 0 auto;
-  /* Honor iOS safe areas: keep horizontal padding from being eaten by the
-     notch in landscape, and pad bottom past the home indicator. */
   padding:
-    0
-    max(20px, env(safe-area-inset-right))
-    calc(100px + env(safe-area-inset-bottom, 0px))
-    max(20px, env(safe-area-inset-left));
+    max(20px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right))
+    32px max(22px, env(safe-area-inset-left));
 }
-header.topbar {
-  position: sticky; top: 0; z-index: 20;
-  background: rgba(250, 246, 240, 0.92);
-  backdrop-filter: saturate(140%) blur(10px);
-  -webkit-backdrop-filter: saturate(140%) blur(10px);
-  border-bottom: 1px solid var(--line);
-  margin: 0 -20px 20px;
-  /* Top padding extends INTO the notch area so the cream blur fills it.
-     Side padding respects landscape notches. */
-  padding:
-    calc(14px + env(safe-area-inset-top, 0px))
-    max(20px, env(safe-area-inset-right))
-    12px
-    max(20px, env(safe-area-inset-left));
-  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
-  display: flex; align-items: center; gap: 12px;
+
+/* --- Top bar (minimal, just brand + alpha tag) --- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 0 28px;
 }
 .brand {
-  display: flex; align-items: baseline; gap: 8px;
-  font-family: var(--serif); font-weight: 700; font-size: 24px;
-  color: var(--accent);
-  letter-spacing: -0.02em;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
-.brand .dot { color: var(--ink); }
-.brand sup { font-family: var(--sans); font-size: 10px; font-weight: 500; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; }
-.topbar-spacer { flex: 1; }
+.brand .glyph {
+  display: inline-block;
+  width: 22px; height: 22px;
+  background: var(--accent);
+  border-radius: 6px;
+  vertical-align: -4px;
+  margin-right: 6px;
+}
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.topbar-right {
+  display: flex; align-items: center; gap: 16px;
+}
 .topbar-link {
-  font-size: 13px; font-weight: 600;
+  font-size: 14px; font-weight: 600;
   color: var(--ink-mute); text-decoration: none;
   letter-spacing: 0.02em;
-  padding: 8px 10px;
-  border-radius: 6px;
-  transition: color .15s, background .15s;
 }
-.topbar-link:hover { color: var(--ink); background: var(--paper); }
-.topbar-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.icon-btn {
-  background: transparent; border: 1px solid var(--line);
-  width: 38px; height: 38px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  color: var(--ink-soft);
-  transition: background .15s, border-color .15s, color .15s;
-}
-.icon-btn:hover { background: var(--bg-soft); color: var(--ink); }
-.icon-btn:active { transform: scale(0.96); }
-.icon-btn svg { width: 18px; height: 18px; }
+.topbar-link:hover { color: var(--ink); }
 
-/* Tabs */
-.tabs {
-  display: flex; gap: 4px;
-  margin-bottom: 18px;
+/* --- Hero --- */
+.hero {
+  padding: 28px 0 36px;
   border-bottom: 1px solid var(--line);
 }
-.tab {
-  background: transparent; border: 0;
-  padding: 10px 14px;
-  color: var(--ink-soft);
-  font-weight: 500; font-size: 14px;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color .15s, border-color .15s;
-}
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
-
-/* ---------------------------------------------------------------------------
-   Search bar
---------------------------------------------------------------------------- */
-.search {
-  display: flex; align-items: center; gap: 10px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 10px 16px;
-  margin-bottom: 14px;
-  box-shadow: var(--shadow-1);
-}
-.search input {
-  flex: 1; border: 0; outline: 0; background: transparent;
-  font: inherit; color: var(--ink);
-}
-.search input::placeholder { color: var(--ink-faint); }
-.search svg { width: 18px; height: 18px; color: var(--ink-faint); flex: 0 0 auto; }
-.filters {
-  display: flex; gap: 8px;
+.hero h1 {
+  font-size: clamp(36px, 6vw, 56px);
   margin-bottom: 18px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
 }
-.filters::-webkit-scrollbar { display: none; }
-.chip {
-  flex: 0 0 auto;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 13px;
-  color: var(--ink-soft);
-  white-space: nowrap;
-  transition: background .15s, color .15s, border-color .15s;
-}
-.chip:hover { background: var(--bg-soft); }
-.chip.active {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-
-/* ---------------------------------------------------------------------------
-   Grid (DECISION LOG: 2-col on mobile / 3-col tablet / 4-col desktop.
-   Considered (1) 2-col masonry, (2) 3-col uniform square tile,
-   (3) single-col full-bleed feed. Picked masonry: photo-as-hero needs to
-   breathe, uniform squares feel database-y, full-bleed wastes mobile real
-   estate. CSS columns gives us fake masonry without JS.)
---------------------------------------------------------------------------- */
-.grid {
-  column-count: 2;
-  column-gap: 14px;
-}
-@media (min-width: 700px)  { .grid { column-count: 3; column-gap: 18px; } }
-@media (min-width: 1000px) { .grid { column-count: 4; column-gap: 20px; } }
-@media (min-width: 1400px) { .grid { column-count: 5; column-gap: 22px; } }
-
-.card {
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-  background: #fff;
-  border-radius: var(--radius);
-  margin: 0 0 14px;
-  overflow: hidden;
-  box-shadow: var(--shadow-1);
-  cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease;
-}
-@media (min-width: 700px) { .card { margin-bottom: 18px; } }
-@media (min-width: 1000px) { .card { margin-bottom: 20px; } }
-.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
-.card .ph {
-  width: 100%;
-  display: block;
-  background: var(--bg-soft);
-  /* min-height prevents masonry reflow flash while lazy images decode. */
-  min-height: 60px;
-}
-.card .ph img { width: 100%; display: block; }
-.card .ph.no-img {
-  aspect-ratio: 4/3;
-  background: linear-gradient(135deg, var(--accent-soft), var(--bg-soft));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif); font-size: 36px; color: var(--accent);
+.hero h1 em {
   font-style: italic;
-}
-.card .body { padding: 12px 14px 14px; }
-.card .dish { font-family: var(--serif); font-weight: 500; font-size: 17px; line-height: 1.25; }
-.card .restaurant { color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
-.card .meta { display: flex; justify-content: flex-end; align-items: center; margin-top: 8px; }
-.card .meta .date { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
-
-/* Rating as a corner badge on the photo (UPD: Hierarchy + Inverted Pyramid).
-   Chose Option A (translucent dark pill, top-left) over chip-aligned-with-
-   title and first-line-below-photo, because it keeps the photo as the visual
-   anchor while making the most decision-relevant data ("what did I think of
-   this?") legible at a glance from the grid. Top-LEFT not top-right because
-   .card-price already lives top-right. */
-.card-rating {
-  position: absolute; top: 10px; left: 10px;
-  background: rgba(35,32,28,0.78);
-  color: var(--gold);
-  font-size: 13px; font-weight: 700;
-  padding: 4px 10px; border-radius: 999px;
-  letter-spacing: 1px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: inline-flex; align-items: center; gap: 4px;
-  pointer-events: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-.card .ph.no-img + .card-rating { display: none; } /* off if no photo */
-.card .price-tag {
-  position: absolute;
-}
-.card-wrap { position: relative; }
-.card-price {
-  position: absolute; top: 10px; right: 10px;
-  background: rgba(255,255,255,.92);
-  color: var(--ink);
-  font-size: 11px; font-weight: 600;
-  padding: 3px 8px; border-radius: 999px;
-  letter-spacing: 0.04em;
-}
-
-/* ---------------------------------------------------------------------------
-   Empty state
---------------------------------------------------------------------------- */
-.empty {
-  text-align: center;
-  padding: 60px 20px 40px;
-  max-width: 360px;
-  margin: 0 auto;
-  /* Belt-and-braces: prevent any inner span from forcing horizontal scroll
-     on narrow viewports. The original 380px max-width clipped at 375px. */
-  width: 100%;
-  box-sizing: border-box;
-}
-.empty h2, .empty p {
-  /* Long words / em-dashes shouldn't push past container. */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-.empty .glyph {
-  font-family: var(--serif);
-  font-size: 64px;
   color: var(--accent);
-  line-height: 1;
-  margin-bottom: 18px;
 }
-.empty h2 { margin-bottom: 8px; }
-.empty p { color: var(--ink-soft); margin: 0 0 22px; }
-.empty .actions { display: flex; flex-direction: column; gap: 10px; }
-.empty button { width: 100%; }
-
-/* ---------------------------------------------------------------------------
-   Buttons
---------------------------------------------------------------------------- */
+.hero .subhead {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--ink-soft);
+  max-width: 640px;
+  margin-bottom: 26px;
+}
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px;
   background: var(--accent);
-  color: #fff;
+  color: var(--bg);
   border: 0;
-  border-radius: 999px;
-  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 16px;
   font-weight: 600;
-  font-size: 15px;
-  transition: background .15s, transform .1s;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .12s ease, transform .08s ease;
   box-shadow: var(--shadow-1);
 }
-.btn:hover { background: var(--accent-deep); }
-.btn:active { transform: scale(0.98); }
+.btn:hover  { background: var(--accent-deep); color: var(--bg); }
+.btn:active { transform: scale(0.97); }
 .btn.ghost {
   background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--line);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   box-shadow: none;
 }
-.btn.ghost:hover { background: var(--bg-soft); }
-.btn.danger { background: transparent; color: #b03b22; border: 1px solid #e7c5bc; box-shadow: none; }
-.btn.danger:hover { background: #fdf0eb; }
-.btn.full { width: 100%; }
+.btn.ghost:hover { background: var(--accent-soft); color: var(--accent-deep); }
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.cta-note { color: var(--ink-soft); font-size: 13px; }
 
-/* ---------------------------------------------------------------------------
-   FAB (camera-first capture)
---------------------------------------------------------------------------- */
-.fab {
-  position: fixed;
-  right: calc(20px + env(safe-area-inset-right, 0px));
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  width: 60px; height: 60px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  border: 0;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 6px 22px rgba(200, 75, 49, 0.45), 0 2px 6px rgba(0,0,0,.08);
-  z-index: 30;
-  transition: transform .15s, background .15s;
+/* --- Problem section --- */
+.section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+.section h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  margin-bottom: 18px;
 }
-.fab:hover { background: var(--accent-deep); }
-.fab:active { transform: scale(0.94); }
-.fab svg { width: 26px; height: 26px; }
-
-/* ---------------------------------------------------------------------------
-   Sheet (add / edit / detail) — bottom sheet on mobile, centered on desktop
---------------------------------------------------------------------------- */
-.scrim {
-  position: fixed; inset: 0;
-  background: rgba(42, 33, 24, 0.45);
-  z-index: 40;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s;
-}
-.scrim.open { opacity: 1; pointer-events: auto; }
-
-.sheet {
-  position: fixed; left: 0; right: 0; bottom: 0;
-  background: var(--bg);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  z-index: 50;
-  max-height: 92vh;
-  max-height: 92dvh;
-  overflow: hidden;
-  display: flex; flex-direction: column;
-  transform: translateY(100%);
-  transition: transform .25s ease-out;
-  box-shadow: 0 -10px 40px rgba(0,0,0,.18);
-}
-.sheet.open { transform: translateY(0); }
-@media (min-width: 700px) {
-  .sheet {
-    left: 50%; right: auto; bottom: 50%;
-    transform: translate(-50%, 50%) translateY(20px); /* hidden start */
-    width: min(560px, 92vw);
-    max-height: 88vh;
-    border-radius: var(--radius-lg);
-    opacity: 0;
-  }
-  .sheet.open { transform: translate(-50%, 50%); opacity: 1; }
-}
-.sheet-handle {
-  width: 40px; height: 4px;
-  background: var(--ink-faint); opacity: .4;
-  border-radius: 2px;
-  margin: 10px auto 6px;
-}
-@media (min-width: 700px) { .sheet-handle { display: none; } }
-.sheet-head {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px 18px 12px;
-  border-bottom: 1px solid var(--line);
-}
-.sheet-head h2 { flex: 1; font-size: 19px; }
-.sheet-body { padding: 18px; overflow-y: auto; flex: 1; }
-.sheet-foot {
-  padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0));
-  border-top: 1px solid var(--line);
-  display: flex; gap: 10px;
-  background: var(--bg);
-}
-.sheet-foot .btn { flex: 1; }
-
-/* ---------------------------------------------------------------------------
-   Form
---------------------------------------------------------------------------- */
-.field { margin-bottom: 16px; }
-.field label {
-  display: block;
-  font-size: 12px; font-weight: 600;
+.section .lede {
+  font-size: clamp(15px, 1.7vw, 17px);
   color: var(--ink-soft);
-  text-transform: uppercase; letter-spacing: 0.06em;
-  margin-bottom: 6px;
+  max-width: 680px;
+  margin-bottom: 20px;
 }
-.field input[type=text],
-.field input[type=date],
-.field input[type=number],
-.field textarea {
-  width: 100%;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font: inherit;
-  color: var(--ink);
-  outline: none;
-  transition: border-color .15s, box-shadow .15s;
-}
-.field input:focus,
-.field textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-.field textarea { resize: vertical; min-height: 78px; font-family: var(--sans); }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-/* Form progressive-disclosure sections (UPD: Progressive Disclosure + 80/20) */
-details.form-more {
-  margin-top: 6px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-details.form-more > summary {
-  cursor: pointer;
-  list-style: none;
-  padding: 4px 0 10px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-  user-select: none;
-  display: flex; align-items: center; gap: 6px;
-}
-details.form-more > summary::-webkit-details-marker { display: none; }
-details.form-more > summary::after {
-  content: '+';
-  margin-left: auto;
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--ink-mute);
-}
-details.form-more[open] > summary::after { content: '−'; }
-
-/* Photo capture */
-.photo-input {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4/3;
-  background: var(--bg-soft);
-  border: 2px dashed var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 8px;
-  color: var(--ink-soft);
-  cursor: pointer;
-  transition: background .15s, border-color .15s;
-  margin-bottom: 16px;
-}
-.photo-input:hover { background: #ece4d6; border-color: var(--accent-soft); }
-.photo-input.has-img { border: 0; }
-.photo-input img { width: 100%; height: 100%; object-fit: cover; }
-.photo-input input { display: none; }
-.photo-input .replace {
-  position: absolute; right: 10px; top: 10px;
-  background: rgba(0,0,0,.55); color: #fff;
-  font-size: 12px; padding: 6px 10px; border-radius: 999px;
-  display: flex; align-items: center; gap: 6px;
-}
-.photo-input .hint-big { font-family: var(--serif); font-size: 22px; color: var(--ink); font-weight: 500; }
-.photo-input .hint-small { font-size: 13px; }
-
-/* Stars input */
-.stars {
-  display: inline-flex; gap: 2px;
-  font-size: 28px;
-  color: var(--gold-empty);
-  user-select: none;
-  cursor: pointer;
-}
-.stars .star { position: relative; width: 1em; line-height: 1; }
-.stars .star::before {
-  content: "★";
-  display: block;
-}
-.stars .star .half {
-  position: absolute; top: 0; left: 0;
-  width: 50%; overflow: hidden;
-  color: var(--gold);
-}
-.stars .star .full {
-  position: absolute; top: 0; left: 0;
-  width: 100%; overflow: hidden;
-  color: var(--gold);
-}
-.stars-display {
-  color: var(--gold);
-  font-size: 18px; letter-spacing: 1px;
-}
-
-/* Price segmented */
-.segmented {
-  display: inline-flex;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 3px;
-  gap: 2px;
-}
-.segmented button {
-  background: transparent; border: 0;
-  padding: 6px 14px;
-  border-radius: 999px;
-  color: var(--ink-soft);
-  font-weight: 500; font-size: 14px;
-  transition: background .15s, color .15s;
-}
-.segmented button.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-/* ---------------------------------------------------------------------------
-   Detail view
---------------------------------------------------------------------------- */
-.detail-photo {
-  background: var(--bg-soft);
-  margin: -18px -18px 16px;
-  width: calc(100% + 36px);
-}
-.detail-photo img { width: 100%; display: block; }
-.detail-photo.no-img {
-  aspect-ratio: 16/10;
-  background: linear-gradient(135deg, var(--accent-soft), var(--bg-soft));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif); font-size: 64px; color: var(--accent); font-style: italic;
-}
-.detail-title { font-family: var(--serif); font-size: 26px; font-weight: 500; line-height: 1.15; margin-bottom: 4px; }
-.detail-rest { color: var(--ink-soft); margin-bottom: 12px; }
-.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.detail-row:first-of-type { border-top: 0; }
-.detail-row .k { color: var(--ink-soft); }
-.detail-notes {
-  font-family: var(--serif); font-size: 17px; line-height: 1.55;
-  background: var(--bg-soft);
-  padding: 14px 16px; border-radius: var(--radius);
-  margin: 14px 0;
-  white-space: pre-wrap;
-}
-.tags-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag {
-  background: var(--accent-soft);
-  color: var(--accent-deep);
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-/* ---------------------------------------------------------------------------
-   Stats view
---------------------------------------------------------------------------- */
-.stats-grid {
+.problem-stack {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-@media (min-width: 700px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
-.stat {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 18px;
-  box-shadow: var(--shadow-1);
-}
-.stat .num { font-family: var(--serif); font-size: 30px; font-weight: 500; color: var(--accent); line-height: 1; }
-.stat .lbl { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 8px; }
-
-.stats-section { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-1); margin-bottom: 16px; }
-.stats-section h3 { margin-bottom: 12px; }
-.list-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 0;
-  border-top: 1px solid var(--line);
-}
-.list-row:first-of-type { border-top: 0; }
-.list-row .label { font-weight: 500; }
-.list-row .sub { font-size: 12px; color: var(--ink-soft); }
-
-/* ---------------------------------------------------------------------------
-   Toast
---------------------------------------------------------------------------- */
-.toast {
-  position: fixed; left: 50%; bottom: 100px;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--ink);
-  color: var(--bg);
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s, transform .2s;
-  box-shadow: var(--shadow-2);
-  display: flex; align-items: center; gap: 12px;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-.toast .undo {
-  background: transparent;
-  border: 0;
-  color: var(--accent-soft);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 2px 4px;
-  cursor: pointer;
-  font-family: inherit;
-}
-.toast .undo:hover { color: #fff; }
-
-/* ---------------------------------------------------------------------------
-   Misc
---------------------------------------------------------------------------- */
-.section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
-.section-head .count { color: var(--ink-faint); font-size: 13px; }
-.divider { height: 1px; background: var(--line); margin: 18px 0; }
-
-/* I/O sheet tiers (UPD: Hick's Law + Hierarchy + Progressive Disclosure) */
-.io-tier {
-  padding: 14px 0;
-  border-top: 1px solid var(--line);
-}
-.io-tier:first-child { padding-top: 0; border-top: 0; }
-.io-tier-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-  margin-bottom: 10px;
-}
-details.io-more {
-  padding: 0;
-  border-top: 1px solid var(--line);
-  margin-top: 4px;
-}
-details.io-more > summary {
-  cursor: pointer;
-  list-style: none;
-  padding: 14px 0 0;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-  user-select: none;
-  display: flex; align-items: center; gap: 6px;
-}
-details.io-more > summary::-webkit-details-marker { display: none; }
-details.io-more > summary::after {
-  content: '+';
-  margin-left: auto;
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--ink-mute);
-  transition: transform .15s;
-}
-details.io-more[open] > summary::after { content: '−'; }
-details.io-more[open] > summary { margin-bottom: 6px; }
-.io-tier.io-danger {
+  gap: 8px;
+  max-width: 580px;
   margin-top: 18px;
-  padding-top: 18px;
-  opacity: 0.85;
 }
-.io-danger-label { color: #b03b22; }
-.row-flex { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.hidden { display: none !important; }
-.menu-btn { background: transparent; border: 0; padding: 4px 8px; color: var(--ink-soft); border-radius: 6px; }
-.menu-btn:hover { background: var(--bg-soft); color: var(--ink); }
-
-/* ---------------------------------------------------------------------------
-   Landing hero (only shown to first-time strangers — empty localStorage)
-   Goal: tell a stranger arriving from a shared link what this thing IS
-   in three seconds, without selling. One CTA, one dismiss.
---------------------------------------------------------------------------- */
-.hero {
-  position: relative;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 28px 22px 22px;
-  margin: 4px 0 22px;
-  box-shadow: var(--shadow-1);
-  /* Belt-and-braces: hidden by default; shown only via .show */
-  display: none;
-}
-.hero.show { display: block; }
-.hero h1 {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 26px;
-  line-height: 1.15;
-  margin: 0 0 8px;
-  color: var(--ink);
-}
-.hero .lede {
-  color: var(--ink-soft);
-  font-size: 15px;
-  line-height: 1.55;
-  margin: 0 0 16px;
-  max-width: 56ch;
-}
-.hero .how {
-  display: flex; gap: 14px;
-  flex-wrap: wrap;
-  margin: 16px 0 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-.hero .how .step {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--ink-soft);
-}
-.hero .how .step .dot {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent-deep);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  flex: 0 0 auto;
-}
-.hero .cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.hero .cta-row .btn { padding: 10px 18px; font-size: 14px; }
-.hero .dismiss {
-  position: absolute; top: 10px; right: 10px;
-  background: transparent; border: 0;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  color: var(--ink-faint);
-  display: inline-flex; align-items: center; justify-content: center;
-  transition: background .15s, color .15s;
-}
-.hero .dismiss:hover { background: var(--bg-soft); color: var(--ink); }
-.hero .dismiss svg { width: 16px; height: 16px; }
-@media (min-width: 700px) {
-  .hero { padding: 36px 32px 26px; }
-  .hero h1 { font-size: 32px; }
-  .hero .lede { font-size: 16px; }
-}
-
-/* ---------------------------------------------------------------------------
-   Cookbook pre-order card (Stats → Coming soon)
-   Intent capture only. mailto: + localStorage. No payment yet.
---------------------------------------------------------------------------- */
-.cookbook-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
-.cookbook-glyph {
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  background: var(--accent-soft);
-  color: var(--accent-deep);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  flex: 0 0 auto;
-}
-.cookbook-titles h3 { display: inline-flex; align-items: center; gap: 8px; }
-.cookbook-titles .badge {
-  background: var(--green);
-  color: #fff;
-  font-family: var(--sans);
-  font-size: 10px; font-weight: 600;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 999px;
-}
-.cookbook-desc { color: var(--ink-soft); font-size: 14px; line-height: 1.55; margin: 8px 0 8px; }
-.cookbook-price { font-size: 14px; margin: 0 0 14px; }
-.cookbook-price strong { color: var(--ink); font-weight: 600; }
-.cookbook-field {
-  display: flex; gap: 8px; align-items: stretch;
-  flex-wrap: wrap;
-}
-.cookbook-field input {
-  flex: 1; min-width: 200px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font: inherit; color: var(--ink);
-  outline: none;
-  transition: border-color .15s, box-shadow .15s;
-}
-.cookbook-field input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-.cookbook-field .btn { flex: 0 0 auto; padding: 10px 18px; font-size: 14px; }
-.cookbook-msg { margin-top: 10px; font-size: 13px; min-height: 1em; }
-.cookbook-msg.ok { color: var(--green); }
-.cookbook-msg.err { color: #b03b22; }
-.cookbook.reserved .cookbook-form { display: none; }
-.cookbook.reserved .cookbook-thanks { display: block; }
-.cookbook-thanks {
-  display: none;
-  background: var(--bg-soft);
-  border-radius: var(--radius-sm);
+.problem-stack .row {
+  display: flex; gap: 12px;
   padding: 12px 14px;
+  background: var(--bg-soft);
+  border-radius: 10px;
   font-size: 14px;
-  color: var(--ink);
+  color: var(--ink-soft);
 }
-.cookbook-thanks .muted { display: block; font-size: 12px; margin-top: 4px; }
+.problem-stack .row strong {
+  color: var(--ink);
+  font-weight: 600;
+  flex: 0 0 130px;
+}
+.problem-stack .row em {
+  font-style: normal;
+  color: var(--accent-deep);
+  font-weight: 600;
+  margin-left: auto;
+}
 
-/* Alpha welcome banner (?ref=alpha) — bottom-anchored, dismissible.
-   Shown once, then never again on this device. Sits ABOVE the FAB so we
-   don't have two bottom-right elements competing for the same space. The
-   FAB and feedback button drop their bottom anchors when the banner is up. */
-.alpha-banner {
-  position: fixed;
-  left: 16px; right: 16px;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  z-index: 60;
-  background: var(--ink);
-  color: var(--bg);
+/* --- Product cards --- */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 22px;
+}
+@media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .cards { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+.card {
+  background: var(--bg-soft);
   border-radius: 14px;
-  padding: 14px 16px;
-  display: none;
-  gap: 12px;
-  align-items: flex-start;
-  box-shadow: var(--shadow-2);
-  font-size: 14px;
-  line-height: 1.45;
+  padding: 20px;
 }
-.alpha-banner.show { display: flex; }
-.alpha-banner .glyph {
-  flex: 0 0 auto;
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--bg);
+.card .icon {
+  width: 36px; height: 36px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  font-family: var(--serif);
-  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 12px;
 }
-.alpha-banner .txt { flex: 1; }
-.alpha-banner .txt strong {
-  display: block;
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 16px;
-  margin-bottom: 2px;
-  color: var(--bg);
-}
-.alpha-banner .txt .sub { color: rgba(250, 246, 240, .75); font-size: 13px; }
-.alpha-banner .close {
-  background: transparent;
-  border: 0;
-  color: rgba(250, 246, 240, .65);
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
-  padding: 4px 6px;
-  flex: 0 0 auto;
-}
-.alpha-banner .close:hover { color: var(--bg); }
+.card h3 { font-size: 18px; margin-bottom: 6px; }
+.card p { color: var(--ink-soft); font-size: 14px; }
 
-/* Inline feedback prompt (UPD: Empathy + active solicitation; pg "do things
-   that don't scale" — the founder asks for feedback in the moment).
-   Surfaces once, after the user has added ≥3 bites OR after 5 min of session.
-   Bottom-anchored, brand-tinted, dismissable, persists state. */
-.fb-prompt {
-  position: fixed;
-  left: 50%;
-  bottom: calc(110px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
-  width: min(420px, calc(100vw - 32px));
-  background: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 16px 18px;
-  box-shadow: 0 8px 24px rgba(35, 32, 28, 0.18), 0 2px 6px rgba(35, 32, 28, 0.08);
-  z-index: 90;
-  animation: fb-prompt-in .35s ease;
+/* --- Why now / for whom --- */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  margin-top: 18px;
 }
-@keyframes fb-prompt-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (min-width: 760px) { .two-col { grid-template-columns: 1fr 1fr; gap: 36px; } }
+.two-col h3 { font-size: 20px; margin-bottom: 8px; }
+.two-col p  { color: var(--ink-soft); font-size: 15px; }
+
+/* --- Alpha promise --- */
+.alpha {
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg-soft) 100%);
+  border-radius: 18px;
+  padding: 32px 28px;
+  margin: 16px 0 0;
 }
-.fb-prompt[hidden] { display: none !important; }
-.fb-prompt-close {
-  position: absolute; top: 8px; right: 10px;
-  background: transparent; border: 0;
-  color: var(--ink-mute); font-size: 18px;
-  cursor: pointer; padding: 4px 6px;
-  line-height: 1;
+.alpha h2 { font-size: clamp(24px, 3.5vw, 32px); margin-bottom: 6px; }
+.alpha .sub { color: var(--ink-soft); margin-bottom: 18px; }
+.alpha ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: grid;
+  gap: 10px;
 }
-.fb-prompt-close:hover { color: var(--ink); }
-.fb-prompt-q {
-  font-family: var(--serif);
-  font-size: 17px;
-  line-height: 1.35;
+.alpha li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 15px;
   color: var(--ink);
-  margin: 0 22px 12px 0;
-  font-weight: 500;
 }
-.fb-prompt-row {
-  display: flex; gap: 8px; align-items: stretch;
-  margin-top: 10px;
-}
-.fb-thumb {
-  flex: 1;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-  font-family: inherit;
-  transition: background .15s, border-color .15s, transform .08s;
-}
-.fb-thumb:hover { background: var(--paper); border-color: var(--ink-mute); }
-.fb-thumb:active { transform: scale(0.97); }
-.fb-thumb.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
-#fb-prompt-comment {
-  flex: 1;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 16px; /* >=16 to prevent iOS auto-zoom */
-  font-family: inherit;
-  background: #fff;
-  color: var(--ink);
-  outline: none;
-}
-#fb-prompt-comment:focus { border-color: var(--accent); }
-#fb-prompt-send {
-  flex: 0 0 auto;
-  padding: 10px 16px;
-  font-size: 14px;
-}
-.fb-prompt-thanks {
-  margin-top: 10px;
-  font-style: italic;
-}
-@media (min-width: 700px) {
-  .alpha-banner { left: auto; right: 24px; max-width: 380px; bottom: 24px; }
-}
-html.standalone .alpha-banner { bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
-/* While the alpha banner is showing, push the FAB up so it's clearly above
-   the banner (the banner literally instructs users to tap +). Hide the
-   secondary feedback pill — it's redundant against the welcome banner and
-   crowds the bottom-right. Pad the app so list content isn't hidden. */
-body.alpha-banner-active .fab    { bottom: calc(232px + env(safe-area-inset-bottom, 0px)); }
-body.alpha-banner-active .fb-btn { display: none; }
-body.alpha-banner-active .app    { padding-bottom: calc(220px + env(safe-area-inset-bottom, 0px)); }
-@media (min-width: 700px) {
-  /* On wide screens the banner is anchored bottom-right and only ~380px wide,
-     so the FAB keeps its normal position; only the .app padding is bumped
-     a little so the bottom of the grid isn't tucked under the banner. */
-  body.alpha-banner-active .fab    { bottom: max(20px, env(safe-area-inset-bottom)); }
-  body.alpha-banner-active .fb-btn { display: inline-flex; }
-  body.alpha-banner-active .app    { padding-bottom: 130px; }
+.alpha li:before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px;
+  width: 16px; height: 16px;
+  background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='black' d='M6.4 11.6L2.8 8l1.4-1.4 2.2 2.2 5.4-5.4L13.2 4.8z'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='black' d='M6.4 11.6L2.8 8l1.4-1.4 2.2 2.2 5.4-5.4L13.2 4.8z'/></svg>") center/contain no-repeat;
 }
 
-/* Alpha-tester cookbook badge — shown next to the cookbook buy button when
-   the user is on the alpha tier. */
-.alpha-cookbook-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  background: var(--green);
-  color: var(--bg);
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-left: 6px;
-  vertical-align: 2px;
+/* --- Footer CTA --- */
+.footer-cta {
+  text-align: center;
+  padding: 56px 0 24px;
 }
+.footer-cta h2 { font-size: clamp(28px, 4.5vw, 40px); margin-bottom: 12px; }
+.footer-cta p  { color: var(--ink-soft); margin-bottom: 22px; }
+.footer-cta .btn { padding: 16px 28px; font-size: 17px; }
 
-/* Floating Feedback button — small, present on every screen, doesn't block content. */
+footer.foot {
+  /* Extra bottom padding ensures the floating Feedback button never overlaps
+     the footer text on small viewports. */
+  padding: 28px 0 max(80px, calc(60px + env(safe-area-inset-bottom)));
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+footer.foot a { color: var(--ink-soft); }
+
+/* --- Feedback button (shared with app) --- */
 .fb-btn {
   position: fixed;
   right: max(14px, env(safe-area-inset-right));
-  bottom: calc(86px + env(safe-area-inset-bottom, 0px)); /* clears the FAB */
-  z-index: 30;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 12px;
   background: var(--ink);
   color: var(--bg);
@@ -1131,2108 +303,183 @@ body.alpha-banner-active .app    { padding-bottom: calc(220px + env(safe-area-in
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: var(--shadow-1);
-  opacity: 0.78;
-  border: 0;
-  cursor: pointer;
-  font-family: var(--sans);
-}
-.fb-btn:hover  { opacity: 1; color: var(--bg); }
-.fb-btn:active { transform: scale(0.96); }
-.fb-btn svg    { width: 13px; height: 13px; }
-@media (min-width: 700px) {
-  .fb-btn { bottom: max(20px, env(safe-area-inset-bottom)); right: 24px; }
-}
-html.standalone .fb-btn { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
-
-/* PWA install banner */
-.install {
-  position: fixed;
-  left: calc(12px + env(safe-area-inset-left, 0px));
-  right: calc(12px + env(safe-area-inset-right, 0px));
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  background: var(--ink);
-  color: var(--bg);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  display: flex; align-items: center; gap: 12px;
   box-shadow: var(--shadow-2);
-  z-index: 25;
-  transform: translateY(140%);
-  transition: transform .3s ease-out;
+  opacity: 0.7;
+  transition: opacity .15s ease;
 }
-.install.show { transform: translateY(0); }
-.install .txt { flex: 1; font-size: 13px; }
-.install .txt strong { font-family: var(--serif); font-weight: 500; display: block; font-size: 15px; margin-bottom: 2px; }
-.install .btn { background: var(--accent); padding: 8px 14px; font-size: 13px; }
-.install .close { background: transparent; border: 0; color: var(--bg); opacity: .7; font-size: 20px; padding: 4px 8px; }
-@media (min-width: 700px) { .install { left: auto; right: 24px; max-width: 340px; } }
-
-/* ---------------------------------------------------------------------------
-   iOS "Add to Home Screen" hint banner
-   Shown only on iOS Safari (NOT in standalone), after >30s OR ≥2 bites.
-   Dismissable; persisted in localStorage.
---------------------------------------------------------------------------- */
-.ios-hint {
-  position: fixed;
-  left: calc(12px + env(safe-area-inset-left, 0px));
-  right: calc(12px + env(safe-area-inset-right, 0px));
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  background: #fff;
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 14px 16px 14px 14px;
-  display: none;
-  align-items: flex-start;
-  gap: 12px;
-  box-shadow: var(--shadow-2);
-  z-index: 26;
-  transform: translateY(140%);
-  transition: transform .3s ease-out;
-}
-.ios-hint.show { display: flex; transform: translateY(0); }
-.ios-hint .icon {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent-deep);
-  display: inline-flex; align-items: center; justify-content: center;
-  flex: 0 0 auto;
-}
-.ios-hint .icon svg { width: 20px; height: 20px; }
-.ios-hint .txt { flex: 1; font-size: 13px; line-height: 1.5; }
-.ios-hint .txt strong { font-family: var(--serif); font-weight: 500; display: block; font-size: 15px; margin-bottom: 2px; color: var(--ink); }
-.ios-hint .txt .muted { color: var(--ink-soft); }
-.ios-hint .share-glyph {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 18px; height: 18px;
-  vertical-align: -3px;
-  margin: 0 2px;
-  color: #007AFF; /* iOS share-icon blue */
-}
-.ios-hint .close {
-  background: transparent; border: 0;
-  color: var(--ink-faint);
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  flex: 0 0 auto;
-}
-.ios-hint .close:active { background: var(--bg-soft); transform: scale(.92); }
-@media (min-width: 700px) { .ios-hint { left: auto; right: 24px; max-width: 360px; } }
-
-/* ---------------------------------------------------------------------------
-   Pull-to-refresh affordance (standalone only). The actual reload is done
-   in JS; this is the visual hint that appears while you drag.
---------------------------------------------------------------------------- */
-.ptr {
-  position: fixed;
-  top: env(safe-area-inset-top, 0px);
-  left: 0; right: 0;
-  height: 60px;
-  display: flex; align-items: center; justify-content: center;
-  pointer-events: none;
-  color: var(--ink-soft);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0;
-  transform: translateY(-30px);
-  transition: opacity .15s, transform .2s;
-  z-index: 15;
-}
-.ptr.active { opacity: 1; transform: translateY(0); }
-.ptr .spinner {
-  width: 16px; height: 16px;
-  border: 2px solid var(--ink-faint);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  margin-right: 8px;
-}
-.ptr.refreshing .spinner { animation: ptrspin .7s linear infinite; }
-@keyframes ptrspin { to { transform: rotate(360deg); } }
-
-/* ---------------------------------------------------------------------------
-   Standalone-mode CSS (display-mode: standalone OR html.standalone fallback)
-   When the user has installed Bites to their home screen, we apply a tighter,
-   more app-like layout. Desktop / regular Safari path is unaffected.
---------------------------------------------------------------------------- */
-@media all and (display-mode: standalone) {
-  html, body { background: var(--bg); }
-  /* Disable any transient "install me" prompts inside standalone. */
-  .install, .ios-hint { display: none !important; }
-}
-/* Class-based fallback for ?standalone=1 testing AND for navigator.standalone
-   (legacy iOS Safari, where display-mode media doesn't always match). */
-html.standalone, html.standalone body { background: var(--bg); }
-html.standalone .install, html.standalone .ios-hint { display: none !important; }
-/* Slightly tighter top in standalone so content doesn't feel buried. */
-html.standalone header.topbar { padding-bottom: 10px; }
+.fb-btn:hover { opacity: 1; color: var(--bg); }
+.fb-btn svg   { width: 13px; height: 13px; }
 </style>
+
+<script>
+// Smart root: if the visitor arrived with any URL flag we want the app to
+// handle (alpha invites, share-link traffic, admin overlays, prior PWA
+// users), bypass the landing and forward to /app/ with the flags intact.
+// Otherwise, render the landing for the stranger who's just discovering it.
+(function () {
+  try {
+    var p = new URLSearchParams(location.search);
+    var APP_FLAGS = ['ref','stats','admin','cookbook','standalone','t','from'];
+    var hasFlag = APP_FLAGS.some(function (k) { return p.has(k); });
+    // Returning users with localStorage state head straight to the app.
+    var hasState = false;
+    try { hasState = !!localStorage.getItem('bites.v0'); } catch (_) {}
+    if (hasFlag || hasState) {
+      var qs = location.search || '';
+      // Preserve hash too if present.
+      location.replace('/app/' + qs + (location.hash || ''));
+    }
+  } catch (_) { /* fall through to render the landing */ }
+})();
+</script>
 </head>
 <body>
+<main class="wrap">
 
-<div class="app">
   <header class="topbar">
-    <div class="brand">Bites<span class="dot">.</span><sup>v0</sup></div>
-    <div class="topbar-spacer"></div>
-    <a class="topbar-link" href="/blog/" title="Notes—operating posts from the AI CEO">Notes</a>
-    <button class="icon-btn" id="btn-export" title="Export / Import" aria-label="Export / Import">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M21 21H3"/></svg>
-    </button>
+    <a class="brand" href="/" style="text-decoration:none;" aria-label="Bites home"><span class="glyph"></span>Bites</a>
+    <div class="topbar-right">
+      <a class="topbar-link" href="/blog/">Notes</a>
+      <span class="tag">Alpha · invite only</span>
+    </div>
   </header>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab active" data-view="home" role="tab">Bites</button>
-    <button class="tab" data-view="stats" role="tab">Stats</button>
-  </nav>
+  <!-- =========================== HERO =========================== -->
+  <section class="hero">
+    <h1>Remember every <em>dish</em> worth remembering.</h1>
+    <p class="subhead">
+      Bites is a private food journal. Save dishes, not restaurants.
+      Search what you ate, when, and where — long after you've forgotten.
+    </p>
+    <div class="cta-row">
+      <a class="btn" href="/app/?ref=alpha&amp;from=landing" id="cta-hero">Try the alpha →</a>
+      <span class="cta-note">No signup. Works in your browser.</span>
+    </div>
+  </section>
 
-  <!-- HOME -->
-  <section id="view-home">
-    <!-- Landing hero: shown only to first-time visitors with empty localStorage. -->
-    <div class="hero" id="hero" role="region" aria-label="Welcome to Bites">
-      <button class="dismiss" id="hero-dismiss" aria-label="Dismiss welcome" title="Dismiss">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <h1>Remember every bite worth remembering.</h1>
-      <p class="lede">Bites is your private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten.</p>
+  <!-- =========================== PROBLEM =========================== -->
+  <section class="section">
+    <h2>Yelp tells you what 4,000 strangers think.</h2>
+    <h2 style="color:var(--accent);">Nothing tells you what <em style="font-style:italic;">you</em> thought.</h2>
+    <p class="lede" style="margin-top:18px;">
+      Real food memory is currently a fragmented mess. The most natural food
+      question a person can ask — <em style="font-style:italic;color:var(--ink);">"what did I think of that place?"</em>
+      — has no good answer.
+    </p>
+    <div class="problem-stack" aria-label="Where food memory currently lives">
+      <div class="row"><strong>Camera roll</strong> 8,000 photos, no taxonomy <em>lost</em></div>
+      <div class="row"><strong>DMs to your spouse</strong> "remember that pasta?" <em>buried</em></div>
+      <div class="row"><strong>Yelp "your reviews"</strong> 30% of users ever wrote one <em>empty</em></div>
+      <div class="row"><strong>Instagram saves</strong> impossible to search <em>useless</em></div>
+      <div class="row"><strong>Notes app</strong> entries that get lost <em>scattered</em></div>
+    </div>
+  </section>
+
+  <!-- =========================== PRODUCT =========================== -->
+  <section class="section">
+    <h2>What Bites does</h2>
+    <p class="lede">Four moves. That's the whole product.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="icon" aria-hidden="true">📸</div>
+        <h3>Capture</h3>
+        <p>One tap. Photo, dish name, restaurant, rating. Done before the check arrives.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🔍</div>
+        <h3>Search</h3>
+        <p>"Tatsu Ramen." "Rome." "Pasta." Two seconds to the bite you're thinking of.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🧠</div>
+        <h3>Recall</h3>
+        <p>Your library is yours. No reviews to game. No feed. No strangers.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">📖</div>
+        <h3>Cookbook</h3>
+        <p>Year-end PDF of your dishes — typeset like a real cookbook. <span class="muted" style="color:var(--ink-faint);">(Pro)</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== WHY NOW / FOR WHOM =========================== -->
+  <section class="section">
+    <div class="two-col">
+      <div>
+        <h3>Why now</h3>
+        <p>
+          AI-native retrieval is finally cheap. Apple Photos has the photos —
+          nobody has the <em style="font-style:italic;">taxonomy</em> over them.
+          Vibe-coding lowers the build cost to one founder + an LLM. You're
+          looking at v0, shipped in days.
+        </p>
+      </div>
+      <div>
+        <h3>Who it's for</h3>
+        <p>
+          People who eat out enough that they forget what they liked. People
+          who travel and want their food memory to come home with them.
+          People who've been meaning to keep a food journal but never got
+          past day three.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== ALPHA PROMISE =========================== -->
+  <section class="section" style="border-bottom:0;">
+    <div class="alpha">
+      <h2>What you get as an alpha tester</h2>
+      <p class="sub">30 testers. 14 days. We're validating an idea, not selling a product.</p>
+      <ul>
+        <li><strong>Free for life.</strong> Every alpha tester keeps lifetime access — including the cookbook ($9.99 retail) and any Pro features that ship later.</li>
+        <li><strong>Direct line to the founder.</strong> Hit the Feedback button on any screen. We read every email.</li>
+        <li><strong>Influence what ships.</strong> The product is still soft clay. Your week-2 feedback shapes the v1.</li>
+      </ul>
       <div class="cta-row">
-        <button class="btn" id="hero-cta">Try it now — no signup</button>
-      </div>
-      <div class="how">
-        <div class="step"><span class="dot">📸</span> Capture</div>
-        <div class="step"><span class="dot">⭐</span> Rate</div>
-        <div class="step"><span class="dot">🔍</span> Recall</div>
-      </div>
-    </div>
-
-    <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="text" placeholder="Search dish, restaurant, notes, tags…" autocomplete="off" />
-      <button class="menu-btn hidden" id="q-clear" title="Clear">✕</button>
-    </div>
-
-    <div class="filters" id="filters" aria-label="Filters"></div>
-
-    <div class="section-head">
-      <h2 class="serif" id="grid-title">Recent bites</h2>
-      <span class="count" id="grid-count"></span>
-    </div>
-
-    <div id="grid" class="grid" aria-live="polite"></div>
-
-    <div id="empty" class="empty hidden">
-      <div class="glyph">🍜</div>
-      <h2>Tap + to save your first dish.</h2>
-      <p>A photo, a name, a star or four. That's it.</p>
-      <div class="actions">
-        <button class="btn" id="empty-add">Add your first bite</button>
-        <button class="btn ghost" id="empty-seed">Try with sample bites</button>
-      </div>
-    </div>
-
-    <div id="empty-search" class="empty hidden">
-      <div class="glyph">🔎</div>
-      <h2>Nothing here yet.</h2>
-      <p>No bites match that search. Try a different word — or capture this one as a new bite.</p>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section id="view-stats" class="hidden">
-    <div class="section-head"><h2 class="serif">Your library</h2></div>
-    <div class="stats-grid" id="stats-grid"></div>
-
-    <div class="stats-section">
-      <h3 class="serif">Top restaurants</h3>
-      <div id="stats-restaurants"></div>
-    </div>
-
-    <div class="stats-section">
-      <h3 class="serif">Most-used tags</h3>
-      <div id="stats-tags"></div>
-    </div>
-
-    <div class="stats-section">
-      <h3 class="serif">Recently rated highest</h3>
-      <div id="stats-best"></div>
-    </div>
-
-    <!-- Coming soon: Bites Cookbook pre-order. Intent capture only — no payment. -->
-    <div class="section-head" style="margin-top: 28px;">
-      <h2 class="serif">Coming soon</h2>
-    </div>
-    <div class="stats-section cookbook" id="cookbook-card">
-      <div class="cookbook-head">
-        <div class="cookbook-glyph" aria-hidden="true">📖</div>
-        <div class="cookbook-titles">
-          <h3 class="serif">Bites Cookbook</h3>
-          <div class="muted" style="font-size:13px;">A magazine-style PDF of your year of food memories</div>
-        </div>
-      </div>
-      <p class="cookbook-desc">Beautiful, printable, yours to keep. Every dish, every photo, every note — typeset like a real cookbook. Delivered as a PDF within 24 hours of purchase.</p>
-      <p class="cookbook-price"><strong>$9.99</strong> <span class="muted">· one-time, no subscription</span></p>
-      <a class="btn cookbook-buy" id="cookbook-buy"
-         href="https://buy.stripe.com/test_4gMdRa1BS0OZ1Bx2Zh3F600"
-         target="_blank" rel="noopener"
-         aria-label="Buy Bites Cookbook for $9.99">
-        Buy now — $9.99
-      </a>
-      <div class="cookbook-meta muted" style="font-size:11px; margin-top:8px;">
-        <span id="cookbook-mode-badge" style="display:inline-block; padding:2px 6px; background:var(--accent-soft); color:var(--accent-deep); border-radius:4px; font-weight:600;">TEST MODE</span>
-        Use card 4242 4242 4242 4242 — no real charges in this build.
+        <a class="btn" href="/app/?ref=alpha&amp;from=landing">Start adding bites — no signup</a>
       </div>
     </div>
   </section>
-</div>
 
-<button class="fab" id="fab" aria-label="Add a bite" title="Add a bite (n)">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-</button>
+  <!-- =========================== FOOTER CTA =========================== -->
+  <section class="footer-cta">
+    <h2>Try it. The app <em style="font-style:italic;">is</em> the trial.</h2>
+    <p>No email gate. No onboarding wizard. Just open it and add a bite.</p>
+    <a class="btn" href="/app/?ref=alpha&amp;from=landing" id="cta-footer">Start adding bites →</a>
+  </section>
 
-<!-- Scrim + Sheets -->
-<div class="scrim" id="scrim"></div>
+  <footer class="foot">
+    Bites is a personal project by <a href="https://aitinkery.com" rel="noopener">AI Tinkery</a>.
+    No accounts. No tracking. No ads. Ever.
+  </footer>
 
-<!-- Add / Edit sheet -->
-<aside class="sheet" id="sheet-form" role="dialog" aria-modal="true" aria-labelledby="sheet-form-title">
-  <div class="sheet-handle"></div>
-  <div class="sheet-head">
-    <h2 id="sheet-form-title">Add a bite</h2>
-    <button class="icon-btn" id="form-close" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-  </div>
-  <div class="sheet-body">
-    <!--
-      DECISION LOG (form flow): considered (1) wizard 4-step, (2) single bottom
-      sheet with all fields, (3) modal page. Picked single sheet — fastest path
-      to "saved <30s", photo at top makes it photo-first emotionally, no step
-      gates means scrolling/skipping is one-handed-friendly.
-    -->
-    <label class="photo-input" id="photo-input">
-      <input type="file" id="photo-file" accept="image/*" capture="environment" />
-      <img id="photo-preview" class="hidden" alt="Photo preview" />
-      <div id="photo-placeholder" style="text-align:center;">
-        <div style="font-size:36px; line-height:1;">📷</div>
-        <div class="hint-big">Snap your bite</div>
-        <div class="hint-small">Tap to use camera or choose a photo</div>
-      </div>
-      <div id="photo-replace" class="replace hidden">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>
-        Replace
-      </div>
-    </label>
+</main>
 
-    <div class="field">
-      <label for="f-dish">Dish</label>
-      <input id="f-dish" type="text" placeholder="Spicy tonkotsu ramen" required />
-    </div>
-
-    <!-- FAST PATH (always visible) — Photo, Dish, Rating.
-         UPD: Progressive Disclosure + 80/20. The killer feature is
-         "saved in <30s." Three fields beats nine. Optional fields are
-         one tap away in the More section below. -->
-    <div class="field">
-      <label>Rating
-        <!--
-          DECISION LOG (rating): considered (1) 5-star halves, (2) thumbs,
-          (3) 10-pt slider. Picked 5-star halves — universal language,
-          half-star granularity is enough resolution for memory ("4 not 4.5"),
-          matches data model rating: 4.5, doesn't feel like a database.
-        -->
-      </label>
-      <div class="row-flex">
-        <div class="stars" id="f-stars" role="slider" aria-valuemin="0" aria-valuemax="5" tabindex="0">
-          <span class="star" data-i="1"><span class="half"></span><span class="full"></span></span>
-          <span class="star" data-i="2"><span class="half"></span><span class="full"></span></span>
-          <span class="star" data-i="3"><span class="half"></span><span class="full"></span></span>
-          <span class="star" data-i="4"><span class="half"></span><span class="full"></span></span>
-          <span class="star" data-i="5"><span class="half"></span><span class="full"></span></span>
-        </div>
-        <span id="f-rating-num" class="muted" style="font-family:var(--serif); font-size:18px;">—</span>
-      </div>
-    </div>
-
-    <!-- MORE (collapsed by default) — Restaurant, Notes, Tags.
-         These all matter for retrieval ("what did I have at that place?")
-         but the user can tap Save without them on the first run. Future
-         edits surface the form again with the existing values. -->
-    <details class="form-more" id="f-more">
-      <summary>More</summary>
-      <div class="field">
-        <label for="f-rest">Restaurant</label>
-        <input id="f-rest" type="text" placeholder="Tatsu Ramen" />
-      </div>
-      <div class="field">
-        <label for="f-notes">Notes</label>
-        <textarea id="f-notes" placeholder="Rich broth, perfect chashu. Get the egg."></textarea>
-      </div>
-      <div class="field">
-        <label for="f-tags">Tags</label>
-        <input id="f-tags" type="text" placeholder="ramen, spicy, repeat" />
-        <div class="muted" style="font-size:12px; margin-top:4px;">Separate with commas.</div>
-      </div>
-    </details>
-
-    <!-- DETAILS (collapsed by default) — City, Price, Date.
-         Almost always set automatically: city = last-used, price = $$ default,
-         date = today. Hidden by default; reveal only if a user wants to
-         override. Cuts the visible field count from 9 to 3 on first capture. -->
-    <details class="form-more" id="f-details">
-      <summary>Details</summary>
-      <div class="field">
-        <label>Price</label>
-        <div class="segmented" id="f-price">
-          <button type="button" data-v="$">$</button>
-          <button type="button" data-v="$$">$$</button>
-          <button type="button" data-v="$$$">$$$</button>
-          <button type="button" data-v="$$$$">$$$$</button>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="f-date">Date</label>
-          <input id="f-date" type="date" />
-        </div>
-        <div class="field">
-          <label for="f-city">City</label>
-          <input id="f-city" type="text" placeholder="San Francisco" />
-        </div>
-      </div>
-    </details>
-  </div>
-  <div class="sheet-foot">
-    <button class="btn ghost" id="form-cancel">Cancel</button>
-    <button class="btn" id="form-save">Save bite</button>
-  </div>
-</aside>
-
-<!-- Detail sheet -->
-<aside class="sheet" id="sheet-detail" role="dialog" aria-modal="true">
-  <div class="sheet-handle"></div>
-  <div class="sheet-head">
-    <h2>Bite</h2>
-    <button class="icon-btn" id="detail-edit" title="Edit" aria-label="Edit">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
-    </button>
-    <button class="icon-btn" id="detail-close" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-  </div>
-  <div class="sheet-body" id="detail-body"></div>
-  <div class="sheet-foot">
-    <button class="btn danger" id="detail-delete">Delete</button>
-    <button class="btn" id="detail-edit-2">Edit</button>
-  </div>
-</aside>
-
-<!-- Export/Import sheet -->
-<aside class="sheet" id="sheet-io" role="dialog" aria-modal="true">
-  <div class="sheet-handle"></div>
-  <div class="sheet-head">
-    <h2>Settings</h2>
-    <button class="icon-btn" id="io-close" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-  </div>
-  <div class="sheet-body">
-    <!-- TIER 1 — Your data: always visible. UPD: Hick's Law + Hierarchy. -->
-    <div class="io-tier">
-      <div class="io-tier-label">Your data</div>
-      <p class="muted" style="margin:0 0 12px">Bites live on this device. Back them up here.</p>
-      <div class="field">
-        <button class="btn full" id="io-export-btn">Download bites.json</button>
-      </div>
-      <div class="field">
-        <label>Import from JSON</label>
-        <input id="io-import-file" type="file" accept="application/json,.json" />
-        <div class="muted" style="font-size:12px; margin-top:6px;">Merged by id. Existing entries aren't overwritten unless ids match.</div>
-      </div>
-    </div>
-
-    <!-- TIER 2 — More: collapsed by default. Cookbook + sample data. -->
-    <details class="io-tier io-more">
-      <summary>More</summary>
-      <div class="field" id="io-cookbook-field">
-        <label>Year-end cookbook <span class="badge" id="io-cookbook-lock" style="display:none; background:var(--accent-soft); color:var(--accent-deep); font-size:11px; padding:2px 8px; border-radius:999px; margin-left:6px;">Pre-order</span></label>
-        <button class="btn full" id="io-cookbook-btn">Export Cookbook · PDF</button>
-        <div class="muted" style="font-size:12px; margin-top:6px;" id="io-cookbook-hint">A magazine-style PDF of your last 12 months. <a href="cookbook.html" target="_blank" rel="noopener" style="color:var(--accent)">Preview the layout</a>.</div>
-      </div>
-      <div class="field">
-        <label>Sample data</label>
-        <button class="btn ghost full" id="io-seed-btn">Load sample bites</button>
-        <div class="muted" style="font-size:12px; margin-top:6px;">Adds 7 example bites so you can see how a populated library feels.</div>
-      </div>
-    </details>
-
-    <!-- TIER 3 — Danger zone: visually muted, separated, deliberate to reach. -->
-    <div class="io-tier io-danger">
-      <div class="io-tier-label io-danger-label">Danger zone</div>
-      <button class="btn danger full" id="io-clear-btn">Delete all bites</button>
-      <div class="muted" style="font-size:12px; margin-top:6px;">Moves bites to trash. 8-second undo, 30-day restore window before permanent deletion.</div>
-    </div>
-  </div>
-</aside>
-
-<div class="toast" id="toast"></div>
-
-<div class="install" id="install">
-  <div class="txt"><strong>Install Bites</strong>Get a real app icon on your home screen.</div>
-  <button class="btn" id="install-yes">Install</button>
-  <button class="close" id="install-no" aria-label="Dismiss">×</button>
-</div>
-
-<!-- Alpha tester welcome (only shown when arriving via ?ref=alpha) -->
-<div class="alpha-banner" id="alpha-banner" role="region" aria-label="Welcome, alpha tester">
-  <div class="glyph" aria-hidden="true">α</div>
-  <div class="txt">
-    <strong>Welcome, alpha tester.</strong>
-    <span class="sub">Bites is <strong style="color:var(--accent-soft);">free for life</strong> for you — your feedback shapes the product. Tap the orange + button to add your first bite.</span>
-  </div>
-  <button class="close" id="alpha-banner-close" aria-label="Dismiss">×</button>
-</div>
-
-<!-- Floating feedback button — opens user's mail client with prefilled template -->
 <a class="fb-btn" id="feedback-btn"
    href="mailto:bites@aitinkery.com?subject=Bites%20alpha%20feedback&body=What%20I%20liked%3A%20%0A%0AWhat%20confused%20me%3A%20%0A%0AWhat%20I%20wish%20was%20different%3A%20%0A%0AWould%20I%20pay%20%249.99%20for%20a%20year-end%20cookbook%20(yes%2Fno%2Fmaybe)%3A%20%0A">
   <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6.7l-3 2.6a.5.5 0 0 1-.7-.4V12H3a1 1 0 0 1-1-1V3z"/></svg>
   Feedback
 </a>
 
-<!-- Inline feedback prompt — surfaces once, after the user has added 3+ bites.
-     Goal: catch real users in the moment they've actually tried the product.
-     Submission paths: mailto (high-signal real reply) + analytics ping (so we
-     know counts even when mailto is cancelled). Dismissible; persists. -->
-<div class="fb-prompt" id="fb-prompt" role="region" aria-label="Founder asking for feedback" hidden>
-  <button class="fb-prompt-close" id="fb-prompt-close" aria-label="Dismiss">✕</button>
-  <div class="fb-prompt-body">
-    <p class="fb-prompt-q">A quick note from the founder — does Bites work for you so far?</p>
-    <div class="fb-prompt-row" id="fb-prompt-thumbs" role="group" aria-label="Thumbs up or down">
-      <button type="button" class="fb-thumb" data-vote="up" aria-label="Yes, working for me">👍 Yes</button>
-      <button type="button" class="fb-thumb" data-vote="down" aria-label="No, not really">👎 Not really</button>
-    </div>
-    <div class="fb-prompt-row" id="fb-prompt-comment-wrap" hidden>
-      <input type="text" id="fb-prompt-comment" maxlength="240" placeholder="One line. What's working / not working?" />
-      <button type="button" class="btn" id="fb-prompt-send">Send</button>
-    </div>
-    <div class="fb-prompt-thanks muted" id="fb-prompt-thanks" hidden>Thanks — noted. 🙏</div>
-  </div>
-</div>
-
-<!-- iOS "Add to Home Screen" hint banner. iOS Safari has no beforeinstallprompt,
-     so we hand-render a coach card pointing at the share button. -->
-<div class="ios-hint" id="ios-hint" role="region" aria-label="Install Bites on your iPhone">
-  <div class="icon" aria-hidden="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="5" width="18" height="14" rx="3"/><path d="M9 12h6M12 9v6"/>
-    </svg>
-  </div>
-  <div class="txt">
-    <strong>Add Bites to your home screen</strong>
-    <span class="muted">Tap
-      <span class="share-glyph" aria-label="the Safari share icon" title="Share">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
-      </span>
-      then “Add to Home Screen” for the full app.</span>
-  </div>
-  <button class="close" id="ios-hint-close" aria-label="Dismiss">
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-  </button>
-</div>
-
-<!-- Pull-to-refresh affordance. Only activated in standalone. -->
-<div class="ptr" id="ptr" aria-hidden="true"><span class="spinner"></span><span id="ptr-label">Pull to refresh</span></div>
-
-<!-- Privacy-respecting analytics (local-only, no network). Loaded BEFORE the
-     inline app script so window.BitesAnalytics is available when track() is called. -->
-<script src="./analytics.js"></script>
-
+<script src="../analytics.js"></script>
 <script>
-/* ============================================================================
-   Bites v0 — vanilla app
-   Storage: localStorage, single key 'bites.v0'
-   Photos: data URLs, downscaled on capture (~1280px max edge, jpeg q=0.82)
-   No frameworks, no build step.
-============================================================================ */
-
-const STORAGE_KEY = 'bites.v0';
-const SEED_DISMISSED_KEY = 'bites.v0.seedDismissed';
-const INSTALL_DISMISSED_KEY = 'bites.v0.installDismissed';
-const HERO_SEEN_KEY = 'bites.v0.heroSeen';
-const RESERVATIONS_KEY = 'bites:reservations';
-const RESERVED_KEY = 'bites.v0.cookbookReserved';
-const USER_TIER_KEY = 'bites.user.tier';
-const ALPHA_BANNER_KEY = 'bites.v0.alphaBannerSeen';
-
-// --- Tiny analytics shim ---------------------------------------------------
-// analytics.js is loaded as a separate <script> below this block. If it loaded,
-// `window.BitesAnalytics` exists; if not (offline first paint), we no-op.
-function track(name, props) {
-  try { if (window.BitesAnalytics) window.BitesAnalytics.track(name, props || {}); } catch (e) {}
-}
-
-// --- Tiny utilities ---------------------------------------------------------
-const $  = (s, r=document) => r.querySelector(s);
-const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-const el = (tag, props={}, children=[]) => {
-  const e = document.createElement(tag);
-  for (const [k, v] of Object.entries(props)) {
-    if (k === 'class') e.className = v;
-    else if (k === 'html') e.innerHTML = v;
-    else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
-    else if (k === 'style' && typeof v === 'object') Object.assign(e.style, v);
-    else e.setAttribute(k, v);
-  }
-  for (const c of [].concat(children)) {
-    if (c == null) continue;
-    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-  }
-  return e;
-};
-const uuid = () => (crypto && crypto.randomUUID
-  ? crypto.randomUUID()
-  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-      const r = Math.random()*16|0, v = c==='x' ? r : (r&0x3|0x8); return v.toString(16);
-    }));
-const todayISO = () => new Date().toISOString().slice(0,10);
-const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-// Lazy-load a script tag exactly once. Used for the cookbook engine so the
-// jsPDF bundle (~360 KB) only ships when a user actually clicks Export.
-const _loadedScripts = new Map();
-function loadScriptOnce(src) {
-  if (_loadedScripts.has(src)) return _loadedScripts.get(src);
-  const p = new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.async = true;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error('Failed to load ' + src));
-    document.head.appendChild(s);
-  });
-  _loadedScripts.set(src, p);
-  return p;
-}
-
-function fmtDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
-  if (isNaN(d)) return iso;
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
-function fmtDateShort(iso) {
-  if (!iso) return '';
-  const d = new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
-  if (isNaN(d)) return iso;
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
-// --- Toast ------------------------------------------------------------------
-let toastTimer;
-function toast(msg) {
-  const t = $('#toast');
-  t.innerHTML = '';
-  t.appendChild(document.createTextNode(msg));
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
-}
-
-// Toast with an UNDO action. Stays visible 8s; calls undoFn() if tapped.
-// onTimeout fires when the user did NOT undo (the action is now committed).
-function toastWithUndo(msg, undoFn, onTimeout) {
-  const t = $('#toast');
-  t.innerHTML = '';
-  t.appendChild(document.createTextNode(msg));
-  const btn = document.createElement('button');
-  btn.className = 'undo';
-  btn.type = 'button';
-  btn.textContent = 'Undo';
-  let used = false;
-  btn.addEventListener('click', () => {
-    if (used) return;
-    used = true;
-    clearTimeout(toastTimer);
-    t.classList.remove('show');
-    try { undoFn(); } catch (e) { console.error(e); }
-  });
-  t.appendChild(btn);
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    t.classList.remove('show');
-    if (!used && onTimeout) try { onTimeout(); } catch (e) { console.error(e); }
-  }, 8000);
-}
-
-// --- Storage ----------------------------------------------------------------
-function loadAll() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const data = JSON.parse(raw);
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.warn('loadAll failed', e);
-    return [];
-  }
-}
-function saveAll(items) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch (e) {
-    // QuotaExceededError most likely — photos too big
-    console.error(e);
-    toast("Storage full. Try smaller photos or export & clear.");
-    throw e;
-  }
-}
-
-// --- Trash (soft-delete with undo) ------------------------------------------
-// Forgiveness > Confirmation > Prevention (UPD p. 90).
-// Deleted bites move to a trash array with a timestamp. They can be restored
-// via the undo toast (8s window) or — once a Trash view ships — manually.
-// Auto-purged after 30 days on app boot to keep storage tidy.
-const TRASH_KEY = 'bites.v0.trash';
-const TRASH_RETENTION_DAYS = 30;
-
-function loadTrash() {
-  try {
-    const raw = localStorage.getItem(TRASH_KEY);
-    if (!raw) return [];
-    const data = JSON.parse(raw);
-    return Array.isArray(data) ? data : [];
-  } catch (e) { console.warn('loadTrash failed', e); return []; }
-}
-function saveTrash(items) {
-  try { localStorage.setItem(TRASH_KEY, JSON.stringify(items)); }
-  catch (e) { console.error('saveTrash failed', e); }
-}
-function softDelete(bites) {
-  // bites: array of bite objects to move to trash
-  const trash = loadTrash();
-  const now = new Date().toISOString();
-  for (const b of bites) {
-    trash.push({ ...b, deletedAt: now });
-  }
-  saveTrash(trash);
-}
-function restoreFromTrash(ids) {
-  // Move bites with these ids back from trash to the live set.
-  const trash = loadTrash();
-  const idSet = new Set(ids);
-  const toRestore = [];
-  const toKeepInTrash = [];
-  for (const t of trash) {
-    if (idSet.has(t.id)) {
-      const { deletedAt, ...clean } = t;
-      toRestore.push(clean);
-    } else {
-      toKeepInTrash.push(t);
+  // Wire CTAs to analytics so we can see landing→app conversions.
+  (function () {
+    function track(name, props) {
+      if (window.BitesAnalytics) window.BitesAnalytics.track(name, props || {});
     }
-  }
-  saveTrash(toKeepInTrash);
-  // Merge restored bites back into live set, then save.
-  const live = loadAll();
-  // De-dup by id (in case something weird happened)
-  const liveIds = new Set(live.map(b => b.id));
-  for (const r of toRestore) if (!liveIds.has(r.id)) live.push(r);
-  saveAll(live);
-  return toRestore.length;
-}
-function purgeOldTrash() {
-  const trash = loadTrash();
-  if (!trash.length) return;
-  const cutoff = Date.now() - TRASH_RETENTION_DAYS * 24 * 60 * 60 * 1000;
-  const kept = trash.filter(t => {
-    const ts = t.deletedAt ? Date.parse(t.deletedAt) : Date.now();
-    return ts > cutoff;
-  });
-  if (kept.length !== trash.length) saveTrash(kept);
-}
-
-// --- State ------------------------------------------------------------------
-const State = {
-  bites: [],
-  query: '',
-  activeTags: new Set(),
-  minRating: 0,
-  view: 'home',         // 'home' | 'stats'
-  editingId: null,      // null = new bite, else id
-  pendingPhotoDataUrl: null,
-  pendingRating: 0,
-  pendingPrice: '',
-  detailId: null,
-};
-
-// --- Image downscaling for storage --------------------------------------------
-function fileToDownscaledDataUrl(file, maxEdge=1280, quality=0.82) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(reader.error);
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('Image load failed'));
-      img.onload = () => {
-        let { width, height } = img;
-        const scale = Math.min(1, maxEdge / Math.max(width, height));
-        const w = Math.round(width * scale);
-        const h = Math.round(height * scale);
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        try {
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        } catch (err) {
-          // Some browsers throw on tainted canvas; fall back to original
-          resolve(reader.result);
-        }
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-// --- Stars rendering (display) ---------------------------------------------
-// Why text not SVG: cards stay light, scale with font, copy-paste cleanly.
-// Half-star is the tricky bit — U+2BE8 has spotty font support, so we fake
-// it with a bicolor span: gold full chars + a half-width gold overlay on a
-// muted ☆.
-function starsText(rating) {
-  const r = Math.max(0, Math.min(5, Number(rating) || 0));
-  const full = Math.floor(r);
-  const half = (r - full) >= 0.5 ? 1 : 0;
-  const empty = 5 - full - half;
-  let out = '★'.repeat(full);
-  if (half) {
-    // Inline half-star: muted star with a clipped gold star on top.
-    out += '<span style="position:relative;display:inline-block;color:var(--gold-empty)">★<span style="position:absolute;left:0;top:0;width:50%;overflow:hidden;color:var(--gold)">★</span></span>';
-  }
-  out += `<span style="color:var(--gold-empty)">${'★'.repeat(empty)}</span>`;
-  return out;
-}
-
-// --- Render: Grid -----------------------------------------------------------
-function filteredBites() {
-  const q = State.query.trim().toLowerCase();
-  const tags = State.activeTags;
-  const minR = State.minRating;
-  return State.bites
-    .filter(b => {
-      if (minR > 0 && (Number(b.rating) || 0) < minR) return false;
-      if (tags.size) {
-        const bt = new Set((b.tags || []).map(t => t.toLowerCase()));
-        for (const t of tags) if (!bt.has(t)) return false;
-      }
-      if (q) {
-        const hay = [
-          b.dish_name, b.restaurant_name, b.notes, b.city,
-          ...(b.tags || [])
-        ].filter(Boolean).join(' ').toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      // newest first by date, fallback created_at
-      const ad = a.date || (a.created_at || '').slice(0,10);
-      const bd = b.date || (b.created_at || '').slice(0,10);
-      if (bd !== ad) return bd.localeCompare(ad);
-      return (b.created_at || '').localeCompare(a.created_at || '');
+    document.getElementById('cta-hero')   .addEventListener('click', function () { track('cta_click', { where: 'hero' }); });
+    document.getElementById('cta-footer') .addEventListener('click', function () { track('cta_click', { where: 'footer' }); });
+    document.querySelectorAll('a.btn[href^="../"]').forEach(function (a) {
+      // Catch the "Start adding bites" CTA in the alpha card too.
+      a.addEventListener('click', function () { track('landing_to_app', { href: a.getAttribute('href') }); });
     });
-}
-
-function renderFilters() {
-  const wrap = $('#filters');
-  wrap.innerHTML = '';
-  // Rating filter chips
-  const rChip = (label, val) => {
-    const active = State.minRating === val;
-    const c = el('button', {
-      class: 'chip' + (active ? ' active' : ''),
-      type: 'button',
-      onclick: () => { State.minRating = active ? 0 : val; renderHome(); }
-    }, [label]);
-    wrap.appendChild(c);
-  };
-  rChip('★ 4+', 4);
-  rChip('★ 3+', 3);
-
-  // Top tags by frequency, capped
-  const tagCounts = {};
-  for (const b of State.bites) for (const t of (b.tags || [])) {
-    const k = String(t).toLowerCase().trim();
-    if (!k) continue;
-    tagCounts[k] = (tagCounts[k] || 0) + 1;
-  }
-  const topTags = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0, 12);
-  for (const [tag] of topTags) {
-    const active = State.activeTags.has(tag);
-    const c = el('button', {
-      class: 'chip' + (active ? ' active' : ''),
-      type: 'button',
-      onclick: () => {
-        if (active) State.activeTags.delete(tag);
-        else State.activeTags.add(tag);
-        renderHome();
-      }
-    }, ['#' + tag]);
-    wrap.appendChild(c);
-  }
-
-  if (State.activeTags.size || State.minRating > 0) {
-    const c = el('button', {
-      class: 'chip',
-      type: 'button',
-      onclick: () => { State.activeTags.clear(); State.minRating = 0; renderHome(); }
-    }, ['Clear']);
-    wrap.appendChild(c);
-  }
-}
-
-function biteCard(b) {
-  const wrap = el('div', { class: 'card-wrap' });
-  const card = el('article', { class: 'card', onclick: () => openDetail(b.id) });
-  const hasImg = !!b.photo_data_url;
-
-  if (hasImg) {
-    const ph = el('div', { class: 'ph' });
-    const img = el('img', { src: b.photo_data_url, alt: b.dish_name || 'bite', loading: 'lazy', decoding: 'async' });
-    ph.appendChild(img);
-    card.appendChild(ph);
-  } else {
-    const ph = el('div', { class: 'ph no-img' }, [(b.dish_name || '?').slice(0,1).toUpperCase()]);
-    card.appendChild(ph);
-  }
-
-  const body = el('div', { class: 'body' });
-  body.appendChild(el('div', { class: 'dish' }, [b.dish_name || 'Untitled bite']));
-  if (b.restaurant_name) body.appendChild(el('div', { class: 'restaurant' }, [b.restaurant_name + (b.city ? ' · ' + b.city : '')]));
-  const meta = el('div', { class: 'meta' });
-  meta.appendChild(el('span', { class: 'date' }, [fmtDateShort(b.date)]));
-  body.appendChild(meta);
-  card.appendChild(body);
-
-  wrap.appendChild(card);
-  // Rating badge on the photo (top-left). Hierarchy: rating is the most
-  // decision-relevant data when scanning, so it earns prominent placement.
-  if (hasImg && b.rating != null && b.rating > 0) {
-    wrap.appendChild(el('span', { class: 'card-rating', html: starsText(b.rating), 'aria-label': 'Rating: ' + b.rating + ' of 5' }));
-  }
-  if (b.price_estimate) {
-    wrap.appendChild(el('span', { class: 'card-price' }, [b.price_estimate]));
-  }
-  return wrap;
-}
-
-function renderHome() {
-  const all = State.bites;
-  const filtered = filteredBites();
-  const grid = $('#grid');
-  const empty = $('#empty');
-  const emptyS = $('#empty-search');
-  const search = $('.search');
-  const filters = $('#filters');
-  const head = $('.section-head');
-
-  grid.innerHTML = '';
-
-  if (all.length === 0) {
-    empty.classList.remove('hidden');
-    emptyS.classList.add('hidden');
-    grid.classList.add('hidden');
-    head.classList.add('hidden');
-    search.classList.add('hidden');
-    filters.classList.add('hidden');
-    return;
-  }
-  search.classList.remove('hidden');
-  filters.classList.remove('hidden');
-  head.classList.remove('hidden');
-  empty.classList.add('hidden');
-  renderFilters();
-
-  if (filtered.length === 0) {
-    emptyS.classList.remove('hidden');
-    grid.classList.add('hidden');
-  } else {
-    emptyS.classList.add('hidden');
-    grid.classList.remove('hidden');
-    for (const b of filtered) grid.appendChild(biteCard(b));
-  }
-
-  $('#grid-count').textContent = filtered.length === all.length
-    ? `${all.length} ${all.length === 1 ? 'bite' : 'bites'}`
-    : `${filtered.length} of ${all.length}`;
-  $('#grid-title').textContent = (State.query || State.activeTags.size || State.minRating > 0)
-    ? 'Matching bites' : 'Recent bites';
-}
-
-// --- Render: Stats ----------------------------------------------------------
-function renderStats() {
-  const bites = State.bites;
-  const grid = $('#stats-grid');
-  grid.innerHTML = '';
-  const total = bites.length;
-  const ratings = bites.map(b => Number(b.rating) || 0).filter(r => r > 0);
-  const avg = ratings.length ? (ratings.reduce((a,b) => a+b, 0) / ratings.length) : 0;
-  const restaurants = new Set(bites.map(b => (b.restaurant_name || '').trim()).filter(Boolean));
-  const tags = new Set(bites.flatMap(b => (b.tags || []).map(t => String(t).toLowerCase())));
-
-  const stat = (n, l) => {
-    const s = el('div', { class: 'stat' });
-    s.appendChild(el('div', { class: 'num' }, [String(n)]));
-    s.appendChild(el('div', { class: 'lbl' }, [l]));
-    return s;
-  };
-  grid.appendChild(stat(total, 'Total bites'));
-  grid.appendChild(stat(avg ? avg.toFixed(1) : '—', 'Avg rating'));
-  grid.appendChild(stat(restaurants.size, 'Restaurants'));
-  grid.appendChild(stat(tags.size, 'Tags'));
-
-  // Top restaurants (by count, then by avg rating tiebreak)
-  const byRest = {};
-  for (const b of bites) {
-    const k = (b.restaurant_name || '').trim();
-    if (!k) continue;
-    byRest[k] = byRest[k] || { count: 0, sum: 0, n: 0 };
-    byRest[k].count += 1;
-    if (Number(b.rating)) { byRest[k].sum += Number(b.rating); byRest[k].n += 1; }
-  }
-  const topRest = Object.entries(byRest)
-    .sort((a, b) => b[1].count - a[1].count || (b[1].sum/(b[1].n||1)) - (a[1].sum/(a[1].n||1)))
-    .slice(0, 6);
-  const restWrap = $('#stats-restaurants');
-  restWrap.innerHTML = '';
-  if (!topRest.length) {
-    restWrap.appendChild(el('div', { class: 'muted' }, ['No restaurants yet.']));
-  } else {
-    for (const [name, v] of topRest) {
-      const row = el('div', { class: 'list-row' });
-      const left = el('div');
-      left.appendChild(el('div', { class: 'label' }, [name]));
-      const sub = v.n ? `${v.count} ${v.count===1?'bite':'bites'} · avg ${(v.sum/v.n).toFixed(1)}★` : `${v.count} bites`;
-      left.appendChild(el('div', { class: 'sub' }, [sub]));
-      row.appendChild(left);
-      const right = el('button', {
-        class: 'menu-btn', type: 'button', onclick: () => {
-          $('#q').value = name;
-          State.query = name;
-          $('#q-clear').classList.remove('hidden');
-          switchView('home');
-        }
-      }, ['View →']);
-      row.appendChild(right);
-      restWrap.appendChild(row);
-    }
-  }
-
-  // Top tags
-  const tagCounts = {};
-  for (const b of bites) for (const t of (b.tags || [])) {
-    const k = String(t).toLowerCase().trim();
-    if (!k) continue;
-    tagCounts[k] = (tagCounts[k] || 0) + 1;
-  }
-  const tagsTop = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0, 12);
-  const tagWrap = $('#stats-tags');
-  tagWrap.innerHTML = '';
-  if (!tagsTop.length) {
-    tagWrap.appendChild(el('div', { class: 'muted' }, ['No tags yet.']));
-  } else {
-    const tagRow = el('div', { class: 'tags-row' });
-    for (const [k, n] of tagsTop) {
-      tagRow.appendChild(el('span', { class: 'tag' }, [`#${k} · ${n}`]));
-    }
-    tagWrap.appendChild(tagRow);
-  }
-
-  // Recently rated highest
-  const best = [...bites]
-    .filter(b => (Number(b.rating) || 0) >= 4.5)
-    .sort((a, b) => (b.date||'').localeCompare(a.date||''))
-    .slice(0, 5);
-  const bestWrap = $('#stats-best');
-  bestWrap.innerHTML = '';
-  if (!best.length) {
-    bestWrap.appendChild(el('div', { class: 'muted' }, ['Nothing rated 4.5+ yet.']));
-  } else {
-    for (const b of best) {
-      const row = el('div', { class: 'list-row', style: { cursor: 'pointer' }, onclick: () => { switchView('home'); openDetail(b.id); } });
-      const left = el('div');
-      left.appendChild(el('div', { class: 'label' }, [b.dish_name || 'Untitled']));
-      left.appendChild(el('div', { class: 'sub' }, [(b.restaurant_name || '—') + ' · ' + fmtDateShort(b.date)]));
-      row.appendChild(left);
-      row.appendChild(el('div', { class: 'stars-mini', style: { fontSize: '14px' }, html: starsText(b.rating) }));
-      bestWrap.appendChild(row);
-    }
-  }
-}
-
-// --- Views ------------------------------------------------------------------
-function switchView(v) {
-  State.view = v;
-  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
-  $('#view-home').classList.toggle('hidden', v !== 'home');
-  $('#view-stats').classList.toggle('hidden', v !== 'stats');
-  if (v === 'stats') renderStats();
-  else renderHome();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// --- Sheet helpers ----------------------------------------------------------
-const Sheets = {
-  open(id) {
-    $('#scrim').classList.add('open');
-    $('#' + id).classList.add('open');
-    document.body.style.overflow = 'hidden';
-  },
-  close() {
-    $('#scrim').classList.remove('open');
-    $$('.sheet').forEach(s => s.classList.remove('open'));
-    document.body.style.overflow = '';
-  }
-};
-
-// --- Add / Edit -------------------------------------------------------------
-// Last-used city is remembered so users don't re-type it for every bite at
-// home. UPD: Recognition over Recall. Default price is $$ (the modal value)
-// so the field doesn't demand a decision on first capture.
-const LAST_CITY_KEY = 'bites.v0.lastCity';
-const DEFAULT_PRICE = '$$';
-
-function openForm(id=null) {
-  State.editingId = id;
-  const b = id ? State.bites.find(x => x.id === id) : null;
-  $('#sheet-form-title').textContent = b ? 'Edit bite' : 'Add a bite';
-  $('#f-dish').value = b?.dish_name || '';
-  $('#f-rest').value = b?.restaurant_name || '';
-  // Smart defaults for NEW bites only. Editing preserves whatever was saved.
-  const lastCity = localStorage.getItem(LAST_CITY_KEY) || '';
-  $('#f-city').value = b?.city ?? lastCity;
-  $('#f-tags').value = (b?.tags || []).join(', ');
-  $('#f-notes').value = b?.notes || '';
-  $('#f-date').value = b?.date || todayISO();
-  State.pendingPhotoDataUrl = b?.photo_data_url || null;
-  State.pendingRating = b?.rating || 0;
-  State.pendingPrice = b?.price_estimate || (b ? '' : DEFAULT_PRICE);
-  paintPhoto();
-  paintStars();
-  paintPrice();
-
-  // Auto-expand the More / Details sections if editing an existing bite that
-  // has values in those fields — otherwise editing would silently hide their
-  // own data behind a collapsed section. New bites always start collapsed.
-  const moreEl = $('#f-more');
-  const detailsEl = $('#f-details');
-  if (b) {
-    const hasMore = !!(b.restaurant_name || b.notes || (b.tags && b.tags.length));
-    const hasDetails = !!(b.price_estimate || b.city || (b.date && b.date !== todayISO()));
-    if (moreEl) moreEl.open = hasMore;
-    if (detailsEl) detailsEl.open = hasDetails;
-  } else {
-    if (moreEl) moreEl.open = false;
-    if (detailsEl) detailsEl.open = false;
-  }
-
-  Sheets.open('sheet-form');
-  setTimeout(() => $('#f-dish').focus(), 250);
-}
-
-function paintPhoto() {
-  const img = $('#photo-preview');
-  const placeholder = $('#photo-placeholder');
-  const replace = $('#photo-replace');
-  const wrap = $('#photo-input');
-  if (State.pendingPhotoDataUrl) {
-    img.src = State.pendingPhotoDataUrl;
-    img.classList.remove('hidden');
-    placeholder.classList.add('hidden');
-    replace.classList.remove('hidden');
-    wrap.classList.add('has-img');
-  } else {
-    img.classList.add('hidden');
-    img.removeAttribute('src');
-    placeholder.classList.remove('hidden');
-    replace.classList.add('hidden');
-    wrap.classList.remove('has-img');
-  }
-}
-
-function paintStars() {
-  const r = State.pendingRating || 0;
-  const stars = $$('#f-stars .star');
-  stars.forEach((s, i) => {
-    const idx = i + 1;
-    const full = s.querySelector('.full');
-    const half = s.querySelector('.half');
-    if (r >= idx) { full.style.display = 'block'; half.style.display = 'none'; }
-    else if (r >= idx - 0.5) { full.style.display = 'none'; half.style.display = 'block'; }
-    else { full.style.display = 'none'; half.style.display = 'none'; }
-  });
-  $('#f-rating-num').textContent = r ? `${r.toFixed(1)} / 5` : 'Tap a star';
-}
-
-function paintPrice() {
-  $$('#f-price button').forEach(b => b.classList.toggle('active', b.dataset.v === State.pendingPrice));
-}
-
-function bindFormHandlers() {
-  // Photo input
-  $('#photo-file').addEventListener('change', async (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) return;
-    try {
-      toast('Processing photo…');
-      const url = await fileToDownscaledDataUrl(f, 1280, 0.82);
-      State.pendingPhotoDataUrl = url;
-      paintPhoto();
-    } catch (err) {
-      console.error(err);
-      toast('Could not load photo');
-    } finally {
-      e.target.value = '';
-    }
-  });
-
-  // Stars: tap left half = .5, right half = full
-  const starsEl = $('#f-stars');
-  const handleStar = (clientX, target) => {
-    const star = target.closest('.star');
-    if (!star) return;
-    const i = parseInt(star.dataset.i, 10);
-    const rect = star.getBoundingClientRect();
-    const left = (clientX - rect.left) < rect.width / 2;
-    const value = left ? i - 0.5 : i;
-    State.pendingRating = (State.pendingRating === value) ? value - 0.5 : value;
-    if (State.pendingRating < 0) State.pendingRating = 0;
-    paintStars();
-  };
-  starsEl.addEventListener('click', e => handleStar(e.clientX, e.target));
-  // Keyboard: arrow keys
-  starsEl.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { State.pendingRating = Math.min(5, (State.pendingRating || 0) + 0.5); paintStars(); e.preventDefault(); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowDown') { State.pendingRating = Math.max(0, (State.pendingRating || 0) - 0.5); paintStars(); e.preventDefault(); }
-  });
-
-  // Price
-  $$('#f-price button').forEach(b => b.addEventListener('click', () => {
-    State.pendingPrice = State.pendingPrice === b.dataset.v ? '' : b.dataset.v;
-    paintPrice();
-  }));
-
-  $('#form-close').addEventListener('click', Sheets.close);
-  $('#form-cancel').addEventListener('click', Sheets.close);
-  $('#form-save').addEventListener('click', saveForm);
-}
-
-function parseTags(s) {
-  return String(s || '')
-    .split(/[,\n]/)
-    .map(t => t.trim().replace(/^#/, ''))
-    .filter(Boolean);
-}
-
-function saveForm() {
-  const dish = $('#f-dish').value.trim();
-  if (!dish) { toast('Add a dish name'); $('#f-dish').focus(); return; }
-
-  const data = {
-    dish_name: dish,
-    restaurant_name: $('#f-rest').value.trim(),
-    city: $('#f-city').value.trim(),
-    rating: Number(State.pendingRating) || 0,
-    notes: $('#f-notes').value.trim(),
-    tags: parseTags($('#f-tags').value),
-    photo_data_url: State.pendingPhotoDataUrl || '',
-    price_estimate: State.pendingPrice || '',
-    date: $('#f-date').value || todayISO(),
-  };
-
-  // First save also dismisses the hero (they don't need the welcome anymore).
-  if (!localStorage.getItem(HERO_SEEN_KEY)) {
-    localStorage.setItem(HERO_SEEN_KEY, '1');
-    track('hero_dismissed', { trigger: 'first_save' });
-  }
-  $('#hero').classList.remove('show');
-
-  if (State.editingId) {
-    const i = State.bites.findIndex(b => b.id === State.editingId);
-    if (i >= 0) {
-      State.bites[i] = { ...State.bites[i], ...data, updated_at: new Date().toISOString() };
-    }
-  } else {
-    State.bites.push({
-      id: 'bite-' + uuid(),
-      created_at: new Date().toISOString(),
-      ...data,
-    });
-  }
-  try {
-    saveAll(State.bites);
-  } catch (e) {
-    return; // toast already fired
-  }
-  // Remember the city so next bite uses it as default. UPD: Recognition over
-  // Recall — don't make the user re-type their own city every time.
-  if (data.city) {
-    try { localStorage.setItem(LAST_CITY_KEY, data.city); } catch {}
-  }
-  Sheets.close();
-  if (State.view === 'stats') renderStats(); else renderHome();
-  toast(State.editingId ? 'Bite updated' : 'Bite saved');
-  track(State.editingId ? 'bite_updated' : 'bite_added', {
-    has_photo: !!data.photo_data_url,
-    rating: data.rating,
-    has_restaurant: !!data.restaurant_name,
-    tag_count: (data.tags || []).length,
-    library_size: State.bites.length
-  });
-  // After saving a new bite, see if we should surface the inline feedback
-  // prompt. Threshold check is internal; this is a safe no-op if not ready.
-  if (!State.editingId) maybeShowFbPrompt();
-  State.editingId = null;
-}
-
-// --- Detail -----------------------------------------------------------------
-function openDetail(id) {
-  const b = State.bites.find(x => x.id === id);
-  if (!b) return;
-  State.detailId = id;
-  const body = $('#detail-body');
-  body.innerHTML = '';
-
-  const photo = el('div', { class: 'detail-photo' + (b.photo_data_url ? '' : ' no-img') });
-  if (b.photo_data_url) {
-    photo.appendChild(el('img', { src: b.photo_data_url, alt: b.dish_name }));
-  } else {
-    photo.textContent = (b.dish_name || '?').slice(0,1).toUpperCase();
-  }
-  body.appendChild(photo);
-
-  body.appendChild(el('div', { class: 'detail-title' }, [b.dish_name || 'Untitled bite']));
-  if (b.restaurant_name || b.city) {
-    body.appendChild(el('div', { class: 'detail-rest' }, [
-      [b.restaurant_name, b.city].filter(Boolean).join(' · ')
-    ]));
-  }
-
-  const stars = el('div', { class: 'stars-display', style: { fontSize: '22px', marginBottom: '6px' }, html: starsText(b.rating) });
-  body.appendChild(stars);
-
-  if (b.notes) {
-    body.appendChild(el('div', { class: 'detail-notes' }, [b.notes]));
-  }
-  if (b.tags && b.tags.length) {
-    const row = el('div', { class: 'tags-row', style: { margin: '14px 0' } });
-    for (const t of b.tags) row.appendChild(el('span', { class: 'tag' }, ['#' + t]));
-    body.appendChild(row);
-  }
-
-  // Meta rows
-  const rowK = (k, v) => {
-    if (v == null || v === '') return null;
-    const r = el('div', { class: 'detail-row' });
-    r.appendChild(el('span', { class: 'k' }, [k]));
-    r.appendChild(el('span', {}, [v]));
-    return r;
-  };
-  const tbl = el('div', { style: { marginTop: '10px' } });
-  [
-    rowK('Date', fmtDate(b.date)),
-    rowK('Rating', (Number(b.rating) || 0).toFixed(1) + ' / 5'),
-    rowK('Price', b.price_estimate || ''),
-    rowK('Restaurant', b.restaurant_name || ''),
-    rowK('City', b.city || ''),
-  ].forEach(r => r && tbl.appendChild(r));
-  body.appendChild(tbl);
-
-  Sheets.open('sheet-detail');
-}
-
-function bindDetailHandlers() {
-  $('#detail-close').addEventListener('click', Sheets.close);
-  const editBoth = () => { const id = State.detailId; Sheets.close(); setTimeout(() => openForm(id), 220); };
-  $('#detail-edit').addEventListener('click', editBoth);
-  $('#detail-edit-2').addEventListener('click', editBoth);
-  $('#detail-delete').addEventListener('click', () => {
-    const b = State.bites.find(x => x.id === State.detailId);
-    if (!b) return;
-    // Soft-delete: no confirm dialog (the undo toast IS the confirmation step).
-    // UPD: Forgiveness > Confirmation. Confirms train users to click through.
-    State.bites = State.bites.filter(x => x.id !== b.id);
-    saveAll(State.bites);
-    softDelete([b]);
-    Sheets.close();
-    if (State.view === 'stats') renderStats(); else renderHome();
-    toastWithUndo(`Deleted “${b.dish_name || 'bite'}”`, () => {
-      restoreFromTrash([b.id]);
-      State.bites = loadAll();
-      if (State.view === 'stats') renderStats(); else renderHome();
-      toast('Restored');
-    });
-  });
-}
-
-// --- Export / Import / Seed -------------------------------------------------
-function bindIOHandlers() {
-  $('#btn-export').addEventListener('click', () => Sheets.open('sheet-io'));
-  $('#io-close').addEventListener('click', Sheets.close);
-
-  // Cookbook PDF export — paid feature. Gate on either:
-  //   localStorage 'bites.v0.cookbookUnlocked' == '1'  (after Stripe purchase, v0.3+)
-  //   URL flag ?cookbook=preview                       (devs / CEO testing)
-  (() => {
-    const btn = $('#io-cookbook-btn');
-    if (!btn) return;
-    const unlocked = (() => {
-      try {
-        if (localStorage.getItem('bites.v0.cookbookUnlocked') === '1') return true;
-      } catch (e) {}
-      const params = new URLSearchParams(location.search);
-      return params.get('cookbook') === 'preview';
-    })();
-    const lock = $('#io-cookbook-lock');
-    if (!unlocked) {
-      btn.classList.add('ghost');
-      btn.textContent = 'Export Cookbook · PDF (Pro)';
-      if (lock) lock.style.display = 'inline-block';
-    }
-    btn.addEventListener('click', async () => {
-      if (!unlocked) {
-        track('cookbook_clicked', { unlocked: false, alpha: isAlphaTier() });
-        toast('Cookbook export is a paid feature — pre-order in Stats.');
-        Sheets.close();
-        switchView('stats');
-        return;
-      }
-      track('cookbook_clicked', { unlocked: true, alpha: isAlphaTier() });
-      if (!State.bites.length) {
-        toast('No bites yet — add a few first.');
-        return;
-      }
-      // Lazy-load jsPDF + cookbook.js. Both are vendored locally.
-      try {
-        await loadScriptOnce('vendor/jspdf.umd.min.js');
-        await loadScriptOnce('cookbook.js');
-      } catch (e) {
-        toast('Cookbook engine failed to load.');
-        console.error(e);
-        return;
-      }
-      const orig = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'Generating…';
-      try {
-        await window.BitesCookbook.download(State.bites, { /* defaults */ });
-        toast('Cookbook downloaded.');
-      } catch (e) {
-        console.error(e);
-        toast('Cookbook export failed — see console.');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = orig;
-      }
+    document.getElementById('feedback-btn').addEventListener('click', function () {
+      track('feedback_clicked', { page: 'landing' });
     });
   })();
-
-  $('#io-export-btn').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(State.bites, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `bites-${todayISO()}.json`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast('Exported ' + State.bites.length + ' bites');
-  });
-
-  $('#io-import-file').addEventListener('change', async (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) return;
-    try {
-      const text = await f.text();
-      const data = JSON.parse(text);
-      if (!Array.isArray(data)) throw new Error('Expected JSON array');
-      const byId = new Map(State.bites.map(b => [b.id, b]));
-      let added = 0, merged = 0;
-      for (const raw of data) {
-        if (!raw || typeof raw !== 'object') continue;
-        const b = normalizeBite(raw);
-        if (!b.id) b.id = 'bite-' + uuid();
-        if (byId.has(b.id)) {
-          // merge — incoming wins on present fields
-          byId.set(b.id, { ...byId.get(b.id), ...b });
-          merged += 1;
-        } else {
-          byId.set(b.id, b);
-          added += 1;
-        }
-      }
-      State.bites = Array.from(byId.values());
-      saveAll(State.bites);
-      renderHome();
-      toast(`Imported · ${added} new, ${merged} merged`);
-    } catch (err) {
-      console.error(err);
-      toast('Import failed: ' + err.message);
-    } finally {
-      e.target.value = '';
-    }
-  });
-
-  $('#io-seed-btn').addEventListener('click', async () => {
-    await loadSeed();
-    Sheets.close();
-  });
-
-  $('#io-clear-btn').addEventListener('click', () => {
-    if (!State.bites.length) { toast('Nothing to delete'); return; }
-    // Mass delete is destructive enough to deserve a confirm (defensive layer
-    // beyond undo). UPD: confirmation reserved for irreversible-after-grace.
-    const n = State.bites.length;
-    if (!confirm(`Move all ${n} bites to trash? You'll have 8 seconds to undo, and 30 days to restore from trash before they're permanently deleted.`)) return;
-    const removed = State.bites.slice();
-    softDelete(removed);
-    State.bites = [];
-    saveAll(State.bites);
-    Sheets.close();
-    renderHome();
-    toastWithUndo(`Moved ${n} bites to trash`, () => {
-      restoreFromTrash(removed.map(b => b.id));
-      State.bites = loadAll();
-      renderHome();
-      toast('Restored');
-    });
-  });
-}
-
-function normalizeBite(raw) {
-  return {
-    id: raw.id || ('bite-' + uuid()),
-    dish_name: raw.dish_name || raw.dish || '',
-    restaurant_name: raw.restaurant_name || raw.restaurant || '',
-    city: raw.city || '',
-    rating: Number(raw.rating) || 0,
-    notes: raw.notes || '',
-    tags: Array.isArray(raw.tags) ? raw.tags : (raw.tags ? parseTags(raw.tags) : []),
-    photo_data_url: raw.photo_data_url || raw.photo || '',
-    price_estimate: raw.price_estimate || raw.price || '',
-    date: raw.date || todayISO(),
-    created_at: raw.created_at || new Date().toISOString(),
-    lat: raw.lat || null,
-    lng: raw.lng || null,
-  };
-}
-
-async function loadSeed() {
-  try {
-    const res = await fetch('./seed-data.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('seed-data.json missing');
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error('seed not array');
-    const byId = new Map(State.bites.map(b => [b.id, b]));
-    let added = 0;
-    for (const raw of data) {
-      const b = normalizeBite(raw);
-      if (!byId.has(b.id)) { byId.set(b.id, b); added += 1; }
-    }
-    State.bites = Array.from(byId.values());
-    saveAll(State.bites);
-    localStorage.setItem(SEED_DISMISSED_KEY, '1');
-    renderHome();
-    toast(`Loaded ${added} sample bites`);
-  } catch (err) {
-    console.warn(err);
-    toast('Could not load samples (try again after first save)');
-  }
-}
-
-// --- Search ------------------------------------------------------------------
-function bindSearch() {
-  const q = $('#q');
-  const clear = $('#q-clear');
-  let searchTimer = null;
-  q.addEventListener('input', () => {
-    State.query = q.value;
-    clear.classList.toggle('hidden', !q.value);
-    renderHome();
-    // Debounce so typing 'pizza' doesn't fire 5 events.
-    clearTimeout(searchTimer);
-    if (q.value.trim()) {
-      searchTimer = setTimeout(() => {
-        track('bite_searched', { len: q.value.trim().length });
-      }, 600);
-    }
-  });
-  clear.addEventListener('click', () => {
-    q.value = ''; State.query = '';
-    clear.classList.add('hidden');
-    renderHome(); q.focus();
-  });
-}
-
-// --- Tabs --------------------------------------------------------------------
-function bindTabs() {
-  $$('.tab').forEach(t => t.addEventListener('click', () => switchView(t.dataset.view)));
-}
-
-// --- Empty state buttons -----------------------------------------------------
-function bindEmpty() {
-  $('#empty-add').addEventListener('click', () => openForm());
-  $('#empty-seed').addEventListener('click', loadSeed);
-}
-
-// --- FAB + scrim + keyboard -------------------------------------------------
-function bindGlobal() {
-  $('#fab').addEventListener('click', () => openForm());
-  $('#scrim').addEventListener('click', Sheets.close);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') Sheets.close();
-    if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey) {
-      // Don't trigger when typing in an input
-      const tag = (document.activeElement || {}).tagName;
-      if (tag !== 'INPUT' && tag !== 'TEXTAREA') openForm();
-    }
-  });
-}
-
-// --- Landing hero (first-time stranger arrival) ------------------------------
-function maybeShowHero() {
-  // Only show when there are no bites AND user hasn't dismissed before.
-  if (State.bites.length > 0) return;
-  if (localStorage.getItem(HERO_SEEN_KEY)) return;
-  $('#hero').classList.add('show');
-}
-function dismissHero() {
-  localStorage.setItem(HERO_SEEN_KEY, '1');
-  $('#hero').classList.remove('show');
-}
-function bindHero() {
-  $('#hero-dismiss').addEventListener('click', () => {
-    track('hero_dismissed', { trigger: 'manual' });
-    dismissHero();
-  });
-  $('#hero-cta').addEventListener('click', () => {
-    track('hero_dismissed', { trigger: 'cta' });
-    dismissHero();
-    // Don't auto-open the form — let them see the empty state and choose.
-    // (Empty state has its own "Add your first bite" + "Try with sample bites".)
-    renderHome();
-  });
-}
-
-// --- Alpha tester welcome (?ref=alpha) ---------------------------------------
-// When someone arrives via ?ref=alpha:
-//   1. Mark them as tier='alpha' in localStorage (persists across sessions).
-//   2. Show a one-time bottom banner welcoming them.
-//   3. Re-badge the cookbook button so they see "free" instead of $9.99.
-function maybeMarkAlphaTier() {
-  const params = new URLSearchParams(location.search);
-  if (params.get('ref') === 'alpha') {
-    try { localStorage.setItem(USER_TIER_KEY, 'alpha'); } catch (e) {}
-  }
-}
-function isAlphaTier() {
-  try { return localStorage.getItem(USER_TIER_KEY) === 'alpha'; } catch (e) { return false; }
-}
-function maybeShowAlphaBanner() {
-  if (!isAlphaTier()) return;
-  if (localStorage.getItem(ALPHA_BANNER_KEY)) return;
-  const banner = $('#alpha-banner');
-  if (!banner) return;
-  banner.classList.add('show');
-  document.body.classList.add('alpha-banner-active');
-  track('alpha_banner_shown', {});
-}
-function bindAlphaBanner() {
-  const banner = $('#alpha-banner');
-  const close = $('#alpha-banner-close');
-  if (!banner || !close) return;
-  close.addEventListener('click', () => {
-    banner.classList.remove('show');
-    document.body.classList.remove('alpha-banner-active');
-    try { localStorage.setItem(ALPHA_BANNER_KEY, '1'); } catch (e) {}
-    track('alpha_banner_dismissed', {});
-  });
-}
-function applyAlphaBadge() {
-  if (!isAlphaTier()) return;
-  // Cookbook buy button on the Stats tab — show a 'free for alpha' chip.
-  const buy = $('#cookbook-buy');
-  if (buy && !$('#alpha-cookbook-chip')) {
-    const chip = el('span', { id: 'alpha-cookbook-chip', class: 'alpha-cookbook-badge' }, ['Alpha — free']);
-    buy.parentElement && buy.parentElement.insertBefore(chip, buy.nextSibling);
-  }
-  // Replace the visible price line with a friendlier alpha note.
-  const price = $('.cookbook-price');
-  if (price && !price.dataset.alphaPatched) {
-    price.dataset.alphaPatched = '1';
-    price.innerHTML = '<strong style="color:var(--green)">Free for alpha testers.</strong> <span class="muted">($9.99 retail · you keep it.)</span>';
-  }
-}
-
-// --- Feedback button --------------------------------------------------------
-function bindFeedback() {
-  const btn = $('#feedback-btn');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    track('feedback_clicked', { page: 'app', view: State.view, library_size: State.bites.length });
-  });
-}
-
-// --- Inline feedback prompt -------------------------------------------------
-// Shows ONCE per device, after the user has added ≥3 bites OR after 5 min of
-// session time, whichever comes first. Honors prior dismissal/completion.
-// Submission paths:
-//   (1) `track('feedback_inline', {...})` — always fires; counts even if
-//       the user closes the mail compose without sending.
-//   (2) mailto: — opens the user's mail client with the comment prefilled,
-//       so we get a real reply we can engage with.
-const FB_PROMPT_KEY = 'bites.v0.fbPrompt'; // values: 'shown', 'up', 'down', 'dismissed'
-const FB_PROMPT_BITE_THRESHOLD = 3;
-const FB_PROMPT_TIME_THRESHOLD_MS = 5 * 60 * 1000;
-
-function shouldShowFbPrompt() {
-  if (localStorage.getItem(FB_PROMPT_KEY)) return false; // already shown/answered/dismissed
-  if (State.bites.length >= FB_PROMPT_BITE_THRESHOLD) return true;
-  return false;
-}
-
-let fbPromptTimer = null;
-let fbPromptVote = null; // 'up' | 'down' | null
-
-function maybeShowFbPrompt() {
-  if (shouldShowFbPrompt()) showFbPrompt();
-}
-
-function showFbPrompt() {
-  const el = $('#fb-prompt');
-  if (!el || el.hidden === false) return;
-  el.hidden = false;
-  localStorage.setItem(FB_PROMPT_KEY, 'shown');
-  track('fb_prompt_shown', { library_size: State.bites.length });
-}
-
-function hideFbPrompt() {
-  const el = $('#fb-prompt');
-  if (!el) return;
-  el.hidden = true;
-}
-
-function bindFbPrompt() {
-  const el = $('#fb-prompt');
-  if (!el) return;
-  // Close (X)
-  $('#fb-prompt-close').addEventListener('click', () => {
-    if (!localStorage.getItem(FB_PROMPT_KEY) || localStorage.getItem(FB_PROMPT_KEY) === 'shown') {
-      localStorage.setItem(FB_PROMPT_KEY, 'dismissed');
-    }
-    track('fb_prompt_dismissed', { had_vote: !!fbPromptVote });
-    hideFbPrompt();
-  });
-  // Thumbs
-  $$('#fb-prompt-thumbs .fb-thumb').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const vote = btn.getAttribute('data-vote');
-      fbPromptVote = vote;
-      $$('#fb-prompt-thumbs .fb-thumb').forEach(b => b.classList.toggle('selected', b === btn));
-      $('#fb-prompt-comment-wrap').hidden = false;
-      $('#fb-prompt-comment').focus();
-      localStorage.setItem(FB_PROMPT_KEY, vote);
-      track('fb_prompt_vote', { vote, library_size: State.bites.length });
-      haptic(8);
-    });
-  });
-  // Send
-  $('#fb-prompt-send').addEventListener('click', () => sendFbPromptComment());
-  $('#fb-prompt-comment').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); sendFbPromptComment(); }
-  });
-}
-
-function sendFbPromptComment() {
-  const comment = $('#fb-prompt-comment').value.trim();
-  // Always fire analytics even if comment is empty (we have the vote).
-  track('fb_prompt_send', { vote: fbPromptVote, comment_len: comment.length, library_size: State.bites.length });
-  // Open mailto with the comment + vote so the founder gets a real reply.
-  if (comment) {
-    const subj = encodeURIComponent(`Bites alpha feedback (${fbPromptVote === 'up' ? 'thumbs up' : 'thumbs down'})`);
-    const body = encodeURIComponent(
-      `Vote: ${fbPromptVote === 'up' ? 'thumbs up' : 'thumbs down'}\n` +
-      `Comment: ${comment}\n\n` +
-      `(Sent from the inline feedback prompt after ${State.bites.length} bites.)`
-    );
-    window.location.href = `mailto:bites@aitinkery.com?subject=${subj}&body=${body}`;
-  }
-  // Show the thanks state, hide after a beat.
-  $('#fb-prompt-thumbs').hidden = true;
-  $('#fb-prompt-comment-wrap').hidden = true;
-  $('#fb-prompt-thanks').hidden = false;
-  setTimeout(() => hideFbPrompt(), 2200);
-}
-
-// --- Cookbook pre-order ------------------------------------------------------
-// Intent capture only. We do TWO things on submit:
-//   1. Open a mailto: so the user actually sends a real email — high-signal,
-//      and gives the founder a real address they can reply to.
-//   2. Stash the email in localStorage `bites:reservations` as a backup
-//      record (the schlep work — if the mailto fails or they cancel the
-//      compose window, we still have a local trace).
-function validEmail(s) {
-  // Pragmatic regex — not RFC 5322, just "looks like an email".
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim());
-}
-function loadReservations() {
-  try {
-    const raw = localStorage.getItem(RESERVATIONS_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr : [];
-  } catch { return []; }
-}
-function saveReservations(list) {
-  try { localStorage.setItem(RESERVATIONS_KEY, JSON.stringify(list)); }
-  catch (e) { console.warn('reservations save failed', e); }
-}
-function setReservedUI(email) {
-  const card = $('#cookbook-card');
-  const badge = $('#cookbook-reserved-badge');
-  const emailSlot = $('#cookbook-reserved-email');
-  if (!card) return;
-  card.classList.add('reserved');
-  if (badge) badge.hidden = false;
-  if (emailSlot) emailSlot.textContent = email || '';
-}
-function bindCookbook() {
-  const form = $('#cookbook-form');
-  if (!form) return;
-
-  // If user already reserved on this device, show the reserved state.
-  const prior = localStorage.getItem(RESERVED_KEY);
-  if (prior) setReservedUI(prior);
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = $('#cookbook-email');
-    const msg = $('#cookbook-msg');
-    msg.classList.remove('ok', 'err');
-    const email = input.value.trim();
-    if (!validEmail(email)) {
-      msg.textContent = 'That email doesn’t look right — mind checking it?';
-      msg.classList.add('err');
-      input.focus();
-      return;
-    }
-
-    // 1. Local record (the schlep — always do this first, even if mail fails).
-    const list = loadReservations();
-    if (!list.some(r => r.email && r.email.toLowerCase() === email.toLowerCase())) {
-      list.push({ email, timestamp: new Date().toISOString() });
-      saveReservations(list);
-    }
-    localStorage.setItem(RESERVED_KEY, email);
-
-    // 2. mailto: — open the user's mail client with prefilled fields.
-    //    pg "do things that don't scale": for the first 50 pre-orders, the
-    //    founder reads each email personally. Higher-signal than a Formspree
-    //    blob, and a stranger sending an actual email is a stronger commit.
-    const subject = encodeURIComponent('Bites Cookbook Reservation');
-    const body = encodeURIComponent(
-      `Reserve me for the Bites Cookbook. — ${email}\n\n` +
-      `(Sent from the Bites pre-order form.)`
-    );
-    const mailto = `mailto:bites@aitinkery.com?subject=${subject}&body=${body}`;
-    // Use location.href so single-tap on iOS triggers Mail.app reliably.
-    window.location.href = mailto;
-
-    // 3. UI: optimistic success state. If the mail client never opened we
-    //    still have the local record — they can reach out and we can match.
-    setReservedUI(email);
-    msg.textContent = '';
-    toast('Reserved. Check your mail app to confirm.');
-  });
-}
-
-// --- Native-feel layer (iOS standalone, haptics, install hint, PTR, dbl-tap) -
-//
-// We don't ship a Capacitor wrap yet, but the user-perceived gap should be
-// near-zero once Bites is added to the home screen. Everything below is
-// what closes that gap on iOS Safari.
-
-// Standalone detection. iOS exposes navigator.standalone (legacy); modern
-// browsers expose display-mode media. We also honor ?standalone=1 so we
-// can verify the standalone CSS path in regular Safari without installing.
-function detectStandalone() {
-  try {
-    const params = new URLSearchParams(location.search);
-    const forced = params.get('standalone') === '1';
-    const mq = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-    const ios = !!(window.navigator && window.navigator.standalone);
-    return forced || mq || ios;
-  } catch { return false; }
-}
-const IS_STANDALONE = detectStandalone();
-if (IS_STANDALONE) document.documentElement.classList.add('standalone');
-
-// Cheap iOS-Safari sniff. Only used to gate the "Add to Home Screen" hint;
-// nothing breaks if this misfires.
-function isIOSSafari() {
-  const ua = navigator.userAgent || '';
-  const isIOS = /iPad|iPhone|iPod/.test(ua) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS reports as Mac
-  const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
-  return isIOS && isSafari;
-}
-
-// Light haptic. Vibration API: ignored on iOS (no harm), works on Android.
-// Once Capacitor is wrapped, swap this for @capacitor/haptics.
-function haptic(ms = 10) {
-  try { if (navigator.vibrate) navigator.vibrate(ms); } catch {}
-}
-// Hook haptics into save / star / delete touch points without re-finding
-// elements (those are dynamic). Use event delegation at body.
-function bindHaptics() {
-  document.addEventListener('click', (e) => {
-    const t = e.target;
-    if (!t || !t.closest) return;
-    if (t.closest('#form-save'))   return haptic(12);
-    if (t.closest('#detail-delete')) return haptic(18);
-    if (t.closest('.stars'))       return haptic(8);
-    if (t.closest('#fab'))         return haptic(8);
-  }, { passive: true });
-}
-
-// iOS "Add to Home Screen" hint. Trigger when:
-//   * iOS Safari AND not already standalone
-//   * AND not previously dismissed
-//   * AND (>30s of usage in this session  OR  >=2 bites in library)
-const IOS_HINT_KEY = 'bites.v0.iosHintDismissed';
-function bindIosHint() {
-  if (IS_STANDALONE) return;
-  if (!isIOSSafari()) return;
-  if (localStorage.getItem(IOS_HINT_KEY)) return;
-  const hint = $('#ios-hint');
-  if (!hint) return;
-  let shown = false;
-  function maybeShow() {
-    if (shown) return;
-    shown = true;
-    hint.classList.add('show');
-  }
-  // Show when they have meaningful library size already.
-  if ((State.bites || []).length >= 2) {
-    setTimeout(maybeShow, 1200);
-  } else {
-    setTimeout(maybeShow, 30000);
-  }
-  $('#ios-hint-close').addEventListener('click', () => {
-    hint.classList.remove('show');
-    localStorage.setItem(IOS_HINT_KEY, '1');
-  });
-}
-
-// Pull-to-refresh (standalone only). The drag is observed at window scope;
-// when the user pulls down past a threshold while at the top of the page,
-// we re-read localStorage and re-render. No third-party libs.
-function bindPullToRefresh() {
-  if (!IS_STANDALONE) return;
-  const ptr = $('#ptr');
-  const label = $('#ptr-label');
-  if (!ptr) return;
-  let startY = 0;
-  let pulling = false;
-  let armed = false;
-  const THRESHOLD = 70; // px before we commit
-  document.addEventListener('touchstart', (e) => {
-    if (window.scrollY > 0) { pulling = false; return; }
-    if (Sheets && document.querySelector('.sheet.open')) { pulling = false; return; }
-    startY = e.touches[0].clientY;
-    pulling = true;
-    armed = false;
-  }, { passive: true });
-  document.addEventListener('touchmove', (e) => {
-    if (!pulling) return;
-    const dy = e.touches[0].clientY - startY;
-    if (dy <= 0) { ptr.classList.remove('active'); return; }
-    ptr.classList.add('active');
-    if (dy >= THRESHOLD) {
-      armed = true;
-      label.textContent = 'Release to refresh';
-    } else {
-      armed = false;
-      label.textContent = 'Pull to refresh';
-    }
-  }, { passive: true });
-  document.addEventListener('touchend', () => {
-    if (!pulling) return;
-    pulling = false;
-    if (armed) {
-      ptr.classList.add('refreshing');
-      label.textContent = 'Refreshing…';
-      // Re-read storage and re-render. localStorage is sync, but we yield a
-      // frame so the spinner has a chance to render before the work.
-      requestAnimationFrame(() => {
-        try {
-          State.bites = loadAll();
-          renderHome();
-          if (typeof renderStats === 'function') renderStats();
-        } catch {}
-        haptic(15);
-        setTimeout(() => {
-          ptr.classList.remove('active', 'refreshing');
-          label.textContent = 'Pull to refresh';
-        }, 350);
-      });
-    } else {
-      ptr.classList.remove('active');
-    }
-  });
-}
-
-// Double-tap-on-active-tab → smooth-scroll to top of that view (iOS classic).
-function bindTabDoubleTap() {
-  $$('.tab').forEach(t => {
-    let last = 0;
-    t.addEventListener('click', () => {
-      const now = Date.now();
-      if (t.classList.contains('active') && (now - last) < 600) {
-        // Already active and rapid second tap — jump to top.
-        try {
-          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
-        } catch { window.scrollTo(0, 0); }
-      }
-      last = now;
-    });
-  });
-}
-
-// --- PWA install banner ------------------------------------------------------
-let deferredPrompt = null;
-function bindInstall() {
-  // No need for the Android/Chrome install banner if we're already running
-  // standalone, or if the user is on iOS Safari (which uses .ios-hint).
-  if (IS_STANDALONE) return;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (localStorage.getItem(INSTALL_DISMISSED_KEY)) return;
-    setTimeout(() => {
-      $('#install').classList.add('show');
-      track('install_banner_shown', {});
-    }, 4000);
-  });
-  $('#install-yes').addEventListener('click', async () => {
-    $('#install').classList.remove('show');
-    track('install_banner_accepted', {});
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      try { await deferredPrompt.userChoice; } catch {}
-      deferredPrompt = null;
-    }
-    localStorage.setItem(INSTALL_DISMISSED_KEY, '1');
-  });
-  $('#install-no').addEventListener('click', () => {
-    $('#install').classList.remove('show');
-    track('install_banner_dismissed', {});
-    localStorage.setItem(INSTALL_DISMISSED_KEY, '1');
-  });
-}
-
-// --- Service worker ----------------------------------------------------------
-function registerSW() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => { /* fine offline-less */ });
-  }
-}
-
-// --- URL-flag handlers (ship-grade dev affordances) -------------------------
-// ?ref=share  → first-time visitor from a shared link gets sample bites
-//             pre-loaded so the second screen they see is the actual product,
-//             not an empty grid. Higher "this is real" conversion.
-// ?admin=reservations → dump localStorage cookbook reservations as a
-//             readable list with copy/CSV download. Hidden URL only the CEO
-//             knows. Pure pg "do things that don't scale" affordance.
-async function handleUrlFlags() {
-  const params = new URLSearchParams(location.search);
-  if (params.get('ref') === 'share') {
-    // Only seed on first visit (don't override an existing library)
-    if (!loadAll().length && !localStorage.getItem('bites.v0.heroSeen')) {
-      try { await loadSeed(); } catch {}
-    }
-  }
-  if (params.get('admin') === 'reservations') {
-    showReservationsAdmin();
-  }
-}
-
-function showReservationsAdmin() {
-  const raw = localStorage.getItem('bites:reservations');
-  let list = [];
-  try { list = raw ? JSON.parse(raw) : []; } catch {}
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
-  const panel = document.createElement('div');
-  panel.style.cssText = 'background:#fff;max-width:600px;width:100%;max-height:80vh;overflow:auto;padding:24px;border-radius:12px;font-family:ui-monospace,Menlo,monospace;font-size:13px;';
-  const csv = 'email,timestamp\n' + list.map(r => `${r.email},${r.timestamp}`).join('\n');
-  panel.innerHTML = `
-    <h2 style="font-family:inherit;font-size:14px;margin:0 0 12px;">Cookbook Reservations (${list.length})</h2>
-    <pre style="background:#f6f3ed;padding:12px;border-radius:6px;white-space:pre-wrap;word-break:break-all;">${list.length ? list.map(r => `${r.email}  —  ${r.timestamp}`).join('\n') : '(none yet)'}</pre>
-    <div style="display:flex;gap:8px;margin-top:12px;">
-      <button id="adm-copy" style="padding:8px 14px;border:0;border-radius:6px;background:#C84B31;color:#fff;cursor:pointer;">Copy CSV</button>
-      <button id="adm-close" style="padding:8px 14px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;">Close</button>
-    </div>`;
-  overlay.appendChild(panel);
-  document.body.appendChild(overlay);
-  panel.querySelector('#adm-copy').addEventListener('click', () => {
-    navigator.clipboard.writeText(csv).then(() => {
-      panel.querySelector('#adm-copy').textContent = '✓ Copied';
-    });
-  });
-  panel.querySelector('#adm-close').addEventListener('click', () => overlay.remove());
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
-}
-
-// --- Boot --------------------------------------------------------------------
-async function boot() {
-  purgeOldTrash(); // silent cleanup of soft-deletes older than 30 days
-  State.bites = loadAll();
-  maybeMarkAlphaTier(); // must run before binding so cookbook badge applies
-  bindFormHandlers();
-  bindDetailHandlers();
-  bindIOHandlers();
-  bindSearch();
-  bindTabs();
-  bindEmpty();
-  bindGlobal();
-  bindHero();
-  bindCookbook();
-  bindInstall();
-  bindHaptics();
-  bindIosHint();
-  bindPullToRefresh();
-  bindTabDoubleTap();
-  bindAlphaBanner();
-  bindFeedback();
-  bindFbPrompt();
-  // After boot completes, also check the time-based path: if the user has
-  // been on the app for >5 min without hitting the bite-count threshold,
-  // show the prompt. (Honors prior dismiss/answer state via shouldShowFbPrompt.)
-  setTimeout(() => maybeShowFbPrompt(), FB_PROMPT_TIME_THRESHOLD_MS);
-  registerSW();
-  await handleUrlFlags();
-  // Re-load State in case ?ref=share seeded data
-  State.bites = loadAll();
-  renderHome();
-  maybeShowHero();
-  maybeShowAlphaBanner();
-  applyAlphaBadge();
-}
-boot();
 </script>
 </body>
 </html>
