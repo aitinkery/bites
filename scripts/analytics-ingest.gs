@@ -73,3 +73,13 @@ function doGet() {
   return ContentService.createTextOutput(JSON.stringify({ ok: true, name: 'bites-analytics-ingest' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
+
+// One-time setup helper. Run this manually from the Apps Script editor the
+// first time you deploy — it triggers the OAuth grant prompt for Sheets
+// access, which doPost can't trigger on its own (Apps Script swallows the
+// permission error before the prompt fires when called from a real request).
+// After running once successfully, this function can stay or be deleted; it's
+// idempotent. Adds a marker row 'authorize-me-test' to the Events sheet.
+function authorizeMe() {
+  SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME).appendRow(['authorize-me-test']);
+}

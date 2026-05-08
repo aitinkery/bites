@@ -108,7 +108,7 @@ Highest-quality data — they'll actually use it because you watched them instal
 | **7** | Mid-alpha pulse: 2-question DM | DM (all 30 testers): "Quick check — still using it? Anything broken?" | At least 50% reply |
 | **10** | Nudge: "Try the Search tab" | DM | Users discover search (it's the long-term retention loop) |
 | **14** | Day-14 survey: feedback email + cookbook willingness-to-pay | DM with link to the in-app Feedback button + analytics export | ≥20 of 30 testers reply with feedback email |
-| **14** | Collect `?stats=1` JSON exports | DM each tester: "When you have a sec, open https://bites.kitchen/?stats=1 and email me the JSON. Takes 10 seconds." | ≥20 of 30 send the export |
+| **14** | Collect `?stats=1` event logs | DM each tester: "Quick favor — open https://bites.kitchen/?stats=1 and tap **Send to founder**. Takes 5 seconds." The button POSTs the local event log to the Bites Alpha Analytics Sheet via Apps Script. | ≥25 of 30 send |
 
 ### Day-14 survey (the only structured data we collect)
 
@@ -155,7 +155,7 @@ Would I pay $9.99 for a year-end cookbook (yes/no/maybe):
 - ✅ All events readable by the user via `?stats=1`
 - ✅ User can wipe via `?stats=1` → "Reset log"
 
-**How we collect at day 14:** DM each tester with the link, ask them to copy-paste the JSON, paste into a reply. Manual but high-signal. Ten minutes total per tester to read.
+**How we collect at day 14:** DM each tester with the link, ask them to tap **Send to founder** in the `?stats=1` overlay. The Apps Script ingest at `scripts/analytics-ingest.gs` writes a row per event into the Bites Alpha Analytics Sheet automatically. The CEO reads the Sheet, not a stack of pasted JSON blobs.
 
 **Stretch (post-alpha, not blocking):** add a Cloudflare Worker endpoint that batches events from `BitesAnalytics.track` and appends to a Google Sheet. Single ~30-line file. Not needed for the alpha.
 
@@ -166,7 +166,7 @@ Would I pay $9.99 for a year-end cookbook (yes/no/maybe):
 **Date:** Day 21 from kickoff (= day 7 of recruitment + day 14 of testing).
 
 **Inputs to read:**
-- All 30 (target) `?stats=1` JSON exports, parsed and aggregated
+- All 30 (target) testers' event logs aggregated automatically in the Bites Alpha Analytics Sheet
 - All feedback emails received via the Feedback button
 - 5–10 1:1 follow-up calls (15 min each) with the most engaged testers
 
