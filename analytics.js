@@ -36,6 +36,13 @@
   var SESSION_KEY   = 'bites.v0.sessionId';
   var MAX_EVENTS    = 5000; // hard cap so a runaway loop can't fill localStorage
 
+  // Optional ingest endpoint. When set (with the matching shared secret),
+  // users can tap "Send to founder" in the ?stats=1 overlay to ship their
+  // event log to the central Google Sheet via Apps Script proxy.
+  // Empty by default — set after deploying scripts/analytics-ingest.gs.
+  var ANALYTICS_INGEST_URL = '';
+  var ANALYTICS_INGEST_SECRET = '';
+
   function uuid() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -157,6 +164,41 @@
     try { localStorage.removeItem(ANALYTICS_KEY); } catch (e) {}
   }
 
+  // Ship the local event log to the configured Apps Script ingest endpoint.
+  // User-initiated only (Send to founder button). Returns a Promise<number>.
+  function sendEventsToIngest() {
+    if (!ANALYTICS_INGEST_URL) {
+      return Promise.reject(new Error('ingest URL not configured'));
+    }
+    var s = loadStore();
+    if (!s.events.length) return Promise.resolve(0);
+    var payload = {
+      secret: ANALYTICS_INGEST_SECRET,
+      session_id: s.installId,
+      user_agent: (navigator && navigator.userAgent) || '',
+      events: s.events.map(function (ev) {
+        return {
+          timestamp: ev.t,
+          session: ev.session,
+          event: ev.name,
+          page: (ev.data && ev.data.page) || '',
+          ref: (ev.data && ev.data.ref) || '',
+          data: ev.data || {}
+        };
+      })
+    };
+    // Apps Script expects text/plain to avoid CORS preflight; the script
+    // parses JSON.parse(e.postData.contents) on its side.
+    return fetch(ANALYTICS_INGEST_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script doesn't return CORS headers; we accept opaque
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function () {
+      return payload.events.length;
+    });
+  }
+
   // --- Stats overlay (?stats=1) -------------------------------------------
   function showStatsOverlay() {
     var s = loadStore();
@@ -193,6 +235,7 @@
       +   summary.replace(/&/g, '&amp;').replace(/</g, '&lt;')
       + '</pre>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">'
+      +   '<button id="bites-stats-send"      style="padding:9px 14px;border:0;border-radius:8px;background:#23201C;color:#FAF6F0;font-weight:600;cursor:pointer;">Send to founder</button>'
       +   '<button id="bites-stats-copy-json" style="padding:9px 14px;border:0;border-radius:8px;background:#C84B31;color:#FAF6F0;font-weight:600;cursor:pointer;">Copy JSON</button>'
       +   '<button id="bites-stats-copy-csv"  style="padding:9px 14px;border:0;border-radius:8px;background:#C84B31;color:#FAF6F0;font-weight:600;cursor:pointer;">Copy CSV</button>'
       +   '<button id="bites-stats-download"  style="padding:9px 14px;border:1px solid #C84B31;border-radius:8px;background:transparent;color:#C84B31;font-weight:600;cursor:pointer;">Download JSON</button>'
@@ -225,6 +268,32 @@
     panel.querySelector('#bites-stats-copy-csv').onclick = function () {
       navigator.clipboard.writeText(csv).then(function () { flash(this, '✓ Copied'); }.bind(this));
     };
+    // Send-to-founder button (only enabled when ingest URL is configured).
+    var sendBtn = panel.querySelector('#bites-stats-send');
+    if (sendBtn) {
+      if (!ANALYTICS_INGEST_URL) {
+        sendBtn.disabled = true;
+        sendBtn.title = 'Ingest endpoint not configured — use Copy JSON instead';
+        sendBtn.style.opacity = '0.5';
+        sendBtn.style.cursor = 'not-allowed';
+      } else {
+        sendBtn.onclick = function () {
+          sendBtn.textContent = 'Sending…';
+          sendBtn.disabled = true;
+          sendEventsToIngest()
+            .then(function (n) {
+              sendBtn.textContent = '✓ Sent ' + n + ' events';
+              setTimeout(function () { sendBtn.textContent = 'Send to founder'; sendBtn.disabled = false; }, 2400);
+            })
+            .catch(function (err) {
+              sendBtn.textContent = 'Send failed — see console';
+              sendBtn.disabled = false;
+              console.error('analytics ingest failed', err);
+            });
+        };
+      }
+    }
+
     panel.querySelector('#bites-stats-download').onclick = function () {
       var blob = new Blob([json], { type: 'application/json' });
       var url = URL.createObjectURL(blob);

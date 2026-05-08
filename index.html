@@ -999,6 +999,87 @@ details.io-more[open] > summary { margin-bottom: 6px; }
   flex: 0 0 auto;
 }
 .alpha-banner .close:hover { color: var(--bg); }
+
+/* Inline feedback prompt (UPD: Empathy + active solicitation; pg "do things
+   that don't scale" — the founder asks for feedback in the moment).
+   Surfaces once, after the user has added ≥3 bites OR after 5 min of session.
+   Bottom-anchored, brand-tinted, dismissable, persists state. */
+.fb-prompt {
+  position: fixed;
+  left: 50%;
+  bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 24px rgba(35, 32, 28, 0.18), 0 2px 6px rgba(35, 32, 28, 0.08);
+  z-index: 90;
+  animation: fb-prompt-in .35s ease;
+}
+@keyframes fb-prompt-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.fb-prompt[hidden] { display: none !important; }
+.fb-prompt-close {
+  position: absolute; top: 8px; right: 10px;
+  background: transparent; border: 0;
+  color: var(--ink-mute); font-size: 18px;
+  cursor: pointer; padding: 4px 6px;
+  line-height: 1;
+}
+.fb-prompt-close:hover { color: var(--ink); }
+.fb-prompt-q {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.35;
+  color: var(--ink);
+  margin: 0 22px 12px 0;
+  font-weight: 500;
+}
+.fb-prompt-row {
+  display: flex; gap: 8px; align-items: stretch;
+  margin-top: 10px;
+}
+.fb-thumb {
+  flex: 1;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s, border-color .15s, transform .08s;
+}
+.fb-thumb:hover { background: var(--paper); border-color: var(--ink-mute); }
+.fb-thumb:active { transform: scale(0.97); }
+.fb-thumb.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
+#fb-prompt-comment {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 16px; /* >=16 to prevent iOS auto-zoom */
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+#fb-prompt-comment:focus { border-color: var(--accent); }
+#fb-prompt-send {
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.fb-prompt-thanks {
+  margin-top: 10px;
+  font-style: italic;
+}
 @media (min-width: 700px) {
   .alpha-banner { left: auto; right: 24px; max-width: 380px; bottom: 24px; }
 }
@@ -1518,6 +1599,26 @@ html.standalone header.topbar { padding-bottom: 10px; }
   <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6.7l-3 2.6a.5.5 0 0 1-.7-.4V12H3a1 1 0 0 1-1-1V3z"/></svg>
   Feedback
 </a>
+
+<!-- Inline feedback prompt — surfaces once, after the user has added 3+ bites.
+     Goal: catch real users in the moment they've actually tried the product.
+     Submission paths: mailto (high-signal real reply) + analytics ping (so we
+     know counts even when mailto is cancelled). Dismissible; persists. -->
+<div class="fb-prompt" id="fb-prompt" role="region" aria-label="Founder asking for feedback" hidden>
+  <button class="fb-prompt-close" id="fb-prompt-close" aria-label="Dismiss">✕</button>
+  <div class="fb-prompt-body">
+    <p class="fb-prompt-q">A quick note from the founder — does Bites work for you so far?</p>
+    <div class="fb-prompt-row" id="fb-prompt-thumbs" role="group" aria-label="Thumbs up or down">
+      <button type="button" class="fb-thumb" data-vote="up" aria-label="Yes, working for me">👍 Yes</button>
+      <button type="button" class="fb-thumb" data-vote="down" aria-label="No, not really">👎 Not really</button>
+    </div>
+    <div class="fb-prompt-row" id="fb-prompt-comment-wrap" hidden>
+      <input type="text" id="fb-prompt-comment" maxlength="240" placeholder="One line. What's working / not working?" />
+      <button type="button" class="btn" id="fb-prompt-send">Send</button>
+    </div>
+    <div class="fb-prompt-thanks muted" id="fb-prompt-thanks" hidden>Thanks — noted. 🙏</div>
+  </div>
+</div>
 
 <!-- iOS "Add to Home Screen" hint banner. iOS Safari has no beforeinstallprompt,
      so we hand-render a coach card pointing at the share button. -->
@@ -2290,6 +2391,9 @@ function saveForm() {
     tag_count: (data.tags || []).length,
     library_size: State.bites.length
   });
+  // After saving a new bite, see if we should surface the inline feedback
+  // prompt. Threshold check is internal; this is a safe no-op if not ready.
+  if (!State.editingId) maybeShowFbPrompt();
   State.editingId = null;
 }
 
@@ -2680,6 +2784,97 @@ function bindFeedback() {
   });
 }
 
+// --- Inline feedback prompt -------------------------------------------------
+// Shows ONCE per device, after the user has added ≥3 bites OR after 5 min of
+// session time, whichever comes first. Honors prior dismissal/completion.
+// Submission paths:
+//   (1) `track('feedback_inline', {...})` — always fires; counts even if
+//       the user closes the mail compose without sending.
+//   (2) mailto: — opens the user's mail client with the comment prefilled,
+//       so we get a real reply we can engage with.
+const FB_PROMPT_KEY = 'bites.v0.fbPrompt'; // values: 'shown', 'up', 'down', 'dismissed'
+const FB_PROMPT_BITE_THRESHOLD = 3;
+const FB_PROMPT_TIME_THRESHOLD_MS = 5 * 60 * 1000;
+
+function shouldShowFbPrompt() {
+  if (localStorage.getItem(FB_PROMPT_KEY)) return false; // already shown/answered/dismissed
+  if (State.bites.length >= FB_PROMPT_BITE_THRESHOLD) return true;
+  return false;
+}
+
+let fbPromptTimer = null;
+let fbPromptVote = null; // 'up' | 'down' | null
+
+function maybeShowFbPrompt() {
+  if (shouldShowFbPrompt()) showFbPrompt();
+}
+
+function showFbPrompt() {
+  const el = $('#fb-prompt');
+  if (!el || el.hidden === false) return;
+  el.hidden = false;
+  localStorage.setItem(FB_PROMPT_KEY, 'shown');
+  track('fb_prompt_shown', { library_size: State.bites.length });
+}
+
+function hideFbPrompt() {
+  const el = $('#fb-prompt');
+  if (!el) return;
+  el.hidden = true;
+}
+
+function bindFbPrompt() {
+  const el = $('#fb-prompt');
+  if (!el) return;
+  // Close (X)
+  $('#fb-prompt-close').addEventListener('click', () => {
+    if (!localStorage.getItem(FB_PROMPT_KEY) || localStorage.getItem(FB_PROMPT_KEY) === 'shown') {
+      localStorage.setItem(FB_PROMPT_KEY, 'dismissed');
+    }
+    track('fb_prompt_dismissed', { had_vote: !!fbPromptVote });
+    hideFbPrompt();
+  });
+  // Thumbs
+  $$('#fb-prompt-thumbs .fb-thumb').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const vote = btn.getAttribute('data-vote');
+      fbPromptVote = vote;
+      $$('#fb-prompt-thumbs .fb-thumb').forEach(b => b.classList.toggle('selected', b === btn));
+      $('#fb-prompt-comment-wrap').hidden = false;
+      $('#fb-prompt-comment').focus();
+      localStorage.setItem(FB_PROMPT_KEY, vote);
+      track('fb_prompt_vote', { vote, library_size: State.bites.length });
+      haptic(8);
+    });
+  });
+  // Send
+  $('#fb-prompt-send').addEventListener('click', () => sendFbPromptComment());
+  $('#fb-prompt-comment').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); sendFbPromptComment(); }
+  });
+}
+
+function sendFbPromptComment() {
+  const comment = $('#fb-prompt-comment').value.trim();
+  // Always fire analytics even if comment is empty (we have the vote).
+  track('fb_prompt_send', { vote: fbPromptVote, comment_len: comment.length, library_size: State.bites.length });
+  // Open mailto with the comment + vote so the founder gets a real reply.
+  if (comment) {
+    const subj = encodeURIComponent(`Bites alpha feedback (${fbPromptVote === 'up' ? 'thumbs up' : 'thumbs down'})`);
+    const body = encodeURIComponent(
+      `Vote: ${fbPromptVote === 'up' ? 'thumbs up' : 'thumbs down'}\n` +
+      `Comment: ${comment}\n\n` +
+      `(Sent from the inline feedback prompt after ${State.bites.length} bites.)`
+    );
+    window.location.href = `mailto:bites@aitinkery.com?subject=${subj}&body=${body}`;
+  }
+  // Show the thanks state, hide after a beat.
+  $('#fb-prompt-thumbs').hidden = true;
+  $('#fb-prompt-comment-wrap').hidden = true;
+  $('#fb-prompt-thanks').hidden = false;
+  setTimeout(() => hideFbPrompt(), 2200);
+}
+
 // --- Cookbook pre-order ------------------------------------------------------
 // Intent capture only. We do TWO things on submit:
 //   1. Open a mailto: so the user actually sends a real email — high-signal,
@@ -3023,6 +3218,11 @@ async function boot() {
   bindTabDoubleTap();
   bindAlphaBanner();
   bindFeedback();
+  bindFbPrompt();
+  // After boot completes, also check the time-based path: if the user has
+  // been on the app for >5 min without hitting the bite-count threshold,
+  // show the prompt. (Honors prior dismiss/answer state via shouldShowFbPrompt.)
+  setTimeout(() => maybeShowFbPrompt(), FB_PROMPT_TIME_THRESHOLD_MS);
   registerSW();
   await handleUrlFlags();
   // Re-load State in case ?ref=share seeded data
