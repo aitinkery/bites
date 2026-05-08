@@ -5,10 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Bites — Remember every dish worth remembering.</title>
 <meta name="description" content="Bites is a private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten." />
-<meta name="theme-color" content="#FAF6F0" />
+<meta name="theme-color" content="#FAF6F0" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#23201C" media="(prefers-color-scheme: dark)" />
+
+<!-- PWA: makes Add to Home Screen offer to install Bites. start_url in the
+     manifest points at /app/, so the home-screen icon launches into the app
+     directly, not back into the landing page. -->
+<link rel="manifest" href="/manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Bites" />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<!-- Apple touch icons (Safari uses for Add to Home Screen) -->
+<link rel="apple-touch-icon" href="/icons/apple/apple-touch-icon-180.png" />
+<link rel="apple-touch-icon" sizes="57x57"   href="/icons/apple/apple-touch-icon-57.png" />
+<link rel="apple-touch-icon" sizes="60x60"   href="/icons/apple/apple-touch-icon-60.png" />
+<link rel="apple-touch-icon" sizes="72x72"   href="/icons/apple/apple-touch-icon-72.png" />
+<link rel="apple-touch-icon" sizes="76x76"   href="/icons/apple/apple-touch-icon-76.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="/icons/apple/apple-touch-icon-114.png" />
+<link rel="apple-touch-icon" sizes="120x120" href="/icons/apple/apple-touch-icon-120.png" />
+<link rel="apple-touch-icon" sizes="144x144" href="/icons/apple/apple-touch-icon-144.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/apple/apple-touch-icon-152.png" />
+<link rel="apple-touch-icon" sizes="167x167" href="/icons/apple/apple-touch-icon-167.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple/apple-touch-icon-180.png" />
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://bites.kitchen/landing/" />
+<meta property="og:url" content="https://bites.kitchen/" />
 <meta property="og:title" content="Bites — Save dishes, not restaurants." />
 <meta property="og:description" content="Your private food journal. Save what you ate, when, and where — long after you've forgotten." />
 <meta property="og:image" content="https://bites.kitchen/og-image.png" />
@@ -19,7 +44,6 @@
 <meta name="twitter:title" content="Bites — Save dishes, not restaurants." />
 <meta name="twitter:description" content="Your private food journal. Save what you ate, when, and where." />
 <meta name="twitter:image" content="https://bites.kitchen/og-image.png" />
-<link rel="icon" href="../icons/icon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />

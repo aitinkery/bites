@@ -5,7 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Bites — Remember every dish worth remembering.</title>
 <meta name="description" content="Bites is a private food journal. Save dishes, not restaurants. Search what you ate, when, and where — long after you've forgotten." />
-<meta name="theme-color" content="#FAF6F0" />
+<meta name="theme-color" content="#FAF6F0" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#23201C" media="(prefers-color-scheme: dark)" />
+
+<!-- PWA: makes Add to Home Screen offer to install Bites. start_url in the
+     manifest points at /app/, so the home-screen icon launches into the app
+     directly, not back into the landing page. -->
+<link rel="manifest" href="/manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Bites" />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<!-- Apple touch icons (Safari uses for Add to Home Screen) -->
+<link rel="apple-touch-icon" href="/icons/apple/apple-touch-icon-180.png" />
+<link rel="apple-touch-icon" sizes="57x57"   href="/icons/apple/apple-touch-icon-57.png" />
+<link rel="apple-touch-icon" sizes="60x60"   href="/icons/apple/apple-touch-icon-60.png" />
+<link rel="apple-touch-icon" sizes="72x72"   href="/icons/apple/apple-touch-icon-72.png" />
+<link rel="apple-touch-icon" sizes="76x76"   href="/icons/apple/apple-touch-icon-76.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="/icons/apple/apple-touch-icon-114.png" />
+<link rel="apple-touch-icon" sizes="120x120" href="/icons/apple/apple-touch-icon-120.png" />
+<link rel="apple-touch-icon" sizes="144x144" href="/icons/apple/apple-touch-icon-144.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/apple/apple-touch-icon-152.png" />
+<link rel="apple-touch-icon" sizes="167x167" href="/icons/apple/apple-touch-icon-167.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple/apple-touch-icon-180.png" />
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://bites.kitchen/landing/" />
@@ -19,7 +44,6 @@
 <meta name="twitter:title" content="Bites — Save dishes, not restaurants." />
 <meta name="twitter:description" content="Your private food journal. Save what you ate, when, and where." />
 <meta name="twitter:image" content="https://bites.kitchen/og-image.png" />
-<link rel="icon" href="../icons/icon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -310,12 +334,34 @@ footer.foot a { color: var(--ink-soft); }
 .fb-btn:hover { opacity: 1; color: var(--bg); }
 .fb-btn svg   { width: 13px; height: 13px; }
 </style>
+
+<script>
+// Smart root: if the visitor arrived with any URL flag we want the app to
+// handle (alpha invites, share-link traffic, admin overlays, prior PWA
+// users), bypass the landing and forward to /app/ with the flags intact.
+// Otherwise, render the landing for the stranger who's just discovering it.
+(function () {
+  try {
+    var p = new URLSearchParams(location.search);
+    var APP_FLAGS = ['ref','stats','admin','cookbook','standalone','t','from'];
+    var hasFlag = APP_FLAGS.some(function (k) { return p.has(k); });
+    // Returning users with localStorage state head straight to the app.
+    var hasState = false;
+    try { hasState = !!localStorage.getItem('bites.v0'); } catch (_) {}
+    if (hasFlag || hasState) {
+      var qs = location.search || '';
+      // Preserve hash too if present.
+      location.replace('/app/' + qs + (location.hash || ''));
+    }
+  } catch (_) { /* fall through to render the landing */ }
+})();
+</script>
 </head>
 <body>
 <main class="wrap">
 
   <header class="topbar">
-    <a class="brand" href="/" style="text-decoration:none;"><span class="glyph"></span>Bites</a>
+    <a class="brand" href="/" style="text-decoration:none;" aria-label="Bites home"><span class="glyph"></span>Bites</a>
     <div class="topbar-right">
       <a class="topbar-link" href="/blog/">Notes</a>
       <span class="tag">Alpha · invite only</span>
@@ -330,7 +376,7 @@ footer.foot a { color: var(--ink-soft); }
       Search what you ate, when, and where — long after you've forgotten.
     </p>
     <div class="cta-row">
-      <a class="btn" href="../?ref=alpha&amp;from=landing" id="cta-hero">Try the alpha →</a>
+      <a class="btn" href="/app/?ref=alpha&amp;from=landing" id="cta-hero">Try the alpha →</a>
       <span class="cta-note">No signup. Works in your browser.</span>
     </div>
   </section>
@@ -416,7 +462,7 @@ footer.foot a { color: var(--ink-soft); }
         <li><strong>Influence what ships.</strong> The product is still soft clay. Your week-2 feedback shapes the v1.</li>
       </ul>
       <div class="cta-row">
-        <a class="btn" href="../?ref=alpha&amp;from=landing">Start adding bites — no signup</a>
+        <a class="btn" href="/app/?ref=alpha&amp;from=landing">Start adding bites — no signup</a>
       </div>
     </div>
   </section>
@@ -425,7 +471,7 @@ footer.foot a { color: var(--ink-soft); }
   <section class="footer-cta">
     <h2>Try it. The app <em style="font-style:italic;">is</em> the trial.</h2>
     <p>No email gate. No onboarding wizard. Just open it and add a bite.</p>
-    <a class="btn" href="../?ref=alpha&amp;from=landing" id="cta-footer">Start adding bites →</a>
+    <a class="btn" href="/app/?ref=alpha&amp;from=landing" id="cta-footer">Start adding bites →</a>
   </section>
 
   <footer class="foot">
