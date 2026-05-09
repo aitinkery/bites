@@ -133,6 +133,49 @@
 
   function pageview(label) {
     track('pageview', { label: label || document.title || pagePath() });
+    // Fire-and-forget anonymous ping so we know SOMEONE landed, not just that
+    // someone tapped 'Send to founder.' One ping per session per page.
+    // De-duped via sessionStorage so reloads in the same tab don't double-count.
+    pingPageviewOnce(label);
+  }
+
+  // Anonymous pageview ping. Sends ONLY the pageview event (not the full log)
+  // to the ingest endpoint, fire-and-forget. Privacy stance unchanged: no IP
+  // logged (Apps Script proxy strips it), no cookies, anonymous installId only.
+  // We dedupe within a tab session so a single visit isn't double-counted on
+  // SPA route changes, but a fresh tab counts as a new pageview.
+  var PING_DEDUP_KEY = 'bites.v0.pinged';
+  function pingPageviewOnce(label) {
+    if (!ANALYTICS_INGEST_URL) return;
+    try {
+      var pingedThisSession = safeGet(sessionStorage, PING_DEDUP_KEY);
+      var thisPath = pagePath();
+      if (pingedThisSession === thisPath) return; // already pinged this exact path this session
+      safeSet(sessionStorage, PING_DEDUP_KEY, thisPath);
+    } catch (e) { /* sessionStorage blocked, just send */ }
+
+    var payload = {
+      secret: ANALYTICS_INGEST_SECRET,
+      session_id: installId,
+      user_agent: (navigator && navigator.userAgent) || '',
+      events: [{
+        timestamp: Date.now(),
+        session: sessionId,
+        event: 'pageview_ping',
+        page: pagePath(),
+        ref: refSource(),
+        data: { label: label || document.title || pagePath() }
+      }]
+    };
+    try {
+      fetch(ANALYTICS_INGEST_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        keepalive: true   // survive page navigation - critical for landing-page bounces
+      }).catch(function () { /* fire-and-forget, ignore */ });
+    } catch (e) { /* offline, ignore */ }
   }
 
   function exportJson() {
