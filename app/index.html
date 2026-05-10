@@ -1084,18 +1084,39 @@ details.io-more[open] > summary { margin-bottom: 6px; }
   .alpha-banner { left: auto; right: 24px; max-width: 380px; bottom: 24px; }
 }
 html.standalone .alpha-banner { bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
-/* While the alpha banner is showing, push the FAB up so it's clearly above
-   the banner (the banner literally instructs users to tap +). Hide the
-   secondary feedback pill — it's redundant against the welcome banner and
-   crowds the bottom-right. Pad the app so list content isn't hidden. */
-body.alpha-banner-active .fab    { bottom: calc(232px + env(safe-area-inset-bottom, 0px)); }
+/* Mobile alpha banner: top-anchored slim chip that doesn't fight the FAB.
+
+   Original design pushed the FAB up to bottom: 232px to make room for a
+   bottom-anchored welcome card. On a 375x812 viewport that put the FAB
+   in the middle of the screen and forced 4 simultaneous orange CTAs into
+   the bottom 30% of the viewport. Real users (16 visitors on 2026-05-09,
+   2 click-throughs to /app/, 0 bites added) showed this layout was a
+   conversion killer.
+
+   New approach: alpha banner is a slim chip that sits below the header,
+   not at the bottom. FAB keeps its natural bottom-right position. No
+   collision. Empty-state guidance ('Tap + to save your first dish')
+   stays as the primary instruction. */
 body.alpha-banner-active .fb-btn { display: none; }
-body.alpha-banner-active .app    { padding-bottom: calc(220px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 699px) {
+  body.alpha-banner-active .alpha-banner {
+    /* Top-anchored slim chip: tucks below the tabs nav, doesn't compete
+       with FAB or empty-state CTA. */
+    top: 96px;
+    bottom: auto;
+    left: 16px; right: 16px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  body.alpha-banner-active .alpha-banner .glyph { width: 24px; height: 24px; font-size: 13px; }
+  body.alpha-banner-active .alpha-banner .txt strong { font-size: 14px; margin-bottom: 0; }
+  body.alpha-banner-active .alpha-banner .txt .sub { font-size: 12px; }
+  body.alpha-banner-active .app { padding-top: 60px; padding-bottom: env(safe-area-inset-bottom, 16px); }
+}
 @media (min-width: 700px) {
-  /* On wide screens the banner is anchored bottom-right and only ~380px wide,
-     so the FAB keeps its normal position; only the .app padding is bumped
-     a little so the bottom of the grid isn't tucked under the banner. */
-  body.alpha-banner-active .fab    { bottom: max(20px, env(safe-area-inset-bottom)); }
+  /* Desktop: keep the original bottom-right anchored banner shape, since
+     it doesn't collide with the FAB at this size. */
   body.alpha-banner-active .fb-btn { display: inline-flex; }
   body.alpha-banner-active .app    { padding-bottom: 130px; }
 }
@@ -2705,6 +2726,16 @@ function maybeShowHero() {
   // Only show when there are no bites AND user hasn't dismissed before.
   if (State.bites.length > 0) return;
   if (localStorage.getItem(HERO_SEEN_KEY)) return;
+  // Alpha testers came to test the product, not to be sold on it.
+  // Show them the empty state directly with the FAB clearly visible.
+  // Without this gate, the hero card competes with the alpha banner + FAB
+  // and creates 4 simultaneous orange CTAs on a 375px viewport (the cause
+  // of the 0% activation rate on 2026-05-09).
+  var params = new URLSearchParams(location.search);
+  if (params.get('ref') === 'alpha') {
+    track('hero_skipped_for_alpha', { from: params.get('from') || '' });
+    return;
+  }
   $('#hero').classList.add('show');
 }
 function dismissHero() {
