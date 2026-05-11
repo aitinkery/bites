@@ -117,6 +117,24 @@
   }
 
   // --- Public API ----------------------------------------------------------
+
+  // Funnel events we ping to the central sheet immediately (in addition to
+  // storing locally). These are the high-signal events for measuring whether
+  // visitors actually USE the app, not just land on it. Props are sent but
+  // are bounded - we never ship notes, dish names, photos, or any free-text
+  // user content. See pingEventIfFunnel below for the strict prop allowlist.
+  var FUNNEL_EVENTS = {
+    'bite_added':            true, // FIRST and most important: did they save anything?
+    'bite_updated':          true, // did they edit? signal of re-engagement
+    'hero_dismissed':        true, // dismissed welcome - committed to using
+    'fb_prompt_vote':        true, // gave a thumbs-up/down on the inline poll
+    'fb_prompt_send':        true, // sent a comment with their vote
+    'cookbook_clicked':      true, // payment intent signal
+    'alpha_banner_dismissed':true, // alpha user committed to staying
+    'install_banner_shown':  true, // PWA opportunity surfaced
+    'install_clicked':       true  // actually tried to install
+  };
+
   function track(name, props) {
     if (!name) return;
     var s = loadStore();
@@ -129,6 +147,10 @@
       props: props || null
     });
     saveStore(s);
+    // High-signal events also fire to the central sheet immediately.
+    if (FUNNEL_EVENTS[name]) {
+      pingEventOnce(name, props);
+    }
   }
 
   function pageview(label) {
@@ -137,6 +159,82 @@
     // someone tapped 'Send to founder.' One ping per session per page.
     // De-duped via sessionStorage so reloads in the same tab don't double-count.
     pingPageviewOnce(label);
+  }
+
+  // Strict prop sanitizer for ping payloads. Allows only safe, bounded
+  // primitives - never strings (which could contain notes, names, etc).
+  // Numbers are clamped to a small range; booleans pass through. This is
+  // the privacy gate: anything not in this list is dropped.
+  function sanitizeProps(props) {
+    if (!props || typeof props !== 'object') return null;
+    var allowed = {
+      'has_photo': 'bool',
+      'has_restaurant': 'bool',
+      'rating': 'number_0_5',
+      'tag_count': 'number_0_20',
+      'library_size': 'number_0_999',
+      'unlocked': 'bool',
+      'alpha': 'bool',
+      'trigger': 'enum',
+      'vote': 'enum',
+      'comment_len': 'number_0_999'
+    };
+    var ENUMS = {
+      'trigger': ['first_save', 'manual', 'cta'],
+      'vote': ['up', 'down', 'meh', 'yes', 'no']
+    };
+    var out = {};
+    for (var k in allowed) {
+      if (!Object.prototype.hasOwnProperty.call(props, k)) continue;
+      var v = props[k];
+      var t = allowed[k];
+      if (t === 'bool') {
+        out[k] = !!v;
+      } else if (t === 'number_0_5') {
+        var n = Number(v);
+        if (!isNaN(n)) out[k] = Math.max(0, Math.min(5, Math.round(n * 2) / 2));
+      } else if (t === 'number_0_20') {
+        var n2 = Number(v);
+        if (!isNaN(n2)) out[k] = Math.max(0, Math.min(20, Math.round(n2)));
+      } else if (t === 'number_0_999') {
+        var n3 = Number(v);
+        if (!isNaN(n3)) out[k] = Math.max(0, Math.min(999, Math.round(n3)));
+      } else if (t === 'enum') {
+        var allowedVals = ENUMS[k] || [];
+        if (allowedVals.indexOf(String(v)) >= 0) out[k] = String(v);
+      }
+    }
+    return out;
+  }
+
+  // Fire a funnel event to the central ingest endpoint. Same privacy posture
+  // as pingPageviewOnce: no IP, no PII, anonymous installId only. Props are
+  // sanitized through the strict allowlist above. Fire-and-forget.
+  // Not session-deduped (we DO want every bite_added, not just the first).
+  function pingEventOnce(name, props) {
+    if (!ANALYTICS_INGEST_URL) return;
+    var payload = {
+      secret: ANALYTICS_INGEST_SECRET,
+      session_id: installId,
+      user_agent: (navigator && navigator.userAgent) || '',
+      events: [{
+        timestamp: Date.now(),
+        session: sessionId,
+        event: String(name),
+        page: pagePath(),
+        ref: refSource(),
+        data: sanitizeProps(props) || {}
+      }]
+    };
+    try {
+      fetch(ANALYTICS_INGEST_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(function () { /* fire-and-forget, ignore */ });
+    } catch (e) { /* offline, ignore */ }
   }
 
   // Anonymous pageview ping. Sends ONLY the pageview event (not the full log)
