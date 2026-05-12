@@ -151,3 +151,23 @@ Not a great cost-per-output if the product fails. Genuinely cheap if the product
 | Output | Landing now serves at `/`; app moves to `/app/`; smart redirect; SW + manifest migration + back-compat |
 
 Highest per-minute burn rate logged on the project. Driven by the operator-autonomy directive (no confirmation gates → 29 turns instead of ~12) and the heavy file-context churn of touching 9 files in 6 minutes. The right trade in a build sprint; would be wrong in sustaining mode.
+
+
+### Spike: EXIF auto-fill + tag suggestions (2026-05-11 18:28–18:36 PDT)
+
+| Metric | Value |
+|---|---|
+| Cost | **$11.34** |
+| Turns | 27 |
+| $/turn | $0.42 |
+| Duration | 8 min |
+| Cache-read tokens | 10.8M |
+| Output tokens | 17.5k |
+| Files modified | 1 (app/index.html) |
+| Net lines added | ~370 |
+| Output | EXIF parser + reverse geocode + tag suggestion table + wiring + CSS + placeholder fix |
+
+Second spike >$10 logged on the project. **Self-critique**: should have been a subagent. The spec was a single file with a clean target — exactly the pattern subagents are for. Estimated subagent cost would have been $4-5 (~60% savings).
+
+Reason I didn't: judged the main-thread context as already-loaded so "no subagent needed." That judgment is the recurring failure mode. Going forward: any feature spec that fits in a paragraph and touches a known file = subagent, no matter how "in-context" it feels.
+
