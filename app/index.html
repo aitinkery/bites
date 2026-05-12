@@ -291,6 +291,44 @@ header.topbar {
   border-color: var(--accent);
 }
 
+/* Inline tag-suggest chips inside the bite form.
+   Appears below the tag input. Each chip is tappable; tap adds to f-tags. */
+.tag-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  min-height: 0;
+}
+.tag-suggest:empty { display: none; }
+.tag-suggest .tag-chip {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+  touch-action: manipulation;
+}
+.tag-suggest .tag-chip::before {
+  content: "+ ";
+  color: var(--ink-mute);
+  font-weight: 600;
+}
+.tag-suggest .tag-chip:hover {
+  background: #fff;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.tag-suggest .tag-chip:active {
+  transform: scale(0.94);
+}
+
 /* ---------------------------------------------------------------------------
    Grid (DECISION LOG: 2-col on mobile / 3-col tablet / 4-col desktop.
    Considered (1) 2-col masonry, (2) 3-col uniform square tile,
@@ -1491,8 +1529,9 @@ html.standalone header.topbar { padding-bottom: 10px; }
       </div>
       <div class="field">
         <label for="f-tags">Tags</label>
-        <input id="f-tags" type="text" placeholder="ramen, spicy, repeat" />
-        <div class="muted" style="font-size:12px; margin-top:4px;">Separate with commas.</div>
+        <input id="f-tags" type="text" placeholder="breakfast, sandwich, worth it" />
+        <div id="f-tag-suggest" class="tag-suggest" aria-label="Tag suggestions"></div>
+        <div class="muted" style="font-size:12px; margin-top:4px;">Separate with commas. Tap a suggestion to add it.</div>
       </div>
     </details>
 
@@ -1884,8 +1923,286 @@ const State = {
   pendingPhotoDataUrl: null,
   pendingRating: 0,
   pendingPrice: '',
+  pendingLat: null,
+  pendingLng: null,
   detailId: null,
 };
+
+// --- EXIF parsing for auto-fill of date + location ------------------------
+// Minimal inline parser. Reads enough of the JPEG to extract DateTimeOriginal
+// (tag 0x9003) and GPSLatitude/Longitude (GPS IFD tags 0x0001-0x0004). No
+// dependencies. Falls back gracefully on parse errors or missing fields.
+//
+// Why inline: a full EXIF library is ~40KB. We need 6 fields. The math fits
+// in 60 lines.
+function readExifFromFile(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onerror = () => resolve(null);
+    reader.onload = (e) => {
+      try {
+        const view = new DataView(e.target.result);
+        // JPEG starts with 0xFFD8
+        if (view.getUint16(0) !== 0xFFD8) return resolve(null);
+        let offset = 2;
+        const len = view.byteLength;
+        // Walk JPEG markers to find APP1 (EXIF)
+        while (offset < len) {
+          if (view.getUint16(offset) !== 0xFFE1) {
+            const size = view.getUint16(offset + 2);
+            offset += 2 + size;
+            continue;
+          }
+          // APP1 EXIF segment
+          const exifMarker = view.getUint32(offset + 4);
+          if (exifMarker !== 0x45786966) return resolve(null); // "Exif"
+          const tiffStart = offset + 10;
+          const little = view.getUint16(tiffStart) === 0x4949;
+          const get16 = (o) => view.getUint16(o, little);
+          const get32 = (o) => view.getUint32(o, little);
+          // IFD0 offset
+          const ifd0 = tiffStart + get32(tiffStart + 4);
+          const ifd0Count = get16(ifd0);
+          let exifIfdOffset = 0;
+          let gpsIfdOffset = 0;
+          for (let i = 0; i < ifd0Count; i++) {
+            const entry = ifd0 + 2 + i * 12;
+            const tag = get16(entry);
+            if (tag === 0x8769) exifIfdOffset = tiffStart + get32(entry + 8);
+            else if (tag === 0x8825) gpsIfdOffset = tiffStart + get32(entry + 8);
+          }
+
+          let dateTime = null;
+          let lat = null;
+          let lng = null;
+
+          // Read DateTimeOriginal from EXIF IFD
+          if (exifIfdOffset) {
+            const count = get16(exifIfdOffset);
+            for (let i = 0; i < count; i++) {
+              const entry = exifIfdOffset + 2 + i * 12;
+              const tag = get16(entry);
+              if (tag === 0x9003) {
+                // ASCII string at offset (or inline if <=4 bytes; ours is 20)
+                const strOffset = tiffStart + get32(entry + 8);
+                const bytes = [];
+                for (let j = 0; j < 19; j++) bytes.push(view.getUint8(strOffset + j));
+                dateTime = String.fromCharCode.apply(null, bytes);
+                // Format: 'YYYY:MM:DD HH:MM:SS' -> 'YYYY-MM-DD'
+                if (dateTime && dateTime.length >= 10) {
+                  dateTime = dateTime.substring(0, 10).replace(/:/g, '-');
+                }
+              }
+            }
+          }
+
+          // Read GPS lat/lng from GPS IFD
+          if (gpsIfdOffset) {
+            const count = get16(gpsIfdOffset);
+            let latRef = 'N', lngRef = 'E';
+            let latVal = null, lngVal = null;
+            const readRational = (offsetWithinTiff) => {
+              const num = get32(offsetWithinTiff);
+              const den = get32(offsetWithinTiff + 4) || 1;
+              return num / den;
+            };
+            for (let i = 0; i < count; i++) {
+              const entry = gpsIfdOffset + 2 + i * 12;
+              const tag = get16(entry);
+              if (tag === 0x0001) latRef = String.fromCharCode(view.getUint8(entry + 8));
+              else if (tag === 0x0002) {
+                const o = tiffStart + get32(entry + 8);
+                const d = readRational(o);
+                const m = readRational(o + 8);
+                const s = readRational(o + 16);
+                latVal = d + m / 60 + s / 3600;
+              } else if (tag === 0x0003) lngRef = String.fromCharCode(view.getUint8(entry + 8));
+              else if (tag === 0x0004) {
+                const o = tiffStart + get32(entry + 8);
+                const d = readRational(o);
+                const m = readRational(o + 8);
+                const s = readRational(o + 16);
+                lngVal = d + m / 60 + s / 3600;
+              }
+            }
+            if (latVal !== null) lat = (latRef === 'S') ? -latVal : latVal;
+            if (lngVal !== null) lng = (lngRef === 'W') ? -lngVal : lngVal;
+          }
+
+          return resolve({ date: dateTime, lat: lat, lng: lng });
+        }
+        return resolve(null);
+      } catch (err) {
+        return resolve(null);
+      }
+    };
+    // Read first 256KB - EXIF lives at the start of the file, no need for full read
+    reader.readAsArrayBuffer(file.slice(0, 262144));
+  });
+}
+
+// Reverse-geocode lat/lng -> city name via OpenStreetMap Nominatim.
+// No API key needed; subject to fair-use rate limits. Cached per-tab session
+// so a user uploading multiple photos from the same trip doesn't re-fetch.
+const REVERSE_GEO_CACHE = {};
+async function reverseGeocodeCity(lat, lng) {
+  if (lat === null || lng === null) return null;
+  const key = lat.toFixed(3) + ',' + lng.toFixed(3); // ~100m precision for cache hit
+  if (REVERSE_GEO_CACHE[key]) return REVERSE_GEO_CACHE[key];
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const a = data.address || {};
+    const city = a.city || a.town || a.village || a.hamlet || a.suburb || a.county || null;
+    REVERSE_GEO_CACHE[key] = city;
+    return city;
+  } catch (e) {
+    return null;
+  }
+}
+
+// --- Tag suggestions ------------------------------------------------------
+// Flat lookup table from dish-name keywords to suggested tags. No ML needed;
+// covers ~90% of common dishes. Keys are case-insensitive substrings that
+// match anywhere in the dish name. Tag values are deduped against any tags
+// the user has already typed before being shown.
+const TAG_SUGGESTIONS = {
+  // Cuisines & dish types
+  'ramen':       ['ramen', 'japanese', 'noodles', 'soup'],
+  'pho':         ['pho', 'vietnamese', 'soup', 'noodles'],
+  'udon':        ['udon', 'japanese', 'noodles'],
+  'soba':        ['soba', 'japanese', 'noodles'],
+  'pasta':       ['pasta', 'italian'],
+  'pizza':       ['pizza', 'italian'],
+  'carbonara':   ['pasta', 'italian'],
+  'cacio':       ['pasta', 'italian'],
+  'risotto':     ['italian', 'rice'],
+  'tacos':       ['mexican', 'tacos', 'lunch'],
+  'taco':        ['mexican', 'tacos'],
+  'burrito':     ['mexican', 'lunch'],
+  'quesadilla':  ['mexican'],
+  'enchilada':   ['mexican'],
+  'curry':       ['curry', 'spicy'],
+  'biryani':     ['indian', 'rice', 'dinner'],
+  'naan':        ['indian', 'bread'],
+  'tikka':       ['indian'],
+  'dosa':        ['indian', 'vegetarian'],
+  'sushi':       ['sushi', 'japanese', 'raw'],
+  'sashimi':     ['sushi', 'japanese', 'raw'],
+  'nigiri':      ['sushi', 'japanese'],
+  'maki':        ['sushi', 'japanese'],
+  'burger':      ['burger', 'lunch', 'american'],
+  'cheeseburger':['burger', 'american'],
+  'sandwich':    ['sandwich', 'lunch'],
+  'panini':      ['sandwich', 'italian', 'lunch'],
+  'banh mi':     ['vietnamese', 'sandwich', 'lunch'],
+  'wrap':        ['lunch', 'wrap'],
+  'salad':       ['salad', 'light', 'healthy'],
+  'bowl':        ['bowl', 'lunch'],
+  'poke':        ['poke', 'hawaiian', 'raw', 'lunch'],
+  'soup':        ['soup', 'comfort'],
+  'stew':        ['stew', 'comfort', 'dinner'],
+  // Proteins
+  'ribs':        ['bbq', 'pork', 'dinner'],
+  'brisket':     ['bbq', 'beef', 'dinner'],
+  'pulled pork': ['bbq', 'pork'],
+  'steak':       ['steak', 'beef', 'dinner'],
+  'chicken':     ['chicken'],
+  'wings':       ['chicken', 'wings', 'shareable'],
+  'duck':        ['duck', 'dinner'],
+  'lamb':        ['lamb', 'dinner'],
+  'salmon':      ['salmon', 'fish'],
+  'tuna':        ['tuna', 'fish'],
+  'shrimp':      ['shrimp', 'seafood'],
+  'crab':        ['crab', 'seafood'],
+  'lobster':     ['lobster', 'seafood', 'splurge'],
+  'oyster':      ['oysters', 'seafood', 'raw'],
+  // Breakfast
+  'eggs':        ['breakfast', 'eggs'],
+  'omelet':      ['breakfast', 'eggs'],
+  'omelette':    ['breakfast', 'eggs'],
+  'toast':       ['breakfast', 'toast'],
+  'pancake':     ['breakfast', 'pancakes', 'sweet'],
+  'waffle':      ['breakfast', 'waffles', 'sweet'],
+  'french toast':['breakfast', 'sweet'],
+  'bagel':       ['breakfast', 'bread'],
+  'croissant':   ['breakfast', 'bakery', 'french'],
+  'biscuit':     ['breakfast', 'bakery'],
+  'granola':     ['breakfast', 'healthy'],
+  'yogurt':      ['breakfast', 'healthy'],
+  // Dessert / sweets
+  'cake':        ['dessert', 'sweet'],
+  'cookie':      ['dessert', 'sweet'],
+  'ice cream':   ['dessert', 'sweet'],
+  'gelato':      ['dessert', 'italian', 'sweet'],
+  'tart':        ['dessert', 'bakery'],
+  'pie':         ['dessert', 'sweet'],
+  'donut':       ['dessert', 'bakery', 'sweet'],
+  'pastry':      ['bakery', 'sweet'],
+  // Drinks
+  'coffee':      ['coffee', 'drink'],
+  'latte':       ['coffee', 'drink'],
+  'cappuccino':  ['coffee', 'drink'],
+  'espresso':    ['coffee', 'drink'],
+  'tea':         ['tea', 'drink'],
+  'matcha':      ['matcha', 'drink', 'japanese'],
+  'cocktail':    ['cocktail', 'drink', 'evening'],
+  'wine':        ['wine', 'drink'],
+  'beer':        ['beer', 'drink'],
+  // Misc cuisines
+  'dumpling':    ['dumplings', 'chinese'],
+  'dim sum':     ['dim sum', 'chinese', 'brunch'],
+  'pad thai':    ['thai', 'noodles'],
+  'green curry': ['thai', 'curry', 'spicy'],
+  'kimchi':      ['korean', 'spicy'],
+  'bulgogi':     ['korean', 'beef'],
+  'bibimbap':    ['korean', 'bowl', 'rice'],
+  'falafel':     ['middle eastern', 'vegetarian'],
+  'shawarma':    ['middle eastern', 'lunch'],
+  'hummus':      ['middle eastern'],
+  'kebab':       ['middle eastern', 'grilled'],
+  'tagine':      ['moroccan', 'stew'],
+  'paella':      ['spanish', 'rice', 'dinner'],
+};
+
+function suggestTagsForDish(dishName) {
+  if (!dishName) return [];
+  const lower = dishName.toLowerCase();
+  const out = new Set();
+  for (const key in TAG_SUGGESTIONS) {
+    if (lower.indexOf(key) !== -1) {
+      TAG_SUGGESTIONS[key].forEach(t => out.add(t));
+    }
+  }
+  return Array.from(out);
+}
+
+function paintTagSuggestions() {
+  const el = $('#f-tag-suggest');
+  if (!el) return;
+  const dish = $('#f-dish').value.trim();
+  const existing = new Set(parseTags($('#f-tags').value));
+  const suggestions = suggestTagsForDish(dish).filter(t => !existing.has(t));
+  el.innerHTML = '';
+  suggestions.slice(0, 8).forEach(tag => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tag-chip';
+    b.textContent = tag;
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = $('#f-tags');
+      const cur = parseTags(input.value);
+      if (!cur.includes(tag)) cur.push(tag);
+      input.value = cur.join(', ');
+      paintTagSuggestions(); // re-paint to remove the chip just added
+      track('tag_suggestion_used', { tag_count: cur.length });
+    });
+    el.appendChild(b);
+  });
+}
 
 // --- Image downscaling for storage --------------------------------------------
 function fileToDownscaledDataUrl(file, maxEdge=1280, quality=0.82) {
@@ -2240,9 +2557,13 @@ function openForm(id=null) {
   State.pendingPhotoDataUrl = b?.photo_data_url || null;
   State.pendingRating = b?.rating || 0;
   State.pendingPrice = b?.price_estimate || (b ? '' : DEFAULT_PRICE);
+  // EXIF auto-fill targets: preserve existing lat/lng on edit, reset on new
+  State.pendingLat = b?.lat || null;
+  State.pendingLng = b?.lng || null;
   paintPhoto();
   paintStars();
   paintPrice();
+  paintTagSuggestions();
 
   // Auto-expand the More / Details sections if editing an existing bite that
   // has values in those fields — otherwise editing would silently hide their
@@ -2302,15 +2623,56 @@ function paintPrice() {
 }
 
 function bindFormHandlers() {
-  // Photo input
+  // Photo input. After picking a photo we:
+  //   1. Downscale + store the data URL (existing behavior)
+  //   2. Try to read EXIF for DateTimeOriginal + GPS — auto-fill date/city
+  //      if the field is still empty so we never overwrite a user's edit
+  //   3. Reverse-geocode GPS -> city in the background (Nominatim, no key)
+  // Privacy: EXIF parsing is entirely on-device. Reverse geocode is the ONE
+  // outbound call; if Nominatim is down we silently skip. The user-supplied
+  // lat/lng never ship to our analytics — they're stored only in the bite
+  // record on this device.
   $('#photo-file').addEventListener('change', async (e) => {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
     try {
       toast('Processing photo…');
-      const url = await fileToDownscaledDataUrl(f, 1280, 0.82);
+      // Kick off EXIF read in parallel with the downscale — they don't depend on each other
+      const [url, exif] = await Promise.all([
+        fileToDownscaledDataUrl(f, 1280, 0.82),
+        readExifFromFile(f),
+      ]);
       State.pendingPhotoDataUrl = url;
       paintPhoto();
+
+      if (exif) {
+        let filled = [];
+        // Date: only fill if the user hasn't already touched the date field
+        // (i.e., it's still the default "today")
+        if (exif.date && $('#f-date').value === todayISO()) {
+          $('#f-date').value = exif.date;
+          filled.push('date');
+        }
+        // Lat/lng: stash for inclusion in the saved bite
+        if (exif.lat !== null && exif.lng !== null) {
+          State.pendingLat = exif.lat;
+          State.pendingLng = exif.lng;
+          // Reverse-geocode city if the field is empty
+          if (!$('#f-city').value.trim()) {
+            try {
+              const city = await reverseGeocodeCity(exif.lat, exif.lng);
+              if (city && !$('#f-city').value.trim()) {
+                $('#f-city').value = city;
+                filled.push('city');
+              }
+            } catch (e) { /* offline, skip */ }
+          }
+        }
+        if (filled.length) {
+          toast('Auto-filled ' + filled.join(' + ') + ' from photo');
+          track('exif_autofilled', { has_photo: true, tag_count: filled.length });
+        }
+      }
     } catch (err) {
       console.error(err);
       toast('Could not load photo');
@@ -2318,6 +2680,12 @@ function bindFormHandlers() {
       e.target.value = '';
     }
   });
+
+  // Tag suggestions: repaint chips when the dish name changes, when the user
+  // edits tags manually (to remove chips for tags they just typed), or when
+  // the form opens with an existing bite.
+  $('#f-dish').addEventListener('input', paintTagSuggestions);
+  $('#f-tags').addEventListener('input', paintTagSuggestions);
 
   // Stars: tap left half = .5, right half = full
   const starsEl = $('#f-stars');
@@ -2371,6 +2739,8 @@ function saveForm() {
     photo_data_url: State.pendingPhotoDataUrl || '',
     price_estimate: State.pendingPrice || '',
     date: $('#f-date').value || todayISO(),
+    lat: State.pendingLat || null,
+    lng: State.pendingLng || null,
   };
 
   // First save also dismisses the hero (they don't need the welcome anymore).
