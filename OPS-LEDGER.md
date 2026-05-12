@@ -17,6 +17,7 @@ Format: `YYYY-MM-DD | $X.XX | item | reference | running balance`
 | Date | Amount | Item | Reference | Balance after |
 |---|---|---|---|---|
 | 2026-05-07 | $9.18 | Domain registration: **bites.kitchen** (1 year, includes WhoisGuard, includes ICANN $0.20 fee) | DomainID 101901534 / OrderID 201869775 / TransactionID 245447849 | **$40.82** |
+| 2026-05-12 | $11.48 | Domain registration: **tinkerybot.com** (1 year, includes WhoisGuard) | DomainID 102110083 / OrderID 202321186 / TransactionID 245967753 | **$29.34** |
 
 ### Pending / queued
 
