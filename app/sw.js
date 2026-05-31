@@ -2,7 +2,9 @@
 // Strategy: cache-first for shell so the app works offline. Photos live in
 // localStorage as data URLs, so we don't need to cache them here.
 // Cache version bumped after the /app/ relocation to invalidate stale shells.
-const CACHE = 'bites-v0-2';
+// 2026-05-30: bumped to v0-3 to ship the photo input fix (removed capture="environment"
+// so users can pick from gallery, not just camera).
+const CACHE = 'bites-v0-3';
 const SHELL = [
   '/app/',
   '/app/index.html',
