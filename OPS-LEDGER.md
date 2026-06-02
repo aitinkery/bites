@@ -172,3 +172,16 @@ Second spike >$10 logged on the project. **Self-critique**: should have been a s
 
 Reason I didn't: judged the main-thread context as already-loaded so "no subagent needed." That judgment is the recurring failure mode. Going forward: any feature spec that fits in a paragraph and touches a known file = subagent, no matter how "in-context" it feels.
 
+
+
+## 2026-06-01 — Demo mode shipped (activation experiment)
+
+Diagnosis from today's metrics audit: **0.7% activation** over 24 days (1 saver in 139 sessions). The funnel works (11% landing→app conversion), but the empty app gives new visitors nothing to chew on. They bounce.
+
+Shipped: auto-seed 10 sample bites for fresh public visitors. Dismissable via "Clear samples" banner. Auto-clears when a user adds their own first bite. `?ref=alpha` testers still see the empty product. `?ref=share` link path preserved.
+
+- Commit: ed51bb3
+- File touched: `app/index.html` (+114 / -5)
+- Analytics events added: `demo_mode_loaded`, `demo_mode_cleared`
+- Hypothesis: activation rate (visitors → savers) should rise meaningfully in the next 2-week window if the empty-app diagnosis is correct.
+- Falsifiable: if activation doesn't improve, the bounce wasn't about the empty grid — it's something earlier in the funnel (copy, trust, value prop on the landing page).
