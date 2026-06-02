@@ -470,6 +470,38 @@ header.topbar {
 .btn.danger { background: transparent; color: #b03b22; border: 1px solid #e7c5bc; box-shadow: none; }
 .btn.danger:hover { background: #fdf0eb; }
 .btn.full { width: 100%; }
+.btn.small { padding: 6px 12px; font-size: 13px; }
+
+/* Demo-mode banner — thin chip above the grid, shown when the user is
+   browsing seeded sample bites. Honest framing ("sample bites") + an
+   easy dismiss path so engaged users can clear and start fresh.
+   Stacks vertically on narrow viewports so the button doesn't wrap. */
+.demo-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 16px;
+  padding: 10px 14px;
+  background: #fff8ec;
+  border: 1px solid #ecd9b0;
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: #6a4a17;
+}
+.demo-banner.hidden { display: none; }
+.demo-banner-text { flex: 1; line-height: 1.4; }
+.demo-banner .btn.ghost.small {
+  border-color: #d3b878;
+  color: #6a4a17;
+  background: transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.demo-banner .btn.ghost.small:hover { background: #f1e3c0; }
+@media (max-width: 420px) {
+  .demo-banner { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .demo-banner .btn.ghost.small { align-self: stretch; }
+}
 
 /* ---------------------------------------------------------------------------
    FAB (camera-first capture)
@@ -1379,6 +1411,13 @@ html.standalone header.topbar { padding-bottom: 10px; }
       <span class="count" id="grid-count"></span>
     </div>
 
+    <div id="demo-banner" class="demo-banner hidden" role="note">
+      <span class="demo-banner-text">
+        <span aria-hidden="true">✨</span> These are sample bites — add your own with the + button below.
+      </span>
+      <button class="btn ghost small" id="demo-clear">Clear samples</button>
+    </div>
+
     <div id="grid" class="grid" aria-live="polite"></div>
 
     <div id="empty" class="empty hidden">
@@ -1718,6 +1757,7 @@ html.standalone header.topbar { padding-bottom: 10px; }
 
 const STORAGE_KEY = 'bites.v0';
 const SEED_DISMISSED_KEY = 'bites.v0.seedDismissed';
+const DEMO_MODE_KEY = 'bites.v0.demoMode';
 const INSTALL_DISMISSED_KEY = 'bites.v0.installDismissed';
 const HERO_SEEN_KEY = 'bites.v0.heroSeen';
 const RESERVATIONS_KEY = 'bites:reservations';
@@ -2391,6 +2431,7 @@ function renderHome() {
   filters.classList.remove('hidden');
   head.classList.remove('hidden');
   empty.classList.add('hidden');
+  renderDemoBanner();
   renderFilters();
 
   if (filtered.length === 0) {
@@ -2785,6 +2826,9 @@ function saveForm() {
   // After saving a new bite, see if we should surface the inline feedback
   // prompt. Threshold check is internal; this is a safe no-op if not ready.
   if (!State.editingId) maybeShowFbPrompt();
+  // If we were in demo mode and the user just added their own bite, retire
+  // the "sample data" banner so we stop talking down to a real user.
+  exitDemoIfUserSaved();
   State.editingId = null;
 }
 
@@ -3554,22 +3598,86 @@ function registerSW() {
 }
 
 // --- URL-flag handlers (ship-grade dev affordances) -------------------------
+// Default behaviour for new visitors: auto-seed the library with 10 sample
+// bites so the second screen they see is the actual product (a populated
+// grid), not an empty page. The activation metric over the first 24 days of
+// soft launch was 0.7% — the diagnosed cause was the empty-app bounce.
+// Demo mode is dismissable via a banner; alpha testers + share-link visitors
+// retain their existing flows.
+//
 // ?ref=share  → first-time visitor from a shared link gets sample bites
 //             pre-loaded so the second screen they see is the actual product,
 //             not an empty grid. Higher "this is real" conversion.
+// ?ref=alpha  → alpha testers, by contrast, see the real empty product
+//             because they're here to test the actual save flow.
 // ?admin=reservations → dump localStorage cookbook reservations as a
 //             readable list with copy/CSV download. Hidden URL only the CEO
 //             knows. Pure pg "do things that don't scale" affordance.
 async function handleUrlFlags() {
   const params = new URLSearchParams(location.search);
-  if (params.get('ref') === 'share') {
-    // Only seed on first visit (don't override an existing library)
-    if (!loadAll().length && !localStorage.getItem('bites.v0.heroSeen')) {
-      try { await loadSeed(); } catch {}
-    }
+  const isAlpha = params.get('ref') === 'alpha';
+  const isShare = params.get('ref') === 'share';
+  const hasLibrary = loadAll().length > 0;
+  const heroSeen = !!localStorage.getItem(HERO_SEEN_KEY);
+  const seedDismissed = !!localStorage.getItem(SEED_DISMISSED_KEY);
+
+  if (isShare && !hasLibrary && !heroSeen) {
+    // Existing share-link behaviour — keep intact.
+    try { await loadSeed(); } catch {}
+  } else if (!isAlpha && !hasLibrary && !seedDismissed && !heroSeen) {
+    // Default demo mode for fresh public visitors.
+    try {
+      await loadSeed();
+      localStorage.setItem(DEMO_MODE_KEY, '1');
+      track('demo_mode_loaded', { source: params.get('ref') || 'direct' });
+    } catch {}
   }
   if (params.get('admin') === 'reservations') {
     showReservationsAdmin();
+  }
+}
+
+function inDemoMode() {
+  return localStorage.getItem(DEMO_MODE_KEY) === '1' && State.bites.length > 0;
+}
+
+function clearDemoMode(opts) {
+  // Wipe seeded bites + restore an empty library so the visitor can start fresh.
+  State.bites = [];
+  saveAll(State.bites);
+  localStorage.removeItem(DEMO_MODE_KEY);
+  // Prevent the demo seed from re-loading on the next refresh.
+  localStorage.setItem(SEED_DISMISSED_KEY, '1');
+  track('demo_mode_cleared', { trigger: (opts && opts.trigger) || 'banner' });
+  renderDemoBanner();
+  renderHome();
+  toast('Cleared sample bites');
+}
+
+function renderDemoBanner() {
+  const banner = $('#demo-banner');
+  if (!banner) return;
+  if (inDemoMode()) banner.classList.remove('hidden');
+  else banner.classList.add('hidden');
+}
+
+function bindDemoBanner() {
+  const btn = $('#demo-clear');
+  if (btn) btn.addEventListener('click', () => clearDemoMode({ trigger: 'banner' }));
+}
+
+// When a user actually adds their own bite while in demo mode, that's the
+// signal they're engaging with the product. Exit demo mode silently so the
+// banner stops shouting "these are samples" at them once they own a real bite.
+function exitDemoIfUserSaved() {
+  if (!inDemoMode()) return;
+  // Only auto-exit when the library has at least one bite NOT in the seed set.
+  // Seed bite ids start with 'bite-seed-'; user bites don't.
+  const hasOwn = State.bites.some(b => !String(b.id || '').startsWith('bite-seed-'));
+  if (hasOwn) {
+    localStorage.removeItem(DEMO_MODE_KEY);
+    track('demo_mode_cleared', { trigger: 'user_saved' });
+    renderDemoBanner();
   }
 }
 
@@ -3611,6 +3719,7 @@ async function boot() {
   bindSearch();
   bindTabs();
   bindEmpty();
+  bindDemoBanner();
   bindGlobal();
   bindHero();
   bindCookbook();
