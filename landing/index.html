@@ -146,6 +146,15 @@ a:hover { color: var(--accent-deep); }
   padding: 28px 0 36px;
   border-bottom: 1px solid var(--line);
 }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 36px;
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+}
 .hero h1 {
   font-size: clamp(36px, 6vw, 56px);
   margin-bottom: 18px;
@@ -159,6 +168,93 @@ a:hover { color: var(--accent-deep); }
   color: var(--ink-soft);
   max-width: 640px;
   margin-bottom: 26px;
+}
+
+/* Hero bite-card stack — real entries from the seed library */
+.hero-bites {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  perspective: 1000px;
+}
+.bite-card {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-1);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.bite-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+.bite-card:nth-child(1) { transform: rotate(-1.2deg); }
+.bite-card:nth-child(2) { transform: rotate(0.8deg); }
+.bite-card:nth-child(3) { transform: rotate(-0.6deg); }
+.bite-card:nth-child(1):hover { transform: rotate(-1.2deg) translateY(-2px); }
+.bite-card:nth-child(2):hover { transform: rotate(0.8deg) translateY(-2px); }
+.bite-card:nth-child(3):hover { transform: rotate(-0.6deg) translateY(-2px); }
+.bite-card .photo {
+  flex: 0 0 96px;
+  width: 96px; height: 96px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--bg-soft);
+}
+.bite-card .meta {
+  display: flex; flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+}
+.bite-card .dish {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bite-card .where {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bite-card .row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.bite-card .rating {
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.bite-card .tag-pill {
+  display: inline-block;
+  padding: 1px 7px;
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.hero-bites-caption {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-align: center;
+  font-style: italic;
 }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -370,14 +466,60 @@ footer.foot a { color: var(--ink-soft); }
 
   <!-- =========================== HERO =========================== -->
   <section class="hero">
-    <h1>Remember every <em>dish</em> worth remembering.</h1>
-    <p class="subhead">
-      Bites is a private food journal. Save dishes, not restaurants.
-      Search what you ate, when, and where — long after you've forgotten.
-    </p>
-    <div class="cta-row">
-      <a class="btn" href="/app/?ref=alpha&amp;from=landing" id="cta-hero">Try the alpha →</a>
-      <span class="cta-note">No signup. Works in your browser.</span>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1>Remember every <em>dish</em> worth remembering.</h1>
+        <p class="subhead">
+          Bites is a private food journal. Save dishes, not restaurants.
+          Search what you ate, when, and where — long after you've forgotten.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href="/app/?ref=alpha&amp;from=landing" id="cta-hero">Try the alpha →</a>
+          <span class="cta-note">No signup. Works in your browser.</span>
+        </div>
+      </div>
+
+      <div class="hero-bites-wrap" aria-label="Three real bites from the demo library">
+        <div class="hero-bites">
+          <a class="bite-card" href="/app/?ref=alpha&amp;from=landing">
+            <img class="photo" src="../seed-photos/bite-seed-002.jpg" alt="Cacio e Pepe" loading="lazy" width="96" height="96">
+            <div class="meta">
+              <div class="dish">Cacio e Pepe</div>
+              <div class="where">Flour + Water · San Francisco</div>
+              <div class="row">
+                <span class="rating">★ 5.0</span>
+                <span class="tag-pill">pasta</span>
+                <span class="tag-pill">repeat</span>
+              </div>
+            </div>
+          </a>
+          <a class="bite-card" href="/app/?ref=alpha&amp;from=landing">
+            <img class="photo" src="../seed-photos/bite-seed-001.jpg" alt="Spicy Tonkotsu Ramen" loading="lazy" width="96" height="96">
+            <div class="meta">
+              <div class="dish">Spicy Tonkotsu Ramen</div>
+              <div class="where">Tatsu Ramen · San Francisco</div>
+              <div class="row">
+                <span class="rating">★ 4.5</span>
+                <span class="tag-pill">ramen</span>
+                <span class="tag-pill">spicy</span>
+              </div>
+            </div>
+          </a>
+          <a class="bite-card" href="/app/?ref=alpha&amp;from=landing">
+            <img class="photo" src="../seed-photos/bite-seed-005.jpg" alt="Sourdough Levain" loading="lazy" width="96" height="96">
+            <div class="meta">
+              <div class="dish">Sourdough Levain</div>
+              <div class="where">Tartine Bakery · San Francisco</div>
+              <div class="row">
+                <span class="rating">★ 4.5</span>
+                <span class="tag-pill">bread</span>
+                <span class="tag-pill">repeat</span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <p class="hero-bites-caption">Three actual bites from the demo library — tap any to open the app.</p>
+      </div>
     </div>
   </section>
 
