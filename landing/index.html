@@ -153,7 +153,17 @@ a:hover { color: var(--accent-deep); }
   align-items: center;
 }
 @media (max-width: 760px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 22px; }
+  /* On mobile, lead with the photos (visual proof) then copy + CTA. */
+  .hero-grid .hero-bites-wrap { order: 1; }
+  .hero-grid .hero-copy       { order: 2; }
+  /* Tighten typography so first card peeks under the headline. */
+  .hero h1 { font-size: clamp(28px, 8vw, 38px); margin-bottom: 12px; }
+  .hero .subhead { font-size: 15px; margin-bottom: 18px; }
+  .hero-bites { gap: 8px; }
+  .bite-card .photo { flex: 0 0 78px; width: 78px; height: 78px; }
+  .bite-card .dish { font-size: 16px; }
+  .hero-bites-caption { margin-top: 10px; }
 }
 .hero h1 {
   font-size: clamp(36px, 6vw, 56px);
